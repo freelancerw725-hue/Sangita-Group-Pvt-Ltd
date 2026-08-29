@@ -30,7 +30,7 @@ export interface BulkMailProgress {
 }
 
 function getBulkMailConfig() {
-  const base = process.env.BULK_MAIL_BASE_URL?.trim() || process.env.BULK_MAIL_URL?.trim() || process.env.APP_URL?.trim() || "http://localhost:3001"
+  const base = process.env.BULK_MAIL_BASE_URL?.trim() || process.env.BULK_MAIL_URL?.trim() || process.env.APP_URL?.trim() || "https://sangita-email-outreach.vercel.app"
   const key = process.env.BULK_MAIL_API_KEY?.trim() || process.env.BULK_MAIL_CAMPAIGN_KEY?.trim() || process.env.BULK_MAIL_IMPORT_KEY?.trim() || ""
   return { base: base.replace(/\/$/, ""), key }
 }

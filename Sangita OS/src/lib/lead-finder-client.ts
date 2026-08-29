@@ -30,7 +30,7 @@ export interface LeadFinderStats {
 }
 
 export async function fetchLeadFinderStats(): Promise<LeadFinderStats | null> {
-  const base = process.env.LEAD_FINDER_BASE_URL?.trim() || process.env.LEAD_FINDER_URL?.trim() || "http://localhost:3000";
+  const base = process.env.LEAD_FINDER_BASE_URL?.trim() || process.env.LEAD_FINDER_URL?.trim() || "https://sangita-lead-finder.vercel.app";
   const key = process.env.LEAD_FINDER_API_KEY?.trim() || process.env.LEAD_FINDER_AUTOMATION_KEY?.trim() || process.env.AUTOMATION_API_KEY?.trim();
   if (!base) return null;
   const url = `${base.replace(/\/$/, "")}/api/automation/stats`;

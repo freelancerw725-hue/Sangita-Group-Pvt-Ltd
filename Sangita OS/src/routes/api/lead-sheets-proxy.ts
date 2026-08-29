@@ -5,7 +5,7 @@ export const Route = createFileRoute("/api/lead-sheets-proxy")({
     handlers: {
       GET: async () => {
         try {
-          const base = process.env.LEAD_FINDER_BASE_URL?.trim() || process.env.LEAD_FINDER_URL?.trim() || "http://localhost:3000";
+          const base = process.env.LEAD_FINDER_BASE_URL?.trim() || process.env.LEAD_FINDER_URL?.trim() || "https://sangita-lead-finder.vercel.app";
           const key = process.env.LEAD_FINDER_API_KEY?.trim() || process.env.LEAD_FINDER_AUTOMATION_KEY?.trim() || "";
           const headers: Record<string, string> = {};
           if (key) headers["x-api-key"] = key;

@@ -22,7 +22,7 @@ export const config = {
   isProd: (env.NODE_ENV || 'development') === 'production',
 
   port: Number(env.PORT || 3001),
-  appUrl: env.APP_URL || 'http://localhost:3000',
+  appUrl: env.APP_URL || 'https://sangita-email-outreach.vercel.app',
 
   dbPath: path.isAbsolute(env.DB_PATH || '')
     ? env.DB_PATH
