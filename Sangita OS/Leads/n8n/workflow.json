@@ -1,0 +1,607 @@
+{
+  "name": "Sangita OS \u2192 Lead Finder \u2014 Keyword + Verification (Phase 3)",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 */30 * * * *"
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "notes": "Every 30 minutes. Adjust cron for production. Daily-target is enforced by Sangita OS \u2014 n8n never calculates it."
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.SANGITA_OS_BASE_URL }}/api/keywords/next",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{ $env.SANGITA_OS_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 10000,
+          "alwaysOutputData": true
+        }
+      },
+      "id": "get-next-keyword",
+      "name": "GET Sangita OS /api/keywords/next",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        260,
+        0
+      ],
+      "notes": "Source of truth for eligibility. Returns 204 when no keyword. Never hard-code keywords."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.keyword }}",
+              "operation": "isNotEmpty"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "if-keyword-available",
+      "name": "IF Keyword Available?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        520,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://{{ $env.SANGITA_OS_BASE_URL }}/api/keywords/{{ $json.id }}/usage",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "eventType",
+              "value": "search_started"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{ $env.SANGITA_OS_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 8000
+        }
+      },
+      "id": "post-search-started",
+      "name": "POST Sangita OS usage: search_started",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        760,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.LEAD_FINDER_BASE_URL }}/api/automation/lead-search",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "keyword",
+              "value": "={{ $('GET Sangita OS /api/keywords/next').item.json.keyword }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{ $env.LEAD_FINDER_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "id": "post-lead-search",
+      "name": "POST Lead Finder /api/automation/lead-search",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        760,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 60,
+        "unit": "seconds"
+      },
+      "id": "wait-60s",
+      "name": "Wait 60s",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1000,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://{{ $env.LEAD_FINDER_BASE_URL }}/api/automation/lead-search/{{ $json.jobId }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{ $env.LEAD_FINDER_API_KEY }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 8000
+        }
+      },
+      "id": "get-job-status",
+      "name": "GET Lead Finder job status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1220,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.status }}",
+              "value2": "running",
+              "operation": "equal"
+            }
+          ]
+        }
+      },
+      "id": "if-running",
+      "name": "IF status == running?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1440,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://{{ $env.SANGITA_OS_BASE_URL }}/api/keywords/{{ $('GET Sangita OS /api/keywords/next').item.json.id }}/usage",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "eventType",
+              "value": "search_completed"
+            },
+            {
+              "name": "leadsFound",
+              "value": "={{ $json.leadsFound }}"
+            },
+            {
+              "name": "newLeads",
+              "value": "={{ $json.newLeads }}"
+            },
+            {
+              "name": "duplicates",
+              "value": "={{ $json.duplicates }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{ $env.SANGITA_OS_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        }
+      },
+      "id": "post-completed",
+      "name": "POST Sangita OS usage: search_completed",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1660,
+        -40
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://{{ $env.SANGITA_OS_BASE_URL }}/api/keywords/{{ $('GET Sangita OS /api/keywords/next').item.json.id }}/usage",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "eventType",
+              "value": "failed_search"
+            },
+            {
+              "name": "errorMessage",
+              "value": "={{ $json.errorMessage || $json.error || 'search failed' }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{ $env.SANGITA_OS_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        }
+      },
+      "id": "post-failed",
+      "name": "POST Sangita OS usage: failed_search",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1660,
+        140
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.status }}",
+              "value2": "failed",
+              "operation": "equal"
+            }
+          ]
+        }
+      },
+      "id": "if-failed",
+      "name": "IF status == failed?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1440,
+        200
+      ],
+      "notes": "Secondary branch: if job polling reaches failed after running, still report to Sangita OS."
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.LEAD_FINDER_BASE_URL }}/api/automation/verify",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "leadIds",
+              "value": "={{ $('GET Lead Finder job status').item.json.newLeadIds || [] }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{ $env.LEAD_FINDER_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "id": "post-verify",
+      "name": "POST Lead Finder /api/automation/verify",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1880,
+        -40
+      ],
+      "notes": "Batch verify new leads. Sets emailVerificationStatus + pending_review. Valid does NOT auto-approve."
+    },
+    {
+      "parameters": {
+        "amount": 30,
+        "unit": "seconds"
+      },
+      "id": "wait-verify",
+      "name": "Wait 30s (verify)",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2100,
+        -40
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://{{ $env.LEAD_FINDER_BASE_URL }}/api/automation/verify/{{ $json.jobId }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{ $env.LEAD_FINDER_API_KEY }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 8000
+        }
+      },
+      "id": "get-verify-status",
+      "name": "GET Verify job status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2320,
+        -40
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.status }}",
+              "value2": "running",
+              "operation": "equal"
+            }
+          ]
+        }
+      },
+      "id": "if-verify-running",
+      "name": "IF verify running?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        2540,
+        -40
+      ]
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "GET Sangita OS /api/keywords/next",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET Sangita OS /api/keywords/next": {
+      "main": [
+        [
+          {
+            "node": "IF Keyword Available?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Keyword Available?": {
+      "main": [
+        [
+          {
+            "node": "POST Sangita OS usage: search_started",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "POST Lead Finder /api/automation/lead-search",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "POST Sangita OS usage: search_started": {
+      "main": [
+        [
+          {
+            "node": "POST Lead Finder /api/automation/lead-search",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "POST Lead Finder /api/automation/lead-search": {
+      "main": [
+        [
+          {
+            "node": "Wait 60s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 60s": {
+      "main": [
+        [
+          {
+            "node": "GET Lead Finder job status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET Lead Finder job status": {
+      "main": [
+        [
+          {
+            "node": "IF status == running?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF status == running?": {
+      "main": [
+        [
+          {
+            "node": "Wait 60s",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "IF status == failed?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF status == failed?": {
+      "main": [
+        [
+          {
+            "node": "POST Sangita OS usage: failed_search",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "POST Sangita OS usage: search_completed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "POST Sangita OS usage: search_completed": {
+      "main": [
+        [
+          {
+            "node": "POST Lead Finder /api/automation/verify",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "POST Lead Finder /api/automation/verify": {
+      "main": [
+        [
+          {
+            "node": "Wait 30s (verify)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 30s (verify)": {
+      "main": [
+        [
+          {
+            "node": "GET Verify job status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET Verify job status": {
+      "main": [
+        [
+          {
+            "node": "IF verify running?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF verify running?": {
+      "main": [
+        [
+          {
+            "node": "Wait 30s (verify)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "instanceId": "phase2-sangita-leadfinder"
+  },
+  "pinData": {},
+  "versionId": "phase3-1.0.0"
+}

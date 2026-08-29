@@ -1,0 +1,448 @@
+{
+  "name": "Lead Finder → Bulk Mail — Scheduled Campaign Start (Phase 4 Step 6)",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 */5 * * * *"
+            }
+          ]
+        }
+      },
+      "id": "schedule-every-5m",
+      "name": "Schedule Every 5m",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [0, 0],
+      "notes": "Every 5 minutes — checks for Lead Sheets where sendAt <= now and status == scheduled/ready_for_bulk_mail"
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.LEAD_FINDER_BASE_URL }}/api/lead-sheets",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{ $env.LEAD_FINDER_API_KEY }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "get-lead-sheets",
+      "name": "GET Lead Finder Lead Sheets",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [260, 0]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.sheets }}",
+              "operation": "isNotEmpty"
+            }
+          ]
+        }
+      },
+      "id": "has-sheets",
+      "name": "Has Sheets?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [520, 0]
+    },
+    {
+      "parameters": {
+        "functionCode": "const now = new Date();\nconst sheets = $input.first().json.sheets || [];\nconst eligible = sheets.filter(s => {\n  if (!s.sendAt) return false;\n  const sendAt = new Date(s.sendAt);\n  if (isNaN(sendAt.getTime())) return false;\n  if (sendAt > now) return false;\n  if (s.status !== 'scheduled' && s.status !== 'ready_for_bulk_mail') return false;\n  if (s.approvedLeads === 0) return false;\n  if (!s.templateId) return false;\n  return true;\n});\nreturn eligible.map(s => ({ json: s }));"
+      },
+      "id": "filter-eligible",
+      "name": "Filter Eligible (sendAt <= now)",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [780, 0],
+      "notes": "Only sheets where sendAt <= now, status scheduled/ready, approved>0, template selected"
+    },
+    {
+      "parameters": {
+        "url": "=https://{{ $env.LEAD_FINDER_BASE_URL }}/api/lead-sheets/{{ $json.id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{ $env.LEAD_FINDER_API_KEY }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 8000
+        }
+      },
+      "id": "recheck-sheet",
+      "name": "Re-check Sheet (approval gate)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1040, 0],
+      "notes": "Re-check approval immediately before start — do not trust old state"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.sheet.approvalStatus }}",
+              "operation": "isNotEmpty"
+            }
+          ],
+          "number": [
+            {
+              "value1": "={{ $json.sheet.approvedLeads }}",
+              "operation": "larger",
+              "value2": 0
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "is-still-approved",
+      "name": "Still Approved?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1300, 0],
+      "notes": "If no approved leads remain, DO NOT START. If pending_review, exclude."
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.LEAD_FINDER_BASE_URL }}/api/lead-sheets/{{ $json.sheet.id }}/handoff",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{ $env.LEAD_FINDER_API_KEY }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 8000
+        }
+      },
+      "id": "get-handoff",
+      "name": "GET Handoff (eligible leads)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1560, -80],
+      "notes": "Returns leadIds/emails for approved valid leads only"
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.BULK_MAIL_BASE_URL }}/api/batches/import",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "sheetId",
+              "value": "={{ $json.sheet.id }}"
+            },
+            {
+              "name": "sheetName",
+              "value": "={{ $json.sheet.name }}"
+            },
+            {
+              "name": "templateId",
+              "value": "={{ $json.sheet.templateId }}"
+            },
+            {
+              "name": "leads",
+              "value": "={{ $json.handoff.leads }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{ $env.BULK_MAIL_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "id": "import-batch",
+      "name": "POST Bulk Mail Batch Import",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1820, -80]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.BULK_MAIL_BASE_URL }}/api/campaigns/from-batch",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "batchId",
+              "value": "={{ $json.batchId }}"
+            },
+            {
+              "name": "templateId",
+              "value": "={{ $('Re-check Sheet (approval gate)').item.json.sheet.templateId }}"
+            },
+            {
+              "name": "sendAt",
+              "value": "={{ $('Re-check Sheet (approval gate)').item.json.sheet.sendAt }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{ $env.BULK_MAIL_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "create-campaign",
+      "name": "POST Bulk Mail Campaign From Batch",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2080, -80]
+    },
+    {
+      "parameters": {
+        "url": "=https://{{ $env.BULK_MAIL_BASE_URL }}/api/campaigns/{{ $json.campaignId }}/progress",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{ $env.BULK_MAIL_API_KEY }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 8000
+        }
+      },
+      "id": "check-campaign-status",
+      "name": "GET Campaign Progress (check status)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2340, -80],
+      "notes": "Check if campaign is paused/cancelled/completed — do not override"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.status }}",
+              "operation": "notEqual",
+              "value2": "paused"
+            },
+            {
+              "value1": "={{ $json.status }}",
+              "operation": "notEqual",
+              "value2": "cancelled"
+            },
+            {
+              "value1": "={{ $json.status }}",
+              "operation": "notEqual",
+              "value2": "completed"
+            }
+          ]
+        }
+      },
+      "id": "is-not-paused-cancelled",
+      "name": "Not Paused/Cancelled/Completed?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [2600, -80]
+    },
+    {
+      "parameters": {
+        "url": "=https://{{ $env.BULK_MAIL_BASE_URL }}/api/campaigns/{{ $json.campaignId }}/start",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": []
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{ $env.BULK_MAIL_API_KEY }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "start-campaign",
+      "name": "POST Campaign Start (auto)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2860, -80],
+      "notes": "Reuses existing POST /api/campaigns/:id/start — enqueues to existing email_queue, respects daily/hourly limits, idempotent"
+    }
+  ],
+  "connections": {
+    "Schedule Every 5m": {
+      "main": [
+        [
+          {
+            "node": "GET Lead Finder Lead Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET Lead Finder Lead Sheets": {
+      "main": [
+        [
+          {
+            "node": "Has Sheets?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Sheets?": {
+      "main": [
+        [
+          {
+            "node": "Filter Eligible (sendAt <= now)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Filter Eligible (sendAt <= now)": {
+      "main": [
+        [
+          {
+            "node": "Re-check Sheet (approval gate)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Re-check Sheet (approval gate)": {
+      "main": [
+        [
+          {
+            "node": "Still Approved?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Still Approved?": {
+      "main": [
+        [
+          {
+            "node": "GET Handoff (eligible leads)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "GET Handoff (eligible leads)": {
+      "main": [
+        [
+          {
+            "node": "POST Bulk Mail Batch Import",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "POST Bulk Mail Batch Import": {
+      "main": [
+        [
+          {
+            "node": "POST Bulk Mail Campaign From Batch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "POST Bulk Mail Campaign From Batch": {
+      "main": [
+        [
+          {
+            "node": "GET Campaign Progress (check status)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET Campaign Progress (check status)": {
+      "main": [
+        [
+          {
+            "node": "Not Paused/Cancelled/Completed?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Not Paused/Cancelled/Completed?": {
+      "main": [
+        [
+          {
+            "node": "POST Campaign Start (auto)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "instanceId": "phase4-step6-scheduled"
+  },
+  "pinData": {},
+  "versionId": "phase4-step6-1.0.0"
+}
