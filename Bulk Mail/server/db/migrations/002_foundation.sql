@@ -1,5 +1,26 @@
 -- Phase 1 foundation: sessions + queue/provider storage + normalized-email indexes
 
+ALTER TABLE leads ADD COLUMN tenant_id INTEGER;
+UPDATE leads SET tenant_id = 1 WHERE tenant_id IS NULL;
+
+ALTER TABLE blocked_contacts ADD COLUMN tenant_id INTEGER;
+UPDATE blocked_contacts SET tenant_id = 1 WHERE tenant_id IS NULL;
+
+ALTER TABLE emails ADD COLUMN tenant_id INTEGER;
+UPDATE emails SET tenant_id = 1 WHERE tenant_id IS NULL;
+
+ALTER TABLE email_queue ADD COLUMN tenant_id INTEGER;
+UPDATE email_queue SET tenant_id = 1 WHERE tenant_id IS NULL;
+
+ALTER TABLE campaign_recipients ADD COLUMN tenant_id INTEGER;
+UPDATE campaign_recipients SET tenant_id = 1 WHERE tenant_id IS NULL;
+
+ALTER TABLE email_events ADD COLUMN tenant_id INTEGER;
+UPDATE email_events SET tenant_id = 1 WHERE tenant_id IS NULL;
+
+ALTER TABLE sender_accounts ADD COLUMN tenant_id INTEGER;
+UPDATE sender_accounts SET tenant_id = 1 WHERE tenant_id IS NULL;
+
 ALTER TABLE leads ADD COLUMN normalized_email TEXT;
 UPDATE leads SET normalized_email = LOWER(TRIM(email)) WHERE normalized_email IS NULL OR normalized_email = '';
 CREATE UNIQUE INDEX IF NOT EXISTS idx_leads_normalized_email ON leads (normalized_email);

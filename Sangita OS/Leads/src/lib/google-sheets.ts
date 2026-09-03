@@ -22,9 +22,20 @@ function normalizeEnvValue(value: string | undefined) {
 }
 
 function getCredentials() {
-  const spreadsheetId = requireEnvValue("GOOGLE_SHEET_ID", "Google Sheets is not configured. Set GOOGLE_SHEET_ID.").trim();
-  const clientEmail = requireEnvValue("GOOGLE_CLIENT_EMAIL", "Google Sheets is not configured. Set GOOGLE_CLIENT_EMAIL.").trim();
-  const privateKey = normalizeEnvValue(requireEnvValue("GOOGLE_PRIVATE_KEY", "Google Sheets is not configured. Set GOOGLE_PRIVATE_KEY."));
+  const spreadsheetId = requireEnvValue(
+    "GOOGLE_SHEET_ID",
+    "Google Sheets is not configured. Set GOOGLE_SHEET_ID.",
+  ).trim();
+  const clientEmail = requireEnvValue(
+    "GOOGLE_CLIENT_EMAIL",
+    "Google Sheets is not configured. Set GOOGLE_CLIENT_EMAIL.",
+  ).trim();
+  const privateKey = normalizeEnvValue(
+    requireEnvValue(
+      "GOOGLE_PRIVATE_KEY",
+      "Google Sheets is not configured. Set GOOGLE_PRIVATE_KEY.",
+    ),
+  );
 
   if (!spreadsheetId || !clientEmail || !privateKey) {
     throw new Error(
@@ -32,7 +43,10 @@ function getCredentials() {
     );
   }
 
-  if (!privateKey.includes("-----BEGIN PRIVATE KEY-----") || !privateKey.includes("-----END PRIVATE KEY-----")) {
+  if (
+    !privateKey.includes("-----BEGIN PRIVATE KEY-----") ||
+    !privateKey.includes("-----END PRIVATE KEY-----")
+  ) {
     throw new Error(
       "GOOGLE_PRIVATE_KEY is malformed. Ensure it contains the complete PEM block with BEGIN/END PRIVATE KEY boundaries.",
     );
@@ -49,7 +63,9 @@ function getCredentials() {
   }
 
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clientEmail)) {
-    throw new Error("GOOGLE_CLIENT_EMAIL appears malformed. Use the service account email from your JSON credentials.");
+    throw new Error(
+      "GOOGLE_CLIENT_EMAIL appears malformed. Use the service account email from your JSON credentials.",
+    );
   }
 
   return { spreadsheetId, clientEmail, privateKey };
@@ -64,7 +80,10 @@ function buildClient() {
   });
 }
 
-async function ensureSheetExists(authClient: ReturnType<typeof buildClient>, spreadsheetId: string) {
+async function ensureSheetExists(
+  authClient: ReturnType<typeof buildClient>,
+  spreadsheetId: string,
+) {
   const sheets = google.sheets({ version: "v4", auth: authClient });
   const workbook = await sheets.spreadsheets.get({ spreadsheetId });
   const existing = workbook.data.sheets?.some((sheet) => sheet.properties?.title === SHEET_NAME);
@@ -89,7 +108,10 @@ async function ensureSheetExists(authClient: ReturnType<typeof buildClient>, spr
   return sheets;
 }
 
-async function getExistingChannelIds(spreadsheets: sheets_v4.Sheets, spreadsheetId: string): Promise<Set<string>> {
+async function getExistingChannelIds(
+  spreadsheets: sheets_v4.Sheets,
+  spreadsheetId: string,
+): Promise<Set<string>> {
   const response = await spreadsheets.spreadsheets.values.get({
     spreadsheetId,
     range: `'${SHEET_NAME}'!C2:C`,

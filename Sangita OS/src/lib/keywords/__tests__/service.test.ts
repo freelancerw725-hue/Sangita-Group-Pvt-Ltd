@@ -24,7 +24,10 @@ function makeKeyword(overrides: Partial<Keyword> = {}): Keyword {
       priority: overrides.priority ?? 5,
       notes: overrides.notes ?? null,
     },
-    { id: overrides.id ?? crypto.randomUUID(), nowIso: overrides.createdAt ?? new Date().toISOString() },
+    {
+      id: overrides.id ?? crypto.randomUUID(),
+      nowIso: overrides.createdAt ?? new Date().toISOString(),
+    },
   );
   return {
     ...base,
@@ -61,7 +64,12 @@ describe("manual keyword creation", () => {
   });
 
   it("creates manual keyword with correct normalized form and defaults", async () => {
-    const kw = makeKeyword({ keyword: "Patna News", source: "manual", dailyTarget: 150, priority: 2 });
+    const kw = makeKeyword({
+      keyword: "Patna News",
+      source: "manual",
+      dailyTarget: 150,
+      priority: 2,
+    });
     const saved = await store.insert(kw);
     expect(saved.keyword).toBe("Patna News");
     expect(saved.normalizedKeyword).toBe("patna news");
@@ -74,25 +82,25 @@ describe("manual keyword creation", () => {
 
   it("validates dailyTarget and priority", () => {
     expect(() =>
-      buildKeyword(
-        { keyword: "test", source: "manual", dailyTarget: 0 } as never,
-        { id: "1", nowIso: new Date().toISOString() },
-      ),
+      buildKeyword({ keyword: "test", source: "manual", dailyTarget: 0 } as never, {
+        id: "1",
+        nowIso: new Date().toISOString(),
+      }),
     ).toThrow();
     expect(() =>
-      buildKeyword(
-        { keyword: "test", source: "manual", priority: 11 } as never,
-        { id: "1", nowIso: new Date().toISOString() },
-      ),
+      buildKeyword({ keyword: "test", source: "manual", priority: 11 } as never, {
+        id: "1",
+        nowIso: new Date().toISOString(),
+      }),
     ).toThrow();
   });
 
   it("rejects empty keyword", () => {
     expect(() =>
-      buildKeyword(
-        { keyword: "   ", source: "manual" } as never,
-        { id: "1", nowIso: new Date().toISOString() },
-      ),
+      buildKeyword({ keyword: "   ", source: "manual" } as never, {
+        id: "1",
+        nowIso: new Date().toISOString(),
+      }),
     ).toThrow();
   });
 });
@@ -114,7 +122,10 @@ describe("AI keyword creation", () => {
     const existing = await store.list();
     const { toInsert } = filterNewKeywords(aiCandidates, existing, "ai");
     for (const inp of toInsert) {
-      const kw = buildKeyword(inp as never, { id: crypto.randomUUID(), nowIso: new Date().toISOString() });
+      const kw = buildKeyword(inp as never, {
+        id: crypto.randomUUID(),
+        nowIso: new Date().toISOString(),
+      });
       await store.insert(kw);
     }
 
@@ -249,7 +260,12 @@ describe("next active keyword selection", () => {
 
   it("LRU: never-used (null lastUsedAt) first among same priority", () => {
     const baseTime = new Date().toISOString();
-    const kwNeverUsed = makeKeyword({ keyword: "Never", priority: 1, lastUsedAt: null, createdAt: baseTime });
+    const kwNeverUsed = makeKeyword({
+      keyword: "Never",
+      priority: 1,
+      lastUsedAt: null,
+      createdAt: baseTime,
+    });
     const kwUsed = makeKeyword({
       keyword: "Used",
       priority: 1,
@@ -279,8 +295,18 @@ describe("next active keyword selection", () => {
 
   it("integration via InMemory store daily counts", async () => {
     const store = createIsolatedMemoryStore();
-    const kwBihar = makeKeyword({ keyword: "Bihar News", priority: 1, dailyTarget: 2, id: "bihar" });
-    const kwPatna = makeKeyword({ keyword: "Patna News", priority: 2, dailyTarget: 2, id: "patna" });
+    const kwBihar = makeKeyword({
+      keyword: "Bihar News",
+      priority: 1,
+      dailyTarget: 2,
+      id: "bihar",
+    });
+    const kwPatna = makeKeyword({
+      keyword: "Patna News",
+      priority: 2,
+      dailyTarget: 2,
+      id: "patna",
+    });
     await store.insert(kwBihar);
     await store.insert(kwPatna);
     // simulate 2 searches for bihar today

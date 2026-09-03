@@ -14,12 +14,12 @@ export default defineConfig({
   },
   vite: {
     server: {
-      port: 3000,
+      port: 5173,
       strictPort: true,
     },
     proxy: {
-      '/api': {
-        target: 'https://sangita-email-outreach.vercel.app',
+      "/api": {
+        target: "https://sangita-email-outreach.vercel.app",
         changeOrigin: true,
       },
     },

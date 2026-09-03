@@ -129,6 +129,56 @@ export const senderTestConnectionSchema = z.object({
   timeoutMs: z.coerce.number().int().min(1000).max(30000).default(10000),
 })
 
+export const senderProfileSchema = z.object({
+  name: z.string().trim().min(1, 'Sender name is required').max(200),
+  email: z.string().trim().toLowerCase().email('Invalid email address').max(254),
+  smtpHost: z.string().trim().min(1, 'SMTP host is required').max(255),
+  smtpPort: z.coerce.number().int().min(1, 'SMTP port must be between 1 and 65535').max(65535),
+  username: z.string().trim().min(1, 'SMTP username is required').max(255),
+  securityMode: z.enum(['none', 'tls', 'ssl']).default('tls'),
+  dailyLimit: z.coerce.number().int().min(1).max(5000).default(200),
+  hourlyLimit: z.coerce.number().int().min(1).max(5000).default(50),
+  enabled: z.coerce.boolean().default(true),
+  businessName: z.string().trim().min(1, 'Business name is required').max(200).optional(),
+  fromEmail: z.string().trim().toLowerCase().email('Invalid from email').max(254).optional(),
+  replyToEmail: z.string().trim().toLowerCase().email('Invalid reply-to email').max(254).optional(),
+  emailSignature: z.string().trim().max(5000).optional(),
+})
+
+export const senderProfileUpdateSchema = senderProfileSchema.partial()
+
+export const brandFooterSchema = z.object({
+  website: z.string().trim().max(255).optional(),
+  unsubscribeText: z.string().trim().max(200).optional(),
+  footerEnabled: z.coerce.boolean().optional(),
+})
+
+export const brandFooterUpdateSchema = brandFooterSchema.partial()
+
+export const smtpTestConnectionSchema = z.object({
+  timeoutMs: z.coerce.number().int().min(1000).max(30000).default(10000),
+})
+
+export const outreachDefaultsSchema = z.object({
+  followup1Days: z.coerce.number().int().min(0).max(365).default(3),
+  followup2Days: z.coerce.number().int().min(0).max(365).default(7),
+  sendWindowStart: z.string().trim().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, 'Invalid time format').optional(),
+  sendWindowEnd: z.string().trim().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, 'Invalid time format').optional(),
+  workingDays: z.string().trim().max(50).optional(),
+})
+
+export const outreachDefaultsUpdateSchema = outreachDefaultsSchema.partial()
+
+export const notificationSettingsSchema = z.object({
+  newReplies: z.coerce.boolean().default(true),
+  interestedLeads: z.coerce.boolean().default(false),
+  campaignCompleted: z.coerce.boolean().default(false),
+  bounceAlerts: z.coerce.boolean().default(false),
+  dailySummary: z.coerce.boolean().default(false),
+})
+
+export const notificationSettingsUpdateSchema = notificationSettingsSchema.partial()
+
 export const senderTestEmailSchema = z.object({
   recipient: senderEmail,
   subject: z.string().trim().min(1, 'Subject is required').max(300),

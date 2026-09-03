@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { getKeywordStore } from "@/lib/keywords/store";
+import { getKeywordStore } from "@/lib/dashboard/server";
 import { buildKeyword, filterNewKeywords } from "@/lib/keywords/service";
 import { normalizeKeyword } from "@/lib/keywords/normalize";
 import { createAiKeywordProvider } from "@/lib/keywords/ai-provider";

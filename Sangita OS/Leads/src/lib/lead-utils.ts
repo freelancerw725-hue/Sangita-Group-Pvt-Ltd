@@ -1,4 +1,11 @@
-import { LeadFilters, LeadRecord, LeadScore, SearchHistoryEntry, SortBy, YouTubeChannelCandidate } from "@/lib/types";
+import {
+  LeadFilters,
+  LeadRecord,
+  LeadScore,
+  SearchHistoryEntry,
+  SortBy,
+  YouTubeChannelCandidate,
+} from "@/lib/types";
 
 const statusPriority: Record<LeadScore, number> = {
   High: 3,
@@ -26,7 +33,10 @@ export function getAgeInYears(publishedAt: string): number {
   return diffMs / (1000 * 60 * 60 * 24 * 365.25);
 }
 
-export function passesAgeFilter(ageInYears: number, channelAge?: LeadFilters["channelAge"]): boolean {
+export function passesAgeFilter(
+  ageInYears: number,
+  channelAge?: LeadFilters["channelAge"],
+): boolean {
   if (!channelAge || channelAge === "any") return true;
   switch (channelAge) {
     case "under1":
@@ -48,7 +58,12 @@ export function scoreLead(subscribers: number): LeadScore {
   return "Low";
 }
 
-export function calculateLeadScore(subscribers: number, websiteAvailable: boolean, emailAvailable: boolean, ageInYears: number) {
+export function calculateLeadScore(
+  subscribers: number,
+  websiteAvailable: boolean,
+  emailAvailable: boolean,
+  ageInYears: number,
+) {
   let score = 0;
   score += Math.min(50, Math.floor(subscribers / 2000));
   score += websiteAvailable ? 20 : 0;
@@ -73,7 +88,13 @@ export function extractContactFields(description: string): {
 } {
   const text = description || "";
   const urls = [...text.matchAll(/https?:\/\/[^\s)]+/gi)].map((match) => match[0]);
-  const website = urls.find((url) => !/youtube\.com|youtu\.be|instagram\.com|facebook\.com|t\.me|telegram\.me|play\.google\.com|apps\.apple\.com/i.test(url)) ?? "";
+  const website =
+    urls.find(
+      (url) =>
+        !/youtube\.com|youtu\.be|instagram\.com|facebook\.com|t\.me|telegram\.me|play\.google\.com|apps\.apple\.com/i.test(
+          url,
+        ),
+    ) ?? "";
   const email = text.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i)?.[0] ?? "";
   const phone = text.match(/(?:\+?\d{1,3}[-.\s]?)?(?:\(?\d{2,4}\)?[-.\s]?){2,4}\d{3,4}/)?.[0] ?? "";
   const instagram = urls.find((url) => /instagram\.com/i.test(url)) ?? "";
@@ -85,33 +106,58 @@ export function extractContactFields(description: string): {
   return { website, email, phone, instagram, facebook, telegram, appAvailable, websiteAvailable };
 }
 
-export function includesKeywordMatch(channel: YouTubeChannelCandidate | LeadRecord, keywordFilter?: string): boolean {
+export function includesKeywordMatch(
+  channel: YouTubeChannelCandidate | LeadRecord,
+  keywordFilter?: string,
+): boolean {
   if (!keywordFilter) return true;
   const needle = normalizeText(keywordFilter);
-  const haystack = normalizeText([
-    channel.channelName,
-    channel.description,
-    "website" in channel ? channel.website : "",
-    "searchKeyword" in channel ? channel.searchKeyword : "",
-  ].join(" "));
+  const haystack = normalizeText(
+    [
+      channel.channelName,
+      channel.description,
+      "website" in channel ? channel.website : "",
+      "searchKeyword" in channel ? channel.searchKeyword : "",
+    ].join(" "),
+  );
   return haystack.includes(needle);
 }
 
-export function filterCandidates<T extends { subscribers: number; country: string; description: string; ageInYears: number; channelName: string }>(
-  items: T[],
-  filters: LeadFilters,
-): T[] {
+export function filterCandidates<
+  T extends {
+    subscribers: number;
+    country: string;
+    description: string;
+    ageInYears: number;
+    channelName: string;
+  },
+>(items: T[], filters: LeadFilters): T[] {
   return items.filter((item) => {
-    if (filters.minSubscribers !== undefined && item.subscribers < filters.minSubscribers) return false;
-    if (filters.maxSubscribers !== undefined && item.subscribers > filters.maxSubscribers) return false;
-    if (filters.country && filters.country.trim() && !normalizeText(item.country).includes(normalizeText(filters.country))) return false;
-    if (filters.keywordFilter && !normalizeText([item.channelName, item.description].join(" ")).includes(normalizeText(filters.keywordFilter))) return false;
+    if (filters.minSubscribers !== undefined && item.subscribers < filters.minSubscribers)
+      return false;
+    if (filters.maxSubscribers !== undefined && item.subscribers > filters.maxSubscribers)
+      return false;
+    if (
+      filters.country &&
+      filters.country.trim() &&
+      !normalizeText(item.country).includes(normalizeText(filters.country))
+    )
+      return false;
+    if (
+      filters.keywordFilter &&
+      !normalizeText([item.channelName, item.description].join(" ")).includes(
+        normalizeText(filters.keywordFilter),
+      )
+    )
+      return false;
     if (!passesAgeFilter(item.ageInYears, filters.channelAge)) return false;
     return true;
   });
 }
 
-export function sortCandidates<T extends { subscribers: number; viewCount: number; videoCount: number }>(items: T[], sortBy: SortBy = "subscribers"): T[] {
+export function sortCandidates<
+  T extends { subscribers: number; viewCount: number; videoCount: number },
+>(items: T[], sortBy: SortBy = "subscribers"): T[] {
   const sorted = [...items];
   sorted.sort((a, b) => {
     switch (sortBy) {
@@ -137,7 +183,10 @@ export function buildStats(leads: LeadRecord[]) {
   };
 }
 
-export function mergeAndDedupeLeads(existing: LeadRecord[], incoming: LeadRecord[]): { merged: LeadRecord[]; skippedDuplicates: number } {
+export function mergeAndDedupeLeads(
+  existing: LeadRecord[],
+  incoming: LeadRecord[],
+): { merged: LeadRecord[]; skippedDuplicates: number } {
   const seen = new Set(existing.map((lead) => lead.channelId));
   const merged = [...existing];
   let skippedDuplicates = 0;

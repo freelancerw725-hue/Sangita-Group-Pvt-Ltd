@@ -29,7 +29,8 @@ export function isAutomationAuthorized(request: Request): boolean {
     return true;
   }
 
-  const headerKey = request.headers.get("x-api-key")?.trim() ?? request.headers.get("x-automation-key")?.trim();
+  const headerKey =
+    request.headers.get("x-api-key")?.trim() ?? request.headers.get("x-automation-key")?.trim();
   const authHeader = request.headers.get("authorization")?.trim();
 
   if (headerKey && headerKey === expected) return true;
@@ -50,7 +51,10 @@ export function isAutomationAuthorized(request: Request): boolean {
 
 export function automationUnauthorizedResponse(): NextResponse {
   return NextResponse.json(
-    { error: "Unauthorized", message: "Missing or invalid automation API key. Use x-api-key or Authorization: Bearer" },
+    {
+      error: "Unauthorized",
+      message: "Missing or invalid automation API key. Use x-api-key or Authorization: Bearer",
+    },
     { status: 401 },
   );
 }
@@ -64,6 +68,8 @@ export function maskSecret(value: string): string {
 // For logging: never include raw keys
 export function safeLog(message: string, meta?: Record<string, unknown>) {
   // strip any potential key material
-  const safeMeta = meta ? JSON.stringify(meta).replace(/(key|token|secret|password)[^"]*"[^"]*"/gi, '"$1":"****"') : "";
+  const safeMeta = meta
+    ? JSON.stringify(meta).replace(/(key|token|secret|password)[^"]*"[^"]*"/gi, '"$1":"****"')
+    : "";
   console.log(`[automation] ${message} ${safeMeta}`);
 }

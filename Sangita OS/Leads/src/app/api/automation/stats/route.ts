@@ -13,7 +13,11 @@ export async function GET(request: Request) {
   if (!isAutomationAuthorized(request)) return automationUnauthorizedResponse();
 
   try {
-    const [leads, history, sheets] = await Promise.all([getStoredLeads(), getSearchHistory(), listLeadSheets()]);
+    const [leads, history, sheets] = await Promise.all([
+      getStoredLeads(),
+      getSearchHistory(),
+      listLeadSheets(),
+    ]);
     const now = new Date();
     const todayKey = now.toISOString().slice(0, 10);
     const todayLeads = leads.filter((l) => l.addedDate.slice(0, 10) === todayKey);
@@ -23,11 +27,15 @@ export async function GET(request: Request) {
       invalid: leads.filter((l) => l.emailVerificationStatus === "invalid").length,
       risky: leads.filter((l) => l.emailVerificationStatus === "risky").length,
       unknown: leads.filter((l) => l.emailVerificationStatus === "unknown").length,
-      not_verified: leads.filter((l) => !l.emailVerificationStatus || l.emailVerificationStatus === "not_verified").length,
+      not_verified: leads.filter(
+        (l) => !l.emailVerificationStatus || l.emailVerificationStatus === "not_verified",
+      ).length,
     };
 
     const approval = {
-      pending_review: leads.filter((l) => !l.approvalStatus || l.approvalStatus === "pending_review").length,
+      pending_review: leads.filter(
+        (l) => !l.approvalStatus || l.approvalStatus === "pending_review",
+      ).length,
       approved: leads.filter((l) => l.approvalStatus === "approved").length,
       rejected: leads.filter((l) => l.approvalStatus === "rejected").length,
     };

@@ -36,7 +36,8 @@ export function fmtMoney(n) {
 
 export function pct(num, den) {
   if (!den) return '0%'
-  return Math.round((num / den) * 100) + '%'
+  const n = num !== null && num !== undefined ? num : 0
+  return Math.round((n / den) * 100) + '%'
 }
 
 /** ISO datetime for SQLite, local-time based with seconds */

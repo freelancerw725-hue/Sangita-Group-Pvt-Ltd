@@ -2,13 +2,39 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import {
-  Rocket, Car, Home, Building2, Trophy, Globe, Target, Sparkles,
-  Plus, TrendingUp, AlertTriangle, CheckCircle2, Clock, Flame,
-  Sun, Moon, Loader2, Brain, ShieldAlert, Lightbulb, Zap,
+  Rocket,
+  Car,
+  Home,
+  Building2,
+  Trophy,
+  Globe,
+  Target,
+  Sparkles,
+  Plus,
+  TrendingUp,
+  AlertTriangle,
+  CheckCircle2,
+  Clock,
+  Flame,
+  Sun,
+  Moon,
+  Loader2,
+  Brain,
+  ShieldAlert,
+  Lightbulb,
+  Zap,
 } from "lucide-react";
 import {
-  RadialBar, RadialBarChart, PolarAngleAxis, ResponsiveContainer,
-  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
+  RadialBar,
+  RadialBarChart,
+  PolarAngleAxis,
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
 } from "recharts";
 import ReactMarkdown from "react-markdown";
 import { AppLayout } from "@/components/os/AppLayout";
@@ -22,9 +48,17 @@ export const Route = createFileRoute("/my-future")({
   head: () => ({
     meta: [
       { title: "My Future — Sangita OS" },
-      { name: "description", content: "Future Intelligence Engine — realistic forecasts, life-goal analyzers, AI CEO briefing, and daily execution plans grounded in your real business data." },
+      {
+        name: "description",
+        content:
+          "Future Intelligence Engine — realistic forecasts, life-goal analyzers, AI CEO briefing, and daily execution plans grounded in your real business data.",
+      },
       { property: "og:title", content: "My Future — Sangita OS" },
-      { property: "og:description", content: "Realistic forecasts for your business, wealth, and life goals — grounded in actual revenue, profit, and growth data." },
+      {
+        property: "og:description",
+        content:
+          "Realistic forecasts for your business, wealth, and life goals — grounded in actual revenue, profit, and growth data.",
+      },
     ],
   }),
   component: MyFuture,
@@ -43,7 +77,8 @@ function useBusinessMetrics() {
       REVENUE_TREND.slice(1).reduce(
         (s, r, i) => s + (r.revenue - REVENUE_TREND[i].revenue) / REVENUE_TREND[i].revenue,
         0,
-      ) / (REVENUE_TREND.length - 1);
+      ) /
+      (REVENUE_TREND.length - 1);
     const mrr = PRODUCTS.reduce((s, p) => s + p.mrr, 0);
     const arr = mrr * 12;
     const netWorth = 4200000; // current estimated
@@ -52,14 +87,29 @@ function useBusinessMetrics() {
     const healthAvg = Math.round(HEALTH.reduce((s, h) => s + h.score, 0) / HEALTH.length);
     const profitMargin = monthlyProfit / monthlyRevenue;
     return {
-      monthlyRevenue, monthlyExpenses, monthlyProfit, growthRate, avgGrowth,
-      mrr, arr, netWorth, cashReserve, clients, healthAvg, profitMargin,
+      monthlyRevenue,
+      monthlyExpenses,
+      monthlyProfit,
+      growthRate,
+      avgGrowth,
+      mrr,
+      arr,
+      netWorth,
+      cashReserve,
+      clients,
+      healthAvg,
+      profitMargin,
     };
   }, []);
 }
 
 /** Months to reach a target future value with monthly savings and compounding business growth */
-function monthsToTarget(target: number, current: number, monthlySave: number, monthlyGrowth: number) {
+function monthsToTarget(
+  target: number,
+  current: number,
+  monthlySave: number,
+  monthlyGrowth: number,
+) {
   if (current >= target) return 0;
   let balance = current;
   let save = monthlySave;
@@ -95,25 +145,82 @@ type Goal = {
 };
 
 const DEFAULT_GOALS: Goal[] = [
-  { id: "lambo", title: "Lamborghini Huracán", icon: Car, cost: 42000000, saved: 3200000, monthlyInvest: 250000 },
-  { id: "bugatti", title: "Bugatti Chiron", icon: Trophy, cost: 300000000, saved: 4200000, monthlyInvest: 400000 },
-  { id: "house", title: "Dream House · Mumbai", icon: Home, cost: 85000000, saved: 6800000, monthlyInvest: 350000 },
-  { id: "office", title: "Own Office Building", icon: Building2, cost: 55000000, saved: 4800000, monthlyInvest: 300000 },
-  { id: "nw1cr", title: "₹1 Cr Personal Net Worth", icon: Target, cost: 10000000, saved: 4200000, monthlyInvest: 200000 },
-  { id: "val10cr", title: "₹10 Cr Company Valuation", icon: TrendingUp, cost: 100000000, saved: 22000000, monthlyInvest: 500000 },
-  { id: "intl", title: "International Expansion", icon: Globe, cost: 25000000, saved: 1200000, monthlyInvest: 180000 },
+  {
+    id: "lambo",
+    title: "Lamborghini Huracán",
+    icon: Car,
+    cost: 42000000,
+    saved: 3200000,
+    monthlyInvest: 250000,
+  },
+  {
+    id: "bugatti",
+    title: "Bugatti Chiron",
+    icon: Trophy,
+    cost: 300000000,
+    saved: 4200000,
+    monthlyInvest: 400000,
+  },
+  {
+    id: "house",
+    title: "Dream House · Mumbai",
+    icon: Home,
+    cost: 85000000,
+    saved: 6800000,
+    monthlyInvest: 350000,
+  },
+  {
+    id: "office",
+    title: "Own Office Building",
+    icon: Building2,
+    cost: 55000000,
+    saved: 4800000,
+    monthlyInvest: 300000,
+  },
+  {
+    id: "nw1cr",
+    title: "₹1 Cr Personal Net Worth",
+    icon: Target,
+    cost: 10000000,
+    saved: 4200000,
+    monthlyInvest: 200000,
+  },
+  {
+    id: "val10cr",
+    title: "₹10 Cr Company Valuation",
+    icon: TrendingUp,
+    cost: 100000000,
+    saved: 22000000,
+    monthlyInvest: 500000,
+  },
+  {
+    id: "intl",
+    title: "International Expansion",
+    icon: Globe,
+    cost: 25000000,
+    saved: 1200000,
+    monthlyInvest: 180000,
+  },
 ];
 
 function GoalCard({ goal }: { goal: Goal }) {
   const m = useBusinessMetrics();
   const Icon = goal.icon;
   const progress = Math.min(100, (goal.saved / goal.cost) * 100);
-  const months = monthsToTarget(goal.cost, goal.saved, goal.monthlyInvest, Math.max(0.005, m.avgGrowth));
+  const months = monthsToTarget(
+    goal.cost,
+    goal.saved,
+    goal.monthlyInvest,
+    Math.max(0.005, m.avgGrowth),
+  );
   const eta = addMonths(months);
   const conf = confidence(m.avgGrowth, m.healthAvg, m.profitMargin);
   const reqRevenue = goal.monthlyInvest / Math.max(0.15, m.profitMargin);
   const reqProfit = goal.monthlyInvest;
-  const reqGrowth = Math.max(0.02, (goal.cost / (goal.saved || 1)) ** (1 / Math.max(months, 12)) - 1);
+  const reqGrowth = Math.max(
+    0.02,
+    (goal.cost / (goal.saved || 1)) ** (1 / Math.max(months, 12)) - 1,
+  );
 
   return (
     <motion.div
@@ -130,7 +237,9 @@ function GoalCard({ goal }: { goal: Goal }) {
           <div className="text-xs text-muted-foreground">Est. cost {inr(goal.cost)}</div>
         </div>
         <div className="text-right">
-          <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Confidence</div>
+          <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
+            Confidence
+          </div>
           <div className="text-sm font-semibold text-primary">{conf}%</div>
         </div>
       </div>
@@ -161,7 +270,15 @@ function GoalCard({ goal }: { goal: Goal }) {
   );
 }
 
-function Metric({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
+function Metric({
+  label,
+  value,
+  highlight,
+}: {
+  label: string;
+  value: string;
+  highlight?: boolean;
+}) {
   return (
     <div className="rounded-lg border border-border bg-background p-2.5">
       <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{label}</div>
@@ -208,11 +325,39 @@ function LifeGoalsSection() {
     >
       {showAdd && (
         <div className="rounded-xl border border-border bg-card p-4 mb-4 grid gap-3 md:grid-cols-5">
-          <input placeholder="Goal title" value={draft.title} onChange={(e) => setDraft({ ...draft, title: e.target.value })} className="md:col-span-2 h-9 rounded-lg border border-border bg-background px-3 text-sm outline-none focus:border-primary/50" />
-          <input placeholder="Cost (₹)" type="number" value={draft.cost} onChange={(e) => setDraft({ ...draft, cost: e.target.value })} className="h-9 rounded-lg border border-border bg-background px-3 text-sm outline-none focus:border-primary/50" />
-          <input placeholder="Saved (₹)" type="number" value={draft.saved} onChange={(e) => setDraft({ ...draft, saved: e.target.value })} className="h-9 rounded-lg border border-border bg-background px-3 text-sm outline-none focus:border-primary/50" />
-          <input placeholder="Monthly (₹)" type="number" value={draft.monthlyInvest} onChange={(e) => setDraft({ ...draft, monthlyInvest: e.target.value })} className="h-9 rounded-lg border border-border bg-background px-3 text-sm outline-none focus:border-primary/50" />
-          <button onClick={addGoal} className="md:col-span-5 h-9 rounded-lg gradient-primary text-white text-sm">Create goal</button>
+          <input
+            placeholder="Goal title"
+            value={draft.title}
+            onChange={(e) => setDraft({ ...draft, title: e.target.value })}
+            className="md:col-span-2 h-9 rounded-lg border border-border bg-background px-3 text-sm outline-none focus:border-primary/50"
+          />
+          <input
+            placeholder="Cost (₹)"
+            type="number"
+            value={draft.cost}
+            onChange={(e) => setDraft({ ...draft, cost: e.target.value })}
+            className="h-9 rounded-lg border border-border bg-background px-3 text-sm outline-none focus:border-primary/50"
+          />
+          <input
+            placeholder="Saved (₹)"
+            type="number"
+            value={draft.saved}
+            onChange={(e) => setDraft({ ...draft, saved: e.target.value })}
+            className="h-9 rounded-lg border border-border bg-background px-3 text-sm outline-none focus:border-primary/50"
+          />
+          <input
+            placeholder="Monthly (₹)"
+            type="number"
+            value={draft.monthlyInvest}
+            onChange={(e) => setDraft({ ...draft, monthlyInvest: e.target.value })}
+            className="h-9 rounded-lg border border-border bg-background px-3 text-sm outline-none focus:border-primary/50"
+          />
+          <button
+            onClick={addGoal}
+            className="md:col-span-5 h-9 rounded-lg gradient-primary text-white text-sm"
+          >
+            Create goal
+          </button>
         </div>
       )}
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -252,16 +397,29 @@ function LamborghiniAnalyzer() {
     >
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="rounded-xl border border-border bg-card p-5">
-          <div className="text-xs text-muted-foreground uppercase tracking-widest">Current progress</div>
+          <div className="text-xs text-muted-foreground uppercase tracking-widest">
+            Current progress
+          </div>
           <div className="mt-1 flex items-baseline gap-2">
             <span className="text-3xl font-semibold">{progress.toFixed(1)}%</span>
             <span className="text-xs text-muted-foreground">of {inr(cost)}</span>
           </div>
           <div className="h-32 -mx-2 mt-2">
             <ResponsiveContainer>
-              <RadialBarChart innerRadius="65%" outerRadius="100%" data={[{ v: progress }]} startAngle={90} endAngle={-270}>
+              <RadialBarChart
+                innerRadius="65%"
+                outerRadius="100%"
+                data={[{ v: progress }]}
+                startAngle={90}
+                endAngle={-270}
+              >
                 <PolarAngleAxis type="number" domain={[0, 100]} tick={false} />
-                <RadialBar dataKey="v" cornerRadius={8} fill={CHART.primary} background={{ fill: "#27272A" }} />
+                <RadialBar
+                  dataKey="v"
+                  cornerRadius={8}
+                  fill={CHART.primary}
+                  background={{ fill: "#27272A" }}
+                />
               </RadialBarChart>
             </ResponsiveContainer>
           </div>
@@ -276,7 +434,8 @@ function LamborghiniAnalyzer() {
           <ScenarioRow label="Expected case" months={expectedMonths} tone="primary" />
           <ScenarioRow label="Worst case" months={worstMonths} tone="warning" />
           <div className="text-[11px] text-muted-foreground italic pt-2">
-            Current trend: revenue growing {(m.avgGrowth * 100).toFixed(1)}% mo/mo, margin {(m.profitMargin * 100).toFixed(0)}%.
+            Current trend: revenue growing {(m.avgGrowth * 100).toFixed(1)}% mo/mo, margin{" "}
+            {(m.profitMargin * 100).toFixed(0)}%.
           </div>
         </div>
 
@@ -328,7 +487,9 @@ function BugattiAnalyzer() {
           <div className="grid gap-2 md:grid-cols-2">
             {rows.map((r) => (
               <div key={r.label} className="rounded-lg border border-border bg-background p-3">
-                <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{r.label}</div>
+                <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                  {r.label}
+                </div>
                 <div className="mt-1 text-sm font-semibold">{r.value}</div>
               </div>
             ))}
@@ -337,13 +498,18 @@ function BugattiAnalyzer() {
         <div className="rounded-xl border border-border bg-card p-5 flex flex-col">
           <div className="text-sm font-semibold">Risk analysis</div>
           <ul className="mt-3 space-y-2 text-sm">
-            <RiskRow tone="warning" text="Requires 30–50× current revenue — high market execution risk." />
+            <RiskRow
+              tone="warning"
+              text="Requires 30–50× current revenue — high market execution risk."
+            />
             <RiskRow tone="warning" text="Long duration exposes you to 2+ macro cycles." />
             <RiskRow tone="success" text="Multi-product portfolio diversifies category risk." />
             <RiskRow tone="danger" text="Founder burnout is the #1 threat at this timeline." />
           </ul>
           <div className="mt-auto pt-4">
-            <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Confidence score</div>
+            <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
+              Confidence score
+            </div>
             <div className="text-3xl font-semibold text-primary">{conf}%</div>
             <div className="text-[11px] text-muted-foreground italic mt-1">
               Estimate only — based on current business data and trends.
@@ -355,8 +521,21 @@ function BugattiAnalyzer() {
   );
 }
 
-function ScenarioRow({ label, months, tone }: { label: string; months: number; tone: "success" | "primary" | "warning" }) {
-  const color = tone === "success" ? "text-emerald-400" : tone === "warning" ? "text-amber-400" : "text-primary";
+function ScenarioRow({
+  label,
+  months,
+  tone,
+}: {
+  label: string;
+  months: number;
+  tone: "success" | "primary" | "warning";
+}) {
+  const color =
+    tone === "success"
+      ? "text-emerald-400"
+      : tone === "warning"
+        ? "text-amber-400"
+        : "text-primary";
   const years = (months / 12).toFixed(1);
   return (
     <div className="flex items-center justify-between rounded-lg border border-border bg-background p-3">
@@ -378,7 +557,12 @@ function Req({ label, value }: { label: string; value: string }) {
 }
 function RiskRow({ tone, text }: { tone: "success" | "warning" | "danger"; text: string }) {
   const Icon = tone === "success" ? CheckCircle2 : tone === "warning" ? AlertTriangle : ShieldAlert;
-  const color = tone === "success" ? "text-emerald-400" : tone === "warning" ? "text-amber-400" : "text-red-400";
+  const color =
+    tone === "success"
+      ? "text-emerald-400"
+      : tone === "warning"
+        ? "text-amber-400"
+        : "text-red-400";
   return (
     <li className="flex gap-2">
       <Icon className={cn("h-4 w-4 mt-0.5 shrink-0", color)} />
@@ -401,18 +585,39 @@ function StartupAdvisor() {
       icon={<Lightbulb className="h-4 w-4" />}
     >
       <div className="grid gap-4 lg:grid-cols-3">
-        <div className={cn(
-          "rounded-xl border p-5 lg:col-span-1",
-          verdict ? "border-emerald-500/40 bg-emerald-500/5" : "border-amber-500/40 bg-amber-500/5",
-        )}>
-          <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Recommendation</div>
-          <div className={cn("mt-1 text-4xl font-semibold", verdict ? "text-emerald-400" : "text-amber-400")}>
+        <div
+          className={cn(
+            "rounded-xl border p-5 lg:col-span-1",
+            verdict
+              ? "border-emerald-500/40 bg-emerald-500/5"
+              : "border-amber-500/40 bg-amber-500/5",
+          )}
+        >
+          <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
+            Recommendation
+          </div>
+          <div
+            className={cn(
+              "mt-1 text-4xl font-semibold",
+              verdict ? "text-emerald-400" : "text-amber-400",
+            )}
+          >
             {verdict ? "YES" : "NO — not yet"}
           </div>
           <p className="mt-3 text-sm text-muted-foreground">
             {verdict
-              ? "Your existing portfolio is healthy (avg score " + m.healthAvg + ", margin " + (m.profitMargin * 100).toFixed(0) + "%). Cash reserve of " + inr(m.cashReserve) + " gives 6–9 months of new-venture runway without starving current products."
-              : "Business health is " + m.healthAvg + "/100 and margin " + (m.profitMargin * 100).toFixed(0) + "%. Stabilize Ops & Automation first — a 4th product will dilute focus and starve Libriofy renewals."}
+              ? "Your existing portfolio is healthy (avg score " +
+                m.healthAvg +
+                ", margin " +
+                (m.profitMargin * 100).toFixed(0) +
+                "%). Cash reserve of " +
+                inr(m.cashReserve) +
+                " gives 6–9 months of new-venture runway without starving current products."
+              : "Business health is " +
+                m.healthAvg +
+                "/100 and margin " +
+                (m.profitMargin * 100).toFixed(0) +
+                "%. Stabilize Ops & Automation first — a 4th product will dilute focus and starve Libriofy renewals."}
           </p>
           <div className="mt-3 text-[11px] text-muted-foreground italic">
             Based on your current business performance and growth trend.
@@ -453,8 +658,12 @@ const DAILY_PLAN = [
   { time: "21:30–22:15", label: "Reading (45 min)", icon: Sparkles },
   { time: "23:00", label: "Sleep goal — 7h", icon: Moon },
 ];
-function PhoneIcon({ className }: { className?: string }) { return <Flame className={className} />; }
-function MailIcon({ className }: { className?: string }) { return <TrendingUp className={className} />; }
+function PhoneIcon({ className }: { className?: string }) {
+  return <Flame className={className} />;
+}
+function MailIcon({ className }: { className?: string }) {
+  return <TrendingUp className={className} />;
+}
 
 const TODAY_TARGETS = [
   { label: "Revenue target", value: "₹85,000" },
@@ -506,7 +715,10 @@ function DailyPlanSection() {
           <div className="text-sm font-semibold mb-3">Today's targets</div>
           <ul className="space-y-2">
             {TODAY_TARGETS.map((t) => (
-              <li key={t.label} className="flex items-center justify-between text-sm border-b border-border/60 pb-1.5">
+              <li
+                key={t.label}
+                className="flex items-center justify-between text-sm border-b border-border/60 pb-1.5"
+              >
                 <span className="text-muted-foreground text-xs">{t.label}</span>
                 <span className="font-semibold">{t.value}</span>
               </li>
@@ -517,7 +729,9 @@ function DailyPlanSection() {
     </SectionShell>
   );
 }
-function CalendarIcon({ className }: { className?: string }) { return <Clock className={className} />; }
+function CalendarIcon({ className }: { className?: string }) {
+  return <Clock className={className} />;
+}
 
 // ------- Habit Tracker -------
 const HABITS = [
@@ -537,34 +751,48 @@ const HABITS = [
 function HabitSection() {
   const done = HABITS.filter((h) => h.done).length;
   const consistency = Math.round((done / HABITS.length) * 100);
-  const discipline = Math.round(HABITS.reduce((s, h) => s + Math.min(30, h.streak), 0) / HABITS.length * (100 / 30));
-  const business = Math.round((consistency * 0.6 + discipline * 0.4));
+  const discipline = Math.round(
+    (HABITS.reduce((s, h) => s + Math.min(30, h.streak), 0) / HABITS.length) * (100 / 30),
+  );
+  const business = Math.round(consistency * 0.6 + discipline * 0.4);
   return (
-    <SectionShell eyebrow="Habits" title="Consistency compounds" icon={<Target className="h-4 w-4" />}>
+    <SectionShell
+      eyebrow="Habits"
+      title="Consistency compounds"
+      icon={<Target className="h-4 w-4" />}
+    >
       <div className="grid gap-4 lg:grid-cols-4">
         <ScoreTile label="Consistency" value={consistency} />
         <ScoreTile label="Discipline" value={discipline} />
         <ScoreTile label="Business score" value={business} />
         <div className="rounded-xl border border-border bg-card p-5">
           <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Today</div>
-          <div className="mt-1 text-3xl font-semibold">{done}<span className="text-muted-foreground text-lg">/{HABITS.length}</span></div>
+          <div className="mt-1 text-3xl font-semibold">
+            {done}
+            <span className="text-muted-foreground text-lg">/{HABITS.length}</span>
+          </div>
           <div className="text-xs text-muted-foreground mt-1">habits completed</div>
         </div>
       </div>
       <div className="mt-4 rounded-xl border border-border bg-card p-5">
         <div className="grid gap-2 md:grid-cols-3 lg:grid-cols-4">
           {HABITS.map((h) => (
-            <div key={h.name} className={cn(
-              "flex items-center justify-between rounded-lg border p-3",
-              h.done ? "border-emerald-500/30 bg-emerald-500/5" : "border-border bg-background",
-            )}>
+            <div
+              key={h.name}
+              className={cn(
+                "flex items-center justify-between rounded-lg border p-3",
+                h.done ? "border-emerald-500/30 bg-emerald-500/5" : "border-border bg-background",
+              )}
+            >
               <div>
                 <div className="text-sm font-medium">{h.name}</div>
                 <div className="text-[11px] text-muted-foreground">{h.streak} day streak</div>
               </div>
-              {h.done
-                ? <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-                : <Clock className="h-4 w-4 text-muted-foreground" />}
+              {h.done ? (
+                <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+              ) : (
+                <Clock className="h-4 w-4 text-muted-foreground" />
+              )}
             </div>
           ))}
         </div>
@@ -576,7 +804,10 @@ function ScoreTile({ label, value }: { label: string; value: number }) {
   return (
     <div className="rounded-xl border border-border bg-card p-5">
       <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{label}</div>
-      <div className="mt-1 text-3xl font-semibold">{value}<span className="text-muted-foreground text-lg">/100</span></div>
+      <div className="mt-1 text-3xl font-semibold">
+        {value}
+        <span className="text-muted-foreground text-lg">/100</span>
+      </div>
       <div className="mt-2 h-1.5 rounded-full bg-muted overflow-hidden">
         <div className="h-full gradient-primary" style={{ width: `${value}%` }} />
       </div>
@@ -626,8 +857,10 @@ function MissedOpportunity() {
 // ------- Business Health -------
 function BusinessHealthSection() {
   const explanations: Record<string, string> = {
-    Sales: "Pipeline value up 12.8%. Conversion strong on SwiftGrowth. Follow-up latency creeping up.",
-    Marketing: "Ad ROAS steady at 3.4×. Organic pipeline flat — content velocity is the bottleneck.",
+    Sales:
+      "Pipeline value up 12.8%. Conversion strong on SwiftGrowth. Follow-up latency creeping up.",
+    Marketing:
+      "Ad ROAS steady at 3.4×. Organic pipeline flat — content velocity is the bottleneck.",
     Development: "Sprint velocity healthy. Libriofy checkout ships this week. Test coverage 78%.",
     Finance: "Runway 11 months. Overdue AR at ₹42k. Margin holding at 33%.",
     "Customer Success": "NPS 62. Onboarding time cut to 4.2 days. 2 churn risks flagged.",
@@ -643,7 +876,8 @@ function BusinessHealthSection() {
     >
       <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
         {HEALTH.map((h) => {
-          const color = h.score >= 85 ? "text-emerald-400" : h.score >= 75 ? "text-primary" : "text-amber-400";
+          const color =
+            h.score >= 85 ? "text-emerald-400" : h.score >= 75 ? "text-primary" : "text-amber-400";
           return (
             <div key={h.area} className="rounded-xl border border-border bg-card p-4">
               <div className="flex items-center justify-between">
@@ -651,9 +885,21 @@ function BusinessHealthSection() {
                 <div className={cn("text-2xl font-semibold", color)}>{h.score}</div>
               </div>
               <div className="mt-1.5 h-1.5 rounded-full bg-muted overflow-hidden">
-                <div className={cn("h-full", h.score >= 85 ? "bg-emerald-500" : h.score >= 75 ? "bg-primary" : "bg-amber-500")} style={{ width: `${h.score}%` }} />
+                <div
+                  className={cn(
+                    "h-full",
+                    h.score >= 85
+                      ? "bg-emerald-500"
+                      : h.score >= 75
+                        ? "bg-primary"
+                        : "bg-amber-500",
+                  )}
+                  style={{ width: `${h.score}%` }}
+                />
               </div>
-              <div className="mt-3 text-xs text-muted-foreground leading-relaxed">{explanations[h.area]}</div>
+              <div className="mt-3 text-xs text-muted-foreground leading-relaxed">
+                {explanations[h.area]}
+              </div>
             </div>
           );
         })}
@@ -667,11 +913,11 @@ function ForecastSection() {
   const m = useBusinessMetrics();
   const next30 = {
     revenue: m.monthlyRevenue * (1 + m.avgGrowth),
-    profit: (m.monthlyRevenue * (1 + m.avgGrowth)) - m.monthlyExpenses * 1.02,
+    profit: m.monthlyRevenue * (1 + m.avgGrowth) - m.monthlyExpenses * 1.02,
     clients: Math.round(m.clients * (1 + m.avgGrowth * 0.4)),
     meetings: 48,
     growth: m.avgGrowth * 100,
-    cash: m.cashReserve + (m.monthlyProfit * 1.02),
+    cash: m.cashReserve + m.monthlyProfit * 1.02,
     health: Math.min(100, m.healthAvg + 2),
   };
 
@@ -724,14 +970,43 @@ function ForecastSection() {
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#27272A" />
-                <XAxis dataKey="month" stroke="#71717A" fontSize={11} tickLine={false} axisLine={false} />
-                <YAxis stroke="#71717A" fontSize={11} tickLine={false} axisLine={false} tickFormatter={(v) => inr(v as number)} />
+                <XAxis
+                  dataKey="month"
+                  stroke="#71717A"
+                  fontSize={11}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <YAxis
+                  stroke="#71717A"
+                  fontSize={11}
+                  tickLine={false}
+                  axisLine={false}
+                  tickFormatter={(v) => inr(v as number)}
+                />
                 <Tooltip
-                  contentStyle={{ background: "#111113", border: "1px solid #27272A", borderRadius: 12, fontSize: 12 }}
+                  contentStyle={{
+                    background: "#111113",
+                    border: "1px solid #27272A",
+                    borderRadius: 12,
+                    fontSize: 12,
+                  }}
                   formatter={(v: number) => inr(v)}
                 />
-                <Area type="monotone" dataKey="revenue" stroke={CHART.primary} strokeWidth={2} fill="url(#frev)" />
-                <Area type="monotone" dataKey="profit" stroke={CHART.success} strokeWidth={2} fill="url(#fprof)" />
+                <Area
+                  type="monotone"
+                  dataKey="revenue"
+                  stroke={CHART.primary}
+                  strokeWidth={2}
+                  fill="url(#frev)"
+                />
+                <Area
+                  type="monotone"
+                  dataKey="profit"
+                  stroke={CHART.success}
+                  strokeWidth={2}
+                  fill="url(#fprof)"
+                />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -742,12 +1017,30 @@ function ForecastSection() {
         <div className="text-sm font-semibold mb-3">12-month roadmap</div>
         <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
           <RoadmapItem title="Hiring plan" value="+6 hires: 2 eng · 2 GTM · 1 CS · 1 finance" />
-          <RoadmapItem title="Revenue goal" value={`${inr(twelveMonth[11].revenue * 12 / 12 * 12)} annual`} />
-          <RoadmapItem title="Product releases" value="Libriofy v2 · Synsfi API · SwiftGrowth Studio" />
-          <RoadmapItem title="Office goals" value="Move to 4,500 sqft HQ · open Bangalore satellite" />
-          <RoadmapItem title="Investment goals" value={`Raise ${inr(35000000)} pre-Series A (optional)`} />
-          <RoadmapItem title="Major risks" value="Founder capacity · Libriofy churn · macro slowdown" />
-          <RoadmapItem title="Growth strategy" value="Land Libriofy renewals · productize SwiftGrowth · Synsfi PMF" />
+          <RoadmapItem
+            title="Revenue goal"
+            value={`${inr(((twelveMonth[11].revenue * 12) / 12) * 12)} annual`}
+          />
+          <RoadmapItem
+            title="Product releases"
+            value="Libriofy v2 · Synsfi API · SwiftGrowth Studio"
+          />
+          <RoadmapItem
+            title="Office goals"
+            value="Move to 4,500 sqft HQ · open Bangalore satellite"
+          />
+          <RoadmapItem
+            title="Investment goals"
+            value={`Raise ${inr(35000000)} pre-Series A (optional)`}
+          />
+          <RoadmapItem
+            title="Major risks"
+            value="Founder capacity · Libriofy churn · macro slowdown"
+          />
+          <RoadmapItem
+            title="Growth strategy"
+            value="Land Libriofy renewals · productize SwiftGrowth · Synsfi PMF"
+          />
           <RoadmapItem title="Cash target" value={`${inr(m.cashReserve * 2.5)} reserve`} />
         </div>
       </div>
@@ -830,7 +1123,11 @@ Answer each in one sharp line:
           disabled={loading}
           className="h-9 px-3 rounded-lg gradient-primary text-white text-sm inline-flex items-center gap-2 soft-shadow disabled:opacity-60"
         >
-          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+          {loading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Sparkles className="h-4 w-4" />
+          )}
           {loading ? "Thinking…" : text ? "Regenerate" : "Generate today's briefing"}
         </button>
       }
@@ -842,8 +1139,11 @@ Answer each in one sharp line:
           </div>
         ) : (
           <div className="text-sm text-muted-foreground">
-            Click <span className="text-foreground font-medium">Generate today's briefing</span> — the AI reads your live business data and returns six operator-grade answers.
-            <div className="mt-3 text-[11px] italic">All output is an estimate based on current business data and trends.</div>
+            Click <span className="text-foreground font-medium">Generate today's briefing</span> —
+            the AI reads your live business data and returns six operator-grade answers.
+            <div className="mt-3 text-[11px] italic">
+              All output is an estimate based on current business data and trends.
+            </div>
           </div>
         )}
       </div>
@@ -860,22 +1160,26 @@ function EndOfDayReport() {
   const habitScore = Math.min(
     100,
     Math.round(
-      (Math.min(log.deepWorkHours / 4, 1) * 25) +
-      (Math.min(log.exerciseHours / 0.75, 1) * 20) +
-      (Math.min(log.sleepHours / 7.5, 1) * 25) +
-      (Math.min(log.learningHours / 1, 1) * 15) +
-      (rate / 100) * 15,
+      Math.min(log.deepWorkHours / 4, 1) * 25 +
+        Math.min(log.exerciseHours / 0.75, 1) * 20 +
+        Math.min(log.sleepHours / 7.5, 1) * 25 +
+        Math.min(log.learningHours / 1, 1) * 15 +
+        (rate / 100) * 15,
     ),
   );
   const anyLogged =
     totalTasks > 0 || log.revenue > 0 || log.profit > 0 || productive > 0 || log.sleepHours > 0;
-  const rating =
-    !anyLogged ? "— · Log today to rate"
-    : habitScore >= 85 ? "A · Elite day"
-    : habitScore >= 70 ? "A− · Strong day"
-    : habitScore >= 55 ? "B · Solid day"
-    : habitScore >= 40 ? "C · Below average"
-    : "D · Recover tomorrow";
+  const rating = !anyLogged
+    ? "— · Log today to rate"
+    : habitScore >= 85
+      ? "A · Elite day"
+      : habitScore >= 70
+        ? "A− · Strong day"
+        : habitScore >= 55
+          ? "B · Solid day"
+          : habitScore >= 40
+            ? "C · Below average"
+            : "D · Recover tomorrow";
   const fmt = (v: number, s = "") => (anyLogged ? `${v}${s}` : "—");
   const stats = [
     { label: "Productive hours", value: anyLogged ? `${productive.toFixed(1)}h` : "—" },
@@ -906,7 +1210,10 @@ function EndOfDayReport() {
           <div className="text-sm font-semibold mb-3">Today's scorecard</div>
           <div className="grid gap-2 md:grid-cols-2">
             {stats.map((s) => (
-              <div key={s.label} className="rounded-lg border border-border bg-background p-3 flex items-center justify-between">
+              <div
+                key={s.label}
+                className="rounded-lg border border-border bg-background p-3 flex items-center justify-between"
+              >
                 <span className="text-xs text-muted-foreground">{s.label}</span>
                 <span className="font-semibold text-sm">{s.value}</span>
               </div>
@@ -928,7 +1235,9 @@ function EndOfDayReport() {
           <ol className="space-y-2 text-sm">
             {tomorrow.map((t, i) => (
               <li key={i} className="flex gap-2">
-                <span className="h-5 w-5 shrink-0 rounded-md bg-primary/10 text-primary text-xs grid place-items-center font-semibold">{i + 1}</span>
+                <span className="h-5 w-5 shrink-0 rounded-md bg-primary/10 text-primary text-xs grid place-items-center font-semibold">
+                  {i + 1}
+                </span>
                 <span className="text-muted-foreground">{t}</span>
               </li>
             ))}
@@ -941,10 +1250,19 @@ function EndOfDayReport() {
 
 // ------- Layout helpers -------
 function SectionShell({
-  eyebrow, title, description, icon, action, children,
+  eyebrow,
+  title,
+  description,
+  icon,
+  action,
+  children,
 }: {
-  eyebrow: string; title: string; description?: string;
-  icon?: React.ReactNode; action?: React.ReactNode; children: React.ReactNode;
+  eyebrow: string;
+  title: string;
+  description?: string;
+  icon?: React.ReactNode;
+  action?: React.ReactNode;
+  children: React.ReactNode;
 }) {
   return (
     <section className="space-y-4">
@@ -954,7 +1272,9 @@ function SectionShell({
             {icon} {eyebrow}
           </div>
           <h2 className="mt-1 text-xl font-semibold tracking-tight">{title}</h2>
-          {description && <p className="text-sm text-muted-foreground mt-1 max-w-2xl">{description}</p>}
+          {description && (
+            <p className="text-sm text-muted-foreground mt-1 max-w-2xl">{description}</p>
+          )}
         </div>
         {action}
       </div>
@@ -981,7 +1301,9 @@ function MyFuture() {
             </div>
             <h1 className="mt-1 text-3xl md:text-4xl font-semibold tracking-tight">My Future</h1>
             <p className="mt-2 text-sm text-muted-foreground max-w-2xl">
-              Realistic forecasts for wealth, business scale, and daily execution — grounded in your live revenue, profit, growth, and habits. This engine never guarantees the future. Every number is an estimate based on your current business data and trends.
+              Realistic forecasts for wealth, business scale, and daily execution — grounded in your
+              live revenue, profit, growth, and habits. This engine never guarantees the future.
+              Every number is an estimate based on your current business data and trends.
             </p>
             <div className="mt-5 grid gap-3 md:grid-cols-4">
               <HeroStat label="Monthly revenue" value={inr(m.monthlyRevenue)} />
@@ -1006,7 +1328,8 @@ function MyFuture() {
         <EndOfDayReport />
 
         <div className="text-center text-[11px] text-muted-foreground italic pt-4 pb-8">
-          The Future Intelligence Engine never guarantees the future. All output is an estimate based on your current business data and trends.
+          The Future Intelligence Engine never guarantees the future. All output is an estimate
+          based on your current business data and trends.
         </div>
       </div>
     </AppLayout>

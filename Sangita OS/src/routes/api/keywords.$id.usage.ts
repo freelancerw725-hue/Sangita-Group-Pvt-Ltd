@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { getKeywordStore } from "@/lib/keywords/store";
+import { getKeywordStore } from "@/lib/dashboard/server";
 import { isAuthorized, unauthorizedResponse, json, errorJson } from "@/lib/keywords/api-auth";
 
 export const Route = createFileRoute("/api/keywords/$id/usage")({
@@ -11,7 +11,9 @@ export const Route = createFileRoute("/api/keywords/$id/usage")({
         try {
           const body = await request.json().catch(() => null);
           if (!body || typeof body.eventType !== "string") {
-            return errorJson("eventType required: search_started | search_completed | failed_search");
+            return errorJson(
+              "eventType required: search_started | search_completed | failed_search",
+            );
           }
           const eventType = body.eventType as string;
           if (!["search_started", "search_completed", "failed_search"].includes(eventType)) {

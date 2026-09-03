@@ -1,9 +1,19 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { isAutomationAuthorized } from "@/lib/automation-auth";
-import { createVerifyJob, getVerifyJob, updateVerifyJob, _clearVerifyJobsForTests } from "@/lib/verification-jobs";
+import {
+  createVerifyJob,
+  getVerifyJob,
+  updateVerifyJob,
+  _clearVerifyJobsForTests,
+} from "@/lib/verification-jobs";
 import { MockEmailVerifier, createEmailVerifier } from "@/lib/verification";
 import { getStoredLeads, saveNewLeads, updateLeadByChannelId } from "@/lib/lead-store";
-import { createLeadSheet, getLeadSheet, updateLeadSheetTemplate, _clearSheetsForTests } from "@/lib/lead-sheets-store";
+import {
+  createLeadSheet,
+  getLeadSheet,
+  updateLeadSheetTemplate,
+  _clearSheetsForTests,
+} from "@/lib/lead-sheets-store";
 import { fetchBulkMailTemplates, getBulkMailTemplate } from "@/lib/bulk-mail-templates";
 import { _clearJobsForTests as clearJobs } from "@/lib/automation-jobs";
 import { hasDatabaseUrl, updateDbLead } from "@/lib/db";
@@ -11,7 +21,11 @@ import type { LeadRecord } from "@/lib/types";
 import { normalizeLeadRecord } from "@/lib/crm";
 
 // Helper to create a lead with email
-function makeLead(channelId: string, email: string, overrides: Partial<LeadRecord> = {}): LeadRecord {
+function makeLead(
+  channelId: string,
+  email: string,
+  overrides: Partial<LeadRecord> = {},
+): LeadRecord {
   const base: LeadRecord = {
     id: crypto.randomUUID(),
     source: "youtube",
@@ -86,7 +100,10 @@ describe("Phase 3 — Email Verification + Approval + Sheets", () => {
 
   // 3. batch verification starts
   it("3. batch verification starts and returns job", async () => {
-    const leads = [makeLead("UC_VERIFY_1", "valid@example.com"), makeLead("UC_VERIFY_2", "invalid@invalid.com")];
+    const leads = [
+      makeLead("UC_VERIFY_1", "valid@example.com"),
+      makeLead("UC_VERIFY_2", "invalid@invalid.com"),
+    ];
     await upsertLeads(leads);
     const job = await createVerifyJob(["UC_VERIFY_1", "UC_VERIFY_2"]);
     expect(job.jobId).toMatch(/^verify_/);
@@ -150,20 +167,42 @@ describe("Phase 3 — Email Verification + Approval + Sheets", () => {
 
   // 9. manual approval works
   it("9. manual approval works", async () => {
-    const lead = makeLead("UC_APPROVE_1", "valid@example.com", { emailVerificationStatus: "valid", approvalStatus: "pending_review" });
+    const lead = makeLead("UC_APPROVE_1", "valid@example.com", {
+      emailVerificationStatus: "valid",
+      approvalStatus: "pending_review",
+    });
     await upsertLeads([lead]);
-    if (hasDatabaseUrl()) await updateDbLead("UC_APPROVE_1", { approvalStatus: "approved", approvedAt: new Date().toISOString() } as never);
-    else await updateLeadByChannelId("UC_APPROVE_1", { approvalStatus: "approved", approvedAt: new Date().toISOString() } as never);
+    if (hasDatabaseUrl())
+      await updateDbLead("UC_APPROVE_1", {
+        approvalStatus: "approved",
+        approvedAt: new Date().toISOString(),
+      } as never);
+    else
+      await updateLeadByChannelId("UC_APPROVE_1", {
+        approvalStatus: "approved",
+        approvedAt: new Date().toISOString(),
+      } as never);
     const stored = (await getStoredLeads()).find((l) => l.channelId === "UC_APPROVE_1");
     expect(stored?.approvalStatus).toBe("approved");
   });
 
   // 10. rejection works
   it("10. rejection works", async () => {
-    const lead = makeLead("UC_REJECT_1", "valid@example.com", { emailVerificationStatus: "valid", approvalStatus: "pending_review" });
+    const lead = makeLead("UC_REJECT_1", "valid@example.com", {
+      emailVerificationStatus: "valid",
+      approvalStatus: "pending_review",
+    });
     await upsertLeads([lead]);
-    if (hasDatabaseUrl()) await updateDbLead("UC_REJECT_1", { approvalStatus: "rejected", rejectedAt: new Date().toISOString() } as never);
-    else await updateLeadByChannelId("UC_REJECT_1", { approvalStatus: "rejected", rejectedAt: new Date().toISOString() } as never);
+    if (hasDatabaseUrl())
+      await updateDbLead("UC_REJECT_1", {
+        approvalStatus: "rejected",
+        rejectedAt: new Date().toISOString(),
+      } as never);
+    else
+      await updateLeadByChannelId("UC_REJECT_1", {
+        approvalStatus: "rejected",
+        rejectedAt: new Date().toISOString(),
+      } as never);
     const stored = (await getStoredLeads()).find((l) => l.channelId === "UC_REJECT_1");
     expect(stored?.approvalStatus).toBe("rejected");
   });
@@ -204,7 +243,10 @@ describe("Phase 3 — Email Verification + Approval + Sheets", () => {
     if (hasDatabaseUrl()) await updateDbLead("UC_SHEET_3", { approvalStatus: "rejected" } as never);
     else await updateLeadByChannelId("UC_SHEET_3", { approvalStatus: "rejected" } as never);
 
-    const sheet = await createLeadSheet({ name: "Bihar News Outreach - 27 Aug", leadIds: ["UC_SHEET_1", "UC_SHEET_2", "UC_SHEET_3"] });
+    const sheet = await createLeadSheet({
+      name: "Bihar News Outreach - 27 Aug",
+      leadIds: ["UC_SHEET_1", "UC_SHEET_2", "UC_SHEET_3"],
+    });
     expect(sheet.name).toBe("Bihar News Outreach - 27 Aug");
     expect(sheet.totalLeads).toBe(3);
     expect(sheet.approvedLeads).toBe(2);
@@ -222,7 +264,11 @@ describe("Phase 3 — Email Verification + Approval + Sheets", () => {
     const templates = await fetchBulkMailTemplates();
     expect(templates.length).toBeGreaterThan(0);
     const tpl = templates[0];
-    const updated = await updateLeadSheetTemplate(sheet.id, { id: tpl.id, name: tpl.name, category: tpl.category });
+    const updated = await updateLeadSheetTemplate(sheet.id, {
+      id: tpl.id,
+      name: tpl.name,
+      category: tpl.category,
+    });
     expect(updated?.templateId).toBe(tpl.id);
     expect(updated?.templateName).toBe(tpl.name);
     expect(updated?.status).toBe("ready_for_bulk_mail");
@@ -241,7 +287,11 @@ describe("Phase 3 — Email Verification + Approval + Sheets", () => {
     expect(sheet.status).not.toBe("ready_for_bulk_mail");
     // After template attached, status changes — but still no Bulk Mail campaign auto-created
     const templates = await fetchBulkMailTemplates();
-    const updated = await updateLeadSheetTemplate(sheet.id, { id: templates[0].id, name: templates[0].name, category: templates[0].category });
+    const updated = await updateLeadSheetTemplate(sheet.id, {
+      id: templates[0].id,
+      name: templates[0].name,
+      category: templates[0].category,
+    });
     expect(updated?.status).toBe("ready_for_bulk_mail");
     // Ensure no Bulk Mail campaign was created automatically — we don't call Bulk Mail API here
     // Bulk Mail's campaigns still empty unless manually created — check via handoff endpoint
@@ -254,7 +304,27 @@ describe("Phase 3 — Email Verification + Approval + Sheets", () => {
     const { executeLeadSearch } = await import("@/lib/automation-search");
     const result = await executeLeadSearch(
       { keyword: "Bihar News" },
-      { discover: async () => [{ candidate: { channelId: "UC_MANUAL_1", channelName: "Manual Channel", channelUrl: "https://youtube.com/channel/UC_MANUAL_1", subscribers: 10000, videoCount: 50, viewCount: 100000, description: "hi@example.com", country: "IN", customUrl: "", thumbnail: "", publishedAt: new Date().toISOString() }, matchedKeywords: ["Bihar News"] }] as never },
+      {
+        discover: async () =>
+          [
+            {
+              candidate: {
+                channelId: "UC_MANUAL_1",
+                channelName: "Manual Channel",
+                channelUrl: "https://youtube.com/channel/UC_MANUAL_1",
+                subscribers: 10000,
+                videoCount: 50,
+                viewCount: 100000,
+                description: "hi@example.com",
+                country: "IN",
+                customUrl: "",
+                thumbnail: "",
+                publishedAt: new Date().toISOString(),
+              },
+              matchedKeywords: ["Bihar News"],
+            },
+          ] as never,
+      },
     );
     expect(result.leadsFound).toBe(1);
     expect(result.response.message).toContain("Found");

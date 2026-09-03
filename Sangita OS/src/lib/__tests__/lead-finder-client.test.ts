@@ -19,9 +19,14 @@ describe("Sangita OS — Lead Finder stats proxy (Phase 3)", () => {
       approval: { pending_review: 10, approved: 80, rejected: 10 },
     };
 
-    const fetchSpy = vi.spyOn(global, "fetch").mockResolvedValue(
-      new Response(JSON.stringify(mockStats), { status: 200, headers: { "content-type": "application/json" } }),
-    );
+    const fetchSpy = vi
+      .spyOn(global, "fetch")
+      .mockResolvedValue(
+        new Response(JSON.stringify(mockStats), {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        }),
+      );
 
     const { fetchLeadFinderStats } = await import("@/lib/lead-finder-client");
     const stats = await fetchLeadFinderStats();
@@ -29,7 +34,10 @@ describe("Sangita OS — Lead Finder stats proxy (Phase 3)", () => {
     expect(fetchSpy).toHaveBeenCalled();
     const calledUrl = fetchSpy.mock.calls[0][0] as string;
     expect(calledUrl).toBe("http://localhost:3000/api/automation/stats");
-    const calledHeaders = (fetchSpy.mock.calls[0][1] as RequestInit).headers as Record<string, string>;
+    const calledHeaders = (fetchSpy.mock.calls[0][1] as RequestInit).headers as Record<
+      string,
+      string
+    >;
     expect(calledHeaders["x-api-key"]).toBe("super-secret-sangita");
 
     // Response should not contain secrets

@@ -149,7 +149,11 @@ export function AIPanel() {
                   disabled={loading}
                   className="h-8 w-8 rounded-lg gradient-primary text-white grid place-items-center disabled:opacity-50"
                 >
-                  {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                  {loading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Send className="h-4 w-4" />
+                  )}
                 </button>
               </div>
             </form>

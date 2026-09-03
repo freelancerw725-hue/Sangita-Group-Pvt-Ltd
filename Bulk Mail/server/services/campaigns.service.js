@@ -49,32 +49,34 @@ function resolveRecipients(audience) {
   return { recipients, excludedBlocked, excludedInvalid, duplicatesRemoved }
 }
 
-function campaignRow(id) {
+function campaignRow(userTenantId, id) {
+  const tenantWhere = userTenantId ? ` AND c.tenant_id = ${userTenantId}` : ''
   const row = db.prepare(
     `SELECT c.*, t.name AS template_name, b.name AS batch_name, s.name AS sender_name, s.email AS sender_email
      FROM campaigns c
      LEFT JOIN templates t ON t.id = c.template_id
      LEFT JOIN lead_batches b ON b.id = c.audience_ref
      LEFT JOIN sender_accounts s ON s.id = c.sender_account_id
-     WHERE c.id = ?`
+     WHERE c.id = ?${tenantWhere}`
   ).get(id)
-  if (!row) throw notFound('Campaign not found')
+  if (!row) throw new Error('Campaign not found')
   return row
 }
 
-function toUi(row) {
+function toUi(userTenantId, row) {
   const progress = getCampaignProgress(row.id)
   const audienceLabel = row.audience_type === 'batch' && row.batch_name
     ? `Batch · ${row.batch_name}`
     : row.audience_type === 'all' ? 'All leads' : 'Manual audience'
 
-  // Get real engagement stats from email_events
-  const emailsSent = db.prepare(`SELECT COUNT(*) c FROM emails WHERE campaign_id = ? AND status = 'sent'`).get(row.id).c
-  const opened = db.prepare(`SELECT COUNT(DISTINCT email_id) c FROM email_events WHERE campaign_id = ? AND type = 'open'`).get(row.id).c
-  const clicked = db.prepare(`SELECT COUNT(DISTINCT email_id) c FROM email_events WHERE campaign_id = ? AND type = 'click'`).get(row.id).c
+  // Get real engagement stats from email_events with tenant filtering
+  const tenantWhere = userTenantId ? ` AND tenant_id = ${userTenantId}` : ''
+  const emailsSent = db.prepare(`SELECT COUNT(*) c FROM emails WHERE campaign_id = ?${tenantWhere} AND status = 'sent'`).get(row.id).c
+  const opened = db.prepare(`SELECT COUNT(DISTINCT email_id) c FROM email_events WHERE campaign_id = ?${tenantWhere} AND type = 'open'`).get(row.id).c
+  const clicked = db.prepare(`SELECT COUNT(DISTINCT email_id) c FROM email_events WHERE campaign_id = ?${tenantWhere} AND type = 'click'`).get(row.id).c
   const repliedCount = db.prepare(`SELECT COUNT(*) c FROM replies WHERE campaign_id = ?`).get(row.id).c
   const interestedCount = db.prepare(
-    `SELECT COUNT(DISTINCT cr.lead_id) c FROM campaign_recipients cr JOIN leads l ON l.id = cr.lead_id WHERE cr.campaign_id = ? AND l.status = 'interested'`
+    `SELECT COUNT(DISTINCT cr.lead_id) c FROM campaign_recipients cr JOIN leads l ON l.id = cr.lead_id WHERE cr.campaign_id = ? AND l.status = 'interested'${tenantWhere}`
   ).get(row.id).c
 
   return {
@@ -109,13 +111,13 @@ function toUi(row) {
   }
 }
 
-export function listCampaigns() {
+export function listCampaigns(userTenantId) {
   const ids = db.prepare(`SELECT id FROM campaigns ORDER BY id`).all().map((r) => r.id)
-  return ids.map((id) => toUi(campaignRow(id)))
+  return ids.map((id) => toUi(userTenantId, campaignRow(userTenantId, id)))
 }
 
-export function getCampaign(id) {
-  return toUi(campaignRow(id))
+export function getCampaign(userTenantId, id) {
+  return toUi(userTenantId, campaignRow(userTenantId, id))
 }
 
 export function getCampaignStats() {
@@ -172,7 +174,7 @@ export function createCampaign(input) {
     for (const r of recipients) ins.run(id, r.id)
 
     recordActivity('lead_created', input.name, `Campaign created: ${input.name} (${recipients.length} recipients)`)
-    return { campaign: getCampaign(id), excludedBlocked, excludedInvalid, duplicatesRemoved }
+    return { campaign: getCampaign(undefined, id), excludedBlocked, excludedInvalid, duplicatesRemoved }
   })
 }
 

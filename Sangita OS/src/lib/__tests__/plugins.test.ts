@@ -23,7 +23,8 @@ describe("Sangita OS Plugins — Leads & Bulk Mail launchers", () => {
   });
 
   it("2. Bulk Mail plugin renders (getBulkMailUrl returns url when configured)", () => {
-    (import.meta.env as Record<string, string>).VITE_BULK_MAIL_BASE_URL = "https://bulk-mail.example.com";
+    (import.meta.env as Record<string, string>).VITE_BULK_MAIL_BASE_URL =
+      "https://bulk-mail.example.com";
     expect(getBulkMailUrl()).toBe("https://bulk-mail.example.com");
   });
 
@@ -31,22 +32,28 @@ describe("Sangita OS Plugins — Leads & Bulk Mail launchers", () => {
     (import.meta.env as Record<string, string>).VITE_LEADS_BASE_URL = "https://leads.example.com";
     expect(getLeadsUrl()).toBe("https://leads.example.com");
     delete (import.meta.env as Record<string, string>).VITE_LEADS_BASE_URL;
-    (import.meta.env as Record<string, string>).VITE_LEAD_FINDER_BASE_URL = "https://lead-finder.example.com";
+    (import.meta.env as Record<string, string>).VITE_LEAD_FINDER_BASE_URL =
+      "https://lead-finder.example.com";
     expect(getLeadsUrl()).toBe("https://lead-finder.example.com");
   });
 
   it("4. Bulk Mail URL comes from configuration (VITE_BULK_MAIL_BASE_URL)", () => {
-    (import.meta.env as Record<string, string>).VITE_BULK_MAIL_BASE_URL = "https://bulk-mail.example.com";
+    (import.meta.env as Record<string, string>).VITE_BULK_MAIL_BASE_URL =
+      "https://bulk-mail.example.com";
     expect(getBulkMailUrl()).toBe("https://bulk-mail.example.com");
   });
 
   it("5. Opens in new tab (component uses target=_blank)", async () => {
-    const content = await import("fs").then((fs) => fs.readFileSync("src/components/os/Plugins.tsx", "utf8"));
+    const content = await import("fs").then((fs) =>
+      fs.readFileSync("src/components/os/Plugins.tsx", "utf8"),
+    );
     expect(content).toContain('target="_blank"');
   });
 
-  it("6. rel=\"noopener noreferrer\" exists", async () => {
-    const content = await import("fs").then((fs) => fs.readFileSync("src/components/os/Plugins.tsx", "utf8"));
+  it('6. rel="noopener noreferrer" exists', async () => {
+    const content = await import("fs").then((fs) =>
+      fs.readFileSync("src/components/os/Plugins.tsx", "utf8"),
+    );
     expect(content).toContain('rel="noopener noreferrer"');
   });
 
@@ -75,7 +82,9 @@ describe("Sangita OS Plugins — Leads & Bulk Mail launchers", () => {
   });
 
   it("11. No secrets exposed in client bundle (no API keys in Plugins.tsx)", async () => {
-    const content = await import("fs").then((fs) => fs.readFileSync("src/components/os/Plugins.tsx", "utf8"));
+    const content = await import("fs").then((fs) =>
+      fs.readFileSync("src/components/os/Plugins.tsx", "utf8"),
+    );
     expect(content).not.toContain("BULK_MAIL_API_KEY");
     expect(content).not.toContain("LEAD_FINDER_API_KEY");
     expect(content).not.toContain("KEYWORDS_API_KEY");

@@ -166,11 +166,7 @@ export class SupabaseKeywordStore implements KeywordStore {
       total_duplicates: keyword.totalDuplicates,
       notes: keyword.notes,
     };
-    const { data, error } = await supabaseAdmin
-      .from("keyword_pool")
-      .insert(row)
-      .select()
-      .single();
+    const { data, error } = await supabaseAdmin.from("keyword_pool").insert(row).select().single();
     if (error) throw error;
     return rowToKeyword(data as KeywordRow);
   }

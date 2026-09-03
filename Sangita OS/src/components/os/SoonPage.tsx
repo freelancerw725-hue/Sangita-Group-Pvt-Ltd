@@ -5,9 +5,17 @@ import { PageHeader } from "./PageHeader";
 import { useOS } from "./os-store";
 
 export function SoonPage({
-  title, eyebrow, description, features, icon,
+  title,
+  eyebrow,
+  description,
+  features,
+  icon,
 }: {
-  title: string; eyebrow?: string; description: string; features: string[]; icon?: ReactNode;
+  title: string;
+  eyebrow?: string;
+  description: string;
+  features: string[];
+  icon?: ReactNode;
 }) {
   const { openAI } = useOS();
   return (
@@ -47,7 +55,8 @@ export function SoonPage({
           <span className="uppercase tracking-widest">In development</span>
         </div>
         <div className="mt-2 text-sm text-muted-foreground max-w-2xl">
-          This module is wired into Sangita OS and will light up as data flows in. Meanwhile, ask AI to draft, forecast, or analyze anything with ⌘/.
+          This module is wired into Sangita OS and will light up as data flows in. Meanwhile, ask AI
+          to draft, forecast, or analyze anything with ⌘/.
         </div>
       </div>
     </div>

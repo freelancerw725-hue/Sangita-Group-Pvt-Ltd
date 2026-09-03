@@ -25,10 +25,13 @@ export function isAuthorized(request: Request): boolean {
 }
 
 export function unauthorizedResponse() {
-  return new Response(JSON.stringify({ error: "Unauthorized", message: "Missing or invalid API key (x-api-key)" }), {
-    status: 401,
-    headers: { "content-type": "application/json" },
-  });
+  return new Response(
+    JSON.stringify({ error: "Unauthorized", message: "Missing or invalid API key (x-api-key)" }),
+    {
+      status: 401,
+      headers: { "content-type": "application/json" },
+    },
+  );
 }
 
 export function json(data: unknown, init?: ResponseInit) {

@@ -36,6 +36,9 @@ export async function GET(request: Request) {
     });
   } catch (error) {
     console.error("EXPORT_ERROR", error);
-    return NextResponse.json({ error: "Unable to export leads. Please try again." }, { status: 500 });
+    return NextResponse.json(
+      { error: "Unable to export leads. Please try again." },
+      { status: 500 },
+    );
   }
 }

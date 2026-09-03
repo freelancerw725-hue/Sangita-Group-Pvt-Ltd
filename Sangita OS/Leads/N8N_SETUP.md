@@ -1,6 +1,7 @@
 # Phase 2+3 — n8n Automation: Sangita OS → Lead Finder (Search + Verification)
 
 **Architecture**
+
 ```
 Sangita OS Keyword Pool
         ↓ GET /api/keywords/next
@@ -31,6 +32,7 @@ No duplicate search engine, no duplicate lead DB. Manual “Find Leads” contin
 ## 1. API URLs
 
 **Sangita OS (Keyword Pool + Stats Proxy)**
+
 - Base: `https://your-sangita-os.vercel.app` (local: `http://localhost:5173`)
 - `GET  /api/keywords` — list pool
 - `GET  /api/keywords/next` — next eligible active keyword (**source of daily-target truth**)
@@ -38,6 +40,7 @@ No duplicate search engine, no duplicate lead DB. Manual “Find Leads” contin
 - `GET  /api/lead-finder-stats` — read-only proxy to Lead Finder `/api/automation/stats` (for dashboard)
 
 **Lead Finder (Automation + Verification + Sheets)**
+
 - Base: `https://your-lead-finder.vercel.app` (local: `http://localhost:3000`)
 - `POST /api/automation/lead-search` — `{keyword: "Bihar News", filters?: {...}}`
 - `GET  /api/automation/lead-search/:jobId` — `{jobId, keyword, status, leadsFound, newLeads, duplicates, newLeadIds}`
@@ -56,6 +59,7 @@ No duplicate search engine, no duplicate lead DB. Manual “Find Leads” contin
 ## 2. Environment Variables
 
 **Sangita OS** (`Sangita OS/.env` / Vercel env):
+
 ```
 SUPABASE_URL=
 SUPABASE_SERVICE_ROLE_KEY=
@@ -67,6 +71,7 @@ LEAD_FINDER_API_KEY=<same as LEAD_FINDER_AUTOMATION_KEY>
 ```
 
 **Lead Finder** (`Leads/.env.local` / Vercel env):
+
 ```
 DATABASE_URL=           # or POSTGRES_URL — required in production
 YOUTUBE_API_KEY=        # server-only
@@ -80,6 +85,7 @@ BULK_MAIL_BASE_URL=http://localhost:3001  # read-only templates fetch
 ```
 
 **n8n** (Settings → Variables / Environment):
+
 ```
 SANGITA_OS_BASE_URL=https://your-sangita-os.vercel.app
 SANGITA_OS_API_KEY=<same as KEYWORDS_API_KEY>
@@ -95,23 +101,23 @@ LEAD_FINDER_API_KEY=<same as LEAD_FINDER_AUTOMATION_KEY>
 
 Import `Leads/n8n/workflow.json` (also at `Sangita OS/n8n/workflow.json`, `n8n/workflow.json`). Version `phase3-1.0.0` has 15 nodes.
 
-| # | Node | Type | Config |
-|---|------|------|--------|
-| 1 | **Schedule Trigger** | `scheduleTrigger` | Cron `0 */30 * * * *` (every 30 min). Change to `0 0 9 * * *` for 9am daily. |
-| 2 | **GET Sangita OS /api/keywords/next** | `httpRequest` | `GET {{SANGITA_OS_BASE_URL}}/api/keywords/next` Headers: `x-api-key: {{SANGITA_OS_API_KEY}}` Timeout 10s `alwaysOutputData:true` |
-| 3 | **IF Keyword Available?** | `if` | `{{$json.keyword}} isNotEmpty` → true = continue, false = stop (no keyword = daily targets reached or all paused). |
-| 4 | **POST Sangita OS usage: search_started** | `httpRequest` | `POST {{SANGITA_OS_BASE_URL}}/api/keywords/{{ $json.id }}/usage` Body: `{"eventType":"search_started"}` Header `x-api-key` |
-| 5 | **POST Lead Finder /api/automation/lead-search** | `httpRequest` | `POST {{LEAD_FINDER_BASE_URL}}/api/automation/lead-search` Body: `{"keyword":"{{ $('GET Sangita OS /api/keywords/next').item.json.keyword }}"}` Header `x-api-key: {{LEAD_FINDER_API_KEY}}` |
-| 6 | **Wait 60s** | `wait` | `60 seconds` |
-| 7 | **GET Lead Finder job status** | `httpRequest` | `GET {{LEAD_FINDER_BASE_URL}}/api/automation/lead-search/{{ $json.jobId }}` Header `x-api-key` |
-| 8 | **IF status == running?** | `if` | `{{$json.status}} == running` → loop back to Wait, else check failed. |
-| 9 | **IF status == failed?** | `if` | `{{$json.status}} == failed` → true → POST failed_search, false → POST search_completed |
-| 10 | **POST Sangita OS usage: search_completed** | `httpRequest` | `POST {{SANGITA_OS_BASE_URL}}/api/keywords/{{ $('GET Sangita OS /api/keywords/next').item.json.id }}/usage` Body: `{"eventType":"search_completed","leadsFound":{{$json.leadsFound}},"newLeads":{{$json.newLeads}},"duplicates":{{$json.duplicates}}}` |
-| 11 | **POST Sangita OS usage: failed_search** | `httpRequest` | Same but `{"eventType":"failed_search","errorMessage":"{{$json.errorMessage}}"`} |
-| 12 | **POST Lead Finder /api/automation/verify** *(Phase 3)* | `httpRequest` | `POST {{LEAD_FINDER_BASE_URL}}/api/automation/verify` Body: `{"leadIds":{{$json.newLeadIds}}}` ← from GET job status `newLeadIds`. Header `x-api-key`. |
-| 13 | **Wait 30s (verify)** | `wait` | `30 seconds` |
-| 14 | **GET Verify job status** | `httpRequest` | `GET {{LEAD_FINDER_BASE_URL}}/api/automation/verify/{{ $json.jobId }}` Header `x-api-key` |
-| 15 | **IF verify running?** | `if` | `{{$json.status}} == running` → loop Wait, else stop (leads now `pending_review`, ready for manual approval). |
+| #   | Node                                                    | Type              | Config                                                                                                                                                                                                                                                 |
+| --- | ------------------------------------------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1   | **Schedule Trigger**                                    | `scheduleTrigger` | Cron `0 */30 * * * *` (every 30 min). Change to `0 0 9 * * *` for 9am daily.                                                                                                                                                                           |
+| 2   | **GET Sangita OS /api/keywords/next**                   | `httpRequest`     | `GET {{SANGITA_OS_BASE_URL}}/api/keywords/next` Headers: `x-api-key: {{SANGITA_OS_API_KEY}}` Timeout 10s `alwaysOutputData:true`                                                                                                                       |
+| 3   | **IF Keyword Available?**                               | `if`              | `{{$json.keyword}} isNotEmpty` → true = continue, false = stop (no keyword = daily targets reached or all paused).                                                                                                                                     |
+| 4   | **POST Sangita OS usage: search_started**               | `httpRequest`     | `POST {{SANGITA_OS_BASE_URL}}/api/keywords/{{ $json.id }}/usage` Body: `{"eventType":"search_started"}` Header `x-api-key`                                                                                                                             |
+| 5   | **POST Lead Finder /api/automation/lead-search**        | `httpRequest`     | `POST {{LEAD_FINDER_BASE_URL}}/api/automation/lead-search` Body: `{"keyword":"{{ $('GET Sangita OS /api/keywords/next').item.json.keyword }}"}` Header `x-api-key: {{LEAD_FINDER_API_KEY}}`                                                            |
+| 6   | **Wait 60s**                                            | `wait`            | `60 seconds`                                                                                                                                                                                                                                           |
+| 7   | **GET Lead Finder job status**                          | `httpRequest`     | `GET {{LEAD_FINDER_BASE_URL}}/api/automation/lead-search/{{ $json.jobId }}` Header `x-api-key`                                                                                                                                                         |
+| 8   | **IF status == running?**                               | `if`              | `{{$json.status}} == running` → loop back to Wait, else check failed.                                                                                                                                                                                  |
+| 9   | **IF status == failed?**                                | `if`              | `{{$json.status}} == failed` → true → POST failed_search, false → POST search_completed                                                                                                                                                                |
+| 10  | **POST Sangita OS usage: search_completed**             | `httpRequest`     | `POST {{SANGITA_OS_BASE_URL}}/api/keywords/{{ $('GET Sangita OS /api/keywords/next').item.json.id }}/usage` Body: `{"eventType":"search_completed","leadsFound":{{$json.leadsFound}},"newLeads":{{$json.newLeads}},"duplicates":{{$json.duplicates}}}` |
+| 11  | **POST Sangita OS usage: failed_search**                | `httpRequest`     | Same but `{"eventType":"failed_search","errorMessage":"{{$json.errorMessage}}"`}                                                                                                                                                                       |
+| 12  | **POST Lead Finder /api/automation/verify** _(Phase 3)_ | `httpRequest`     | `POST {{LEAD_FINDER_BASE_URL}}/api/automation/verify` Body: `{"leadIds":{{$json.newLeadIds}}}` ← from GET job status `newLeadIds`. Header `x-api-key`.                                                                                                 |
+| 13  | **Wait 30s (verify)**                                   | `wait`            | `30 seconds`                                                                                                                                                                                                                                           |
+| 14  | **GET Verify job status**                               | `httpRequest`     | `GET {{LEAD_FINDER_BASE_URL}}/api/automation/verify/{{ $json.jobId }}` Header `x-api-key`                                                                                                                                                              |
+| 15  | **IF verify running?**                                  | `if`              | `{{$json.status}} == running` → loop Wait, else stop (leads now `pending_review`, ready for manual approval).                                                                                                                                          |
 
 **Connections:** Schedule → GET next → IF (false) stop, (true) both search_started + POST lead-search → Wait 60s → GET status → IF running → loop Wait 60s, else IF failed → POST failed_search → stop, else POST search_completed → POST verify → Wait 30s → GET verify status → IF running → loop Wait 30s else stop (pending_review). No auto-approve, no Bulk Mail trigger.
 
@@ -122,6 +128,7 @@ Import `Leads/n8n/workflow.json` (also at `Sangita OS/n8n/workflow.json`, `n8n/w
 ## 4. Phase 3 — Verification & Sheets APIs
 
 **POST verify**
+
 ```bash
 curl -X POST -H "x-api-key: $LEAD_FINDER_AUTOMATION_KEY" -H "Content-Type: application/json" \
   -d '{"leadIds":["UC123","UC456"]}' https://lead-finder.vercel.app/api/automation/verify
@@ -129,6 +136,7 @@ curl -X POST -H "x-api-key: $LEAD_FINDER_AUTOMATION_KEY" -H "Content-Type: appli
 ```
 
 **GET verify status**
+
 ```bash
 curl -H "x-api-key: $LEAD_FINDER_AUTOMATION_KEY" https://lead-finder.vercel.app/api/automation/verify/verify_abc
 # running: {"jobId":"verify_abc","status":"running","total":100,"valid":0,"invalid":0,"risky":0,"unknown":0}
@@ -136,6 +144,7 @@ curl -H "x-api-key: $LEAD_FINDER_AUTOMATION_KEY" https://lead-finder.vercel.app/
 ```
 
 **Manual approval (Lead Finder UI or API)**
+
 ```bash
 curl -X POST -H "Content-Type: application/json" -d '{"ids":["UC123"]}' https://lead-finder.vercel.app/api/leads/bulk-approve
 curl -X POST -H "Content-Type: application/json" -d '{"ids":["UC123"]}' https://lead-finder.vercel.app/api/leads/bulk-reject
@@ -143,11 +152,12 @@ curl -X POST -H "Content-Type: application/json" -d '{"ids":["UC123"]}' https://
 ```
 
 **Leads Sheet**
+
 ```bash
 curl -X POST -H "Content-Type: application/json" -d '{"name":"Bihar News Outreach - 27 Aug","leadIds":["UC123"]}' https://lead-finder.vercel.app/api/lead-sheets
 # {"sheet":{"id":"sheet_...","totalLeads":120,"approvedLeads":95,"verificationSummary":{"valid":72,"invalid":15,...},"status":"draft"}}
 
-curl -X PATCH -H "Content-Type: application/json" -d '{"templateId":1}' https://lead-finder.vercel.app/api/lead-sheets/sheet_... 
+curl -X PATCH -H "Content-Type: application/json" -d '{"templateId":1}' https://lead-finder.vercel.app/api/lead-sheets/sheet_...
 # {"sheet":{"templateId":1,"templateName":"Initial Outreach","status":"ready_for_bulk_mail"}}
 
 curl https://lead-finder.vercel.app/api/lead-sheets/sheet_.../handoff
@@ -155,12 +165,14 @@ curl https://lead-finder.vercel.app/api/lead-sheets/sheet_.../handoff
 ```
 
 **Bulk Mail templates (read-only)**
+
 ```bash
 curl https://lead-finder.vercel.app/api/bulk-mail/templates
 # {"templates":[{"id":1,"name":"Initial Outreach","category":"Initial Outreach"}, ...]}
 ```
 
 **Sangita OS stats proxy (read-only)**
+
 ```bash
 curl https://sangita-os.vercel.app/api/lead-finder-stats
 # {"totalLeads":1234,"todayLeads":45,"verification":{"valid":72,...},"approval":{"pending_review":10,"approved":95,"rejected":5}}
@@ -171,6 +183,7 @@ curl https://sangita-os.vercel.app/api/lead-finder-stats
 ## 5. Example Requests / Responses (Phase 2)
 
 **GET next keyword**
+
 ```bash
 curl -H "x-api-key: $KEYWORDS_API_KEY" https://sangita-os.vercel.app/api/keywords/next
 # 200 {"keyword":"Bihar News","source":"ai","dailyTarget":100,"priority":1,"id":"…","normalizedKeyword":"bihar news","status":"active"}
@@ -178,6 +191,7 @@ curl -H "x-api-key: $KEYWORDS_API_KEY" https://sangita-os.vercel.app/api/keyword
 ```
 
 **POST Lead Finder automation**
+
 ```bash
 curl -X POST -H "x-api-key: $LEAD_FINDER_AUTOMATION_KEY" -H "Content-Type: application/json" \
   -d '{"keyword":"Bihar News"}' https://lead-finder.vercel.app/api/automation/lead-search
@@ -186,6 +200,7 @@ curl -X POST -H "x-api-key: $LEAD_FINDER_AUTOMATION_KEY" -H "Content-Type: appli
 ```
 
 **GET job status**
+
 ```bash
 curl -H "x-api-key: $LEAD_FINDER_AUTOMATION_KEY" https://lead-finder.vercel.app/api/automation/lead-search/abc123
 # running:  {"jobId":"abc123","keyword":"Bihar News","status":"running","leadsFound":0,"newLeads":0,"duplicates":0}
@@ -194,6 +209,7 @@ curl -H "x-api-key: $LEAD_FINDER_AUTOMATION_KEY" https://lead-finder.vercel.app/
 ```
 
 **POST Sangita OS usage**
+
 ```bash
 curl -X POST -H "x-api-key: $KEYWORDS_API_KEY" -H "Content-Type: application/json" \
   -d '{"eventType":"search_started"}' https://sangita-os.vercel.app/api/keywords/<id>/usage
@@ -204,6 +220,7 @@ curl -X POST -H "x-api-key: $KEYWORDS_API_KEY" -H "Content-Type: application/jso
 ```
 
 **Unauthorized**
+
 ```bash
 curl https://lead-finder.vercel.app/api/automation/lead-search -d '{"keyword":"x"}' -H "Content-Type: application/json"
 # 401 {"error":"Unauthorized","message":"Missing or invalid automation API key..."}
@@ -214,6 +231,7 @@ curl https://lead-finder.vercel.app/api/automation/lead-search -d '{"keyword":"x
 ## 6. How to Test One Keyword Manually
 
 **Without n8n (curl):**
+
 ```bash
 # 1. Get next
 NEXT=$(curl -s -H "x-api-key: $KEYWORDS_API_KEY" $SANGITA_OS_BASE_URL/api/keywords/next)
@@ -255,7 +273,7 @@ curl -X POST -H "x-api-key: $KEYWORDS_API_KEY" -H "Content-Type: application/jso
 ## 7. How to Activate Scheduled Workflow
 
 1. **Import:** n8n → Workflows → Import from File → `Leads/n8n/workflow.json` (or drag). Alternatively Import from URL/clipboard.
-2. **Credentials:** No OAuth needed. Use *Variables* (`$env.*`). n8n ≥1.0 supports `{{$env.VAR}}` in HTTP Request. Set via: n8n → Settings → Variables → add `SANGITA_OS_BASE_URL`, `SANGITA_OS_API_KEY`, `LEAD_FINDER_BASE_URL`, `LEAD_FINDER_API_KEY`. Or set OS env before starting n8n (`export SANGITA_OS_API_KEY=… n8n start`).
+2. **Credentials:** No OAuth needed. Use _Variables_ (`$env.*`). n8n ≥1.0 supports `{{$env.VAR}}` in HTTP Request. Set via: n8n → Settings → Variables → add `SANGITA_OS_BASE_URL`, `SANGITA_OS_API_KEY`, `LEAD_FINDER_BASE_URL`, `LEAD_FINDER_API_KEY`. Or set OS env before starting n8n (`export SANGITA_OS_API_KEY=… n8n start`).
 3. **Test without schedule:** Open workflow → click **Execute Workflow** (runs Schedule Trigger manually once).
 4. **Activate:** Toggle **Active** switch top-right. Schedule will now fire every 30 min. Adjust cron in node 1 for production (e.g., daily limit: run once per keyword? Daily targets already enforced by Sangita OS — schedule can be frequent).
 5. **If n8n not accessible:** Keep workflow inactive and trigger via `curl` loop or cron on server using same HTTP sequence — see Section 6.

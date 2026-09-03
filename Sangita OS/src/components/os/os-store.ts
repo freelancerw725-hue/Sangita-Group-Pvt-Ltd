@@ -15,10 +15,25 @@ export function useOS() {
   const snap = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
   return {
     ...snap,
-    openPalette: () => { state = { ...state, paletteOpen: true }; emit(); },
-    closePalette: () => { state = { ...state, paletteOpen: false }; emit(); },
-    openAI: () => { state = { ...state, aiOpen: true }; emit(); },
-    closeAI: () => { state = { ...state, aiOpen: false }; emit(); },
-    togglePalette: () => { state = { ...state, paletteOpen: !state.paletteOpen }; emit(); },
+    openPalette: () => {
+      state = { ...state, paletteOpen: true };
+      emit();
+    },
+    closePalette: () => {
+      state = { ...state, paletteOpen: false };
+      emit();
+    },
+    openAI: () => {
+      state = { ...state, aiOpen: true };
+      emit();
+    },
+    closeAI: () => {
+      state = { ...state, aiOpen: false };
+      emit();
+    },
+    togglePalette: () => {
+      state = { ...state, paletteOpen: !state.paletteOpen };
+      emit();
+    },
   };
 }

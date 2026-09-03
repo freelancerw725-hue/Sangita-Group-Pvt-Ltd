@@ -57,7 +57,9 @@ export function useDailyLog(date = todayKey()) {
     const all = readAll();
     setLog(all[date] ?? emptyLog(date));
     setHistory(
-      Object.values(all).sort((a, b) => (a.date < b.date ? 1 : -1)).slice(0, 7),
+      Object.values(all)
+        .sort((a, b) => (a.date < b.date ? 1 : -1))
+        .slice(0, 7),
     );
     setHydrated(true);
   }, [date]);
@@ -70,7 +72,9 @@ export function useDailyLog(date = todayKey()) {
         all[date] = next;
         writeAll(all);
         setHistory(
-          Object.values(all).sort((a, b) => (a.date < b.date ? 1 : -1)).slice(0, 7),
+          Object.values(all)
+            .sort((a, b) => (a.date < b.date ? 1 : -1))
+            .slice(0, 7),
         );
         return next;
       });
@@ -84,7 +88,9 @@ export function useDailyLog(date = todayKey()) {
     writeAll(all);
     setLog(emptyLog(date));
     setHistory(
-      Object.values(all).sort((a, b) => (a.date < b.date ? 1 : -1)).slice(0, 7),
+      Object.values(all)
+        .sort((a, b) => (a.date < b.date ? 1 : -1))
+        .slice(0, 7),
     );
   }, [date]);
 
@@ -92,9 +98,7 @@ export function useDailyLog(date = todayKey()) {
 }
 
 export function totalProductiveHours(l: DailyLog) {
-  return (
-    l.deepWorkHours + l.salesHours + l.meetingsHours + l.learningHours
-  );
+  return l.deepWorkHours + l.salesHours + l.meetingsHours + l.learningHours;
 }
 
 export function completionRate(l: DailyLog) {

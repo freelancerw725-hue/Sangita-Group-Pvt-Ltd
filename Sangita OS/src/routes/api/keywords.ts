@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { getKeywordStore } from "@/lib/keywords/store";
+import { getKeywordStore } from "@/lib/dashboard/server";
 import {
   buildKeyword,
   DuplicateKeywordError,
@@ -62,10 +62,14 @@ export const Route = createFileRoute("/api/keywords")({
           const store = getKeywordStore();
           const existing = await store.findByNormalized(normalized);
           if (existing) {
-            return errorJson(`Duplicate keyword: "${input.keyword.trim()}" already exists as "${existing.keyword}"`, 409, {
-              code: "DUPLICATE_KEYWORD",
-              existing,
-            });
+            return errorJson(
+              `Duplicate keyword: "${input.keyword.trim()}" already exists as "${existing.keyword}"`,
+              409,
+              {
+                code: "DUPLICATE_KEYWORD",
+                existing,
+              },
+            );
           }
 
           const nowIso = new Date().toISOString();

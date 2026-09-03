@@ -25,17 +25,22 @@ async function findLeadTabByChannelId(
   // Only search DATA - * tabs, skip legacy and other tabs
   const dataTabs = Array.from(sheetNames).filter(name => name.startsWith("DATA - "));
   
-  for (const tabName of dataTabs) {
-    const response = await spreadsheets.spreadsheets.values.get({
-      spreadsheetId,
-      range: `'${tabName}'!${CHANNEL_ID_COLUMN}2:${CHANNEL_ID_COLUMN}`,
-    });
-    
-    const values = response.data.values ?? [];
+  if (dataTabs.length === 0) return null;
+  
+  // Use batchGet to fetch channel ID column from all DATA tabs in ONE API call
+  const ranges = dataTabs.map(tabName => `'${tabName}'!${CHANNEL_ID_COLUMN}2:${CHANNEL_ID_COLUMN}`);
+  const response = await spreadsheets.spreadsheets.values.batchGet({
+    spreadsheetId,
+    ranges,
+  });
+  
+  const valueRanges = response.data.valueRanges ?? [];
+  for (let tabIdx = 0; tabIdx < valueRanges.length; tabIdx++) {
+    const values = valueRanges[tabIdx].values ?? [];
     for (let i = 0; i < values.length; i++) {
       if (values[i]?.[0] === channelId) {
         // Row index is i + 2 (1-based header row + 1-based data rows)
-        return { tabName, rowIndex: i + 2 };
+        return { tabName: dataTabs[tabIdx], rowIndex: i + 2 };
       }
     }
   }

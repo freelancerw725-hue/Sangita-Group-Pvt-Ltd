@@ -1,0 +1,24 @@
+import { db } from '../server/db/connection.js'
+
+db.prepare(
+  `INSERT INTO sender_accounts (name, email, smtp_host, smtp_port, username, password_secret, security_mode, daily_limit, hourly_limit, enabled, business_name, from_email, reply_to_email, email_signature) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+).run(
+  'SwiftGrowthDigital',
+  'hello@swiftgrowthdigital.com',
+  'smtp.gmail.com',
+  587,
+  'hello@swiftgrowthdigital.com',
+  'app_password_placeholder',
+  'tls',
+  200,
+  50,
+  1,
+  'SwiftGrowth Digital',
+  'hello@swiftgrowthdigital.com',
+  'sonu@swiftgrowthdigital.com',
+  'Thanks & Regards,\nSonu\nSwiftGrowthDigital\n+91 98765 43210'
+)
+
+const row = db.prepare('SELECT * FROM sender_accounts').get()
+console.log('New sender:', JSON.stringify(row, null, 2))
+db.close()

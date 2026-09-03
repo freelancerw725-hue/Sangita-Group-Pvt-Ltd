@@ -7,7 +7,12 @@
  */
 import { normalizeKeywords } from "@/lib/lead-utils";
 import { discoverYoutubeChannels, transformCandidateToLead, applyLeadFilters } from "@/lib/youtube";
-import { saveNewLeads, appendSearchHistory, getStoredLeads, getSearchHistory } from "@/lib/lead-store";
+import {
+  saveNewLeads,
+  appendSearchHistory,
+  getStoredLeads,
+  getSearchHistory,
+} from "@/lib/lead-store";
 import { buildStats } from "@/lib/lead-utils";
 import type { SearchResponse } from "@/lib/types";
 
@@ -42,7 +47,7 @@ export async function executeLeadSearch(
 }> {
   const rawKeywords = input.keywords ?? (input.keyword ? [input.keyword] : []);
   // Reuse normalizeKeywords (single source of truth, same as manual)
-  const keywords = normalizeKeywords(rawKeywords.length ? rawKeywords : input.keyword ?? "");
+  const keywords = normalizeKeywords(rawKeywords.length ? rawKeywords : (input.keyword ?? ""));
   if (keywords.length === 0) throw new Error("At least one keyword is required.");
 
   // Validate single-keyword automation is primary; but allow multiple if passed

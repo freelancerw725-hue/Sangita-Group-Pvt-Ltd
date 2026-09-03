@@ -13,7 +13,8 @@ import { requireAuth } from '../services/auth.service.js'
 
 const router = Router()
 
-router.use(requireAuth)
+// Apply auth only to sender-accounts routes
+router.use('/sender-accounts', requireAuth)
 
 router.get('/sender-accounts', asyncHandler(async (_req, res) => {
   ok(res, { data: senders.listSenders() })

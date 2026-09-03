@@ -82,7 +82,10 @@ describe("Lead Finder Automation - Phase 2", () => {
     expect(job.leadsFound).toBe(0);
 
     // Simulate POST handler marking running
-    const running = await updateJob(job.jobId, { status: "running", startedAt: new Date().toISOString() });
+    const running = await updateJob(job.jobId, {
+      status: "running",
+      startedAt: new Date().toISOString(),
+    });
     expect(running?.status).toBe("running");
   });
 
@@ -108,7 +111,17 @@ describe("Lead Finder Automation - Phase 2", () => {
     // Mock search that returns 2 leads
     const mockLeads: LeadRecord[] = [];
     // Use executeLeadSearch with mocked discover to avoid YouTube API
-    const fakeChannels = [sampleCandidate, { ...sampleCandidate, candidate: { ...sampleCandidate.candidate, channelId: "UC_TEST_456", channelName: "Patna News" } }];
+    const fakeChannels = [
+      sampleCandidate,
+      {
+        ...sampleCandidate,
+        candidate: {
+          ...sampleCandidate.candidate,
+          channelId: "UC_TEST_456",
+          channelName: "Patna News",
+        },
+      },
+    ];
     const result = await executeLeadSearch(
       { keyword: "Bihar News" },
       {
@@ -147,7 +160,11 @@ describe("Lead Finder Automation - Phase 2", () => {
       expect.unreachable("should have thrown");
     } catch (e) {
       const msg = (e as Error).message;
-      await updateJob(job.jobId, { status: "failed", errorMessage: msg, completedAt: new Date().toISOString() });
+      await updateJob(job.jobId, {
+        status: "failed",
+        errorMessage: msg,
+        completedAt: new Date().toISOString(),
+      });
     }
     const failed = await getJob(job.jobId);
     expect(failed!.status).toBe("failed");
@@ -272,7 +289,12 @@ describe("Lead Finder Automation - Phase 2", () => {
     expect(usagePayloadCompleted.newLeads).toBe(95);
     expect(usagePayloadCompleted.duplicates).toBe(25);
 
-    const jobFailed = { jobId: "fail1", keyword: "X", status: "failed" as const, errorMessage: "quotaExceeded" };
+    const jobFailed = {
+      jobId: "fail1",
+      keyword: "X",
+      status: "failed" as const,
+      errorMessage: "quotaExceeded",
+    };
     const usagePayloadFailed = {
       eventType: "failed_search" as const,
       errorMessage: jobFailed.errorMessage,

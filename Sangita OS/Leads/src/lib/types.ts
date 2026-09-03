@@ -1,6 +1,7 @@
 export type LeadSource = "youtube" | "google_maps" | "news" | "real_estate" | "local_business";
 
-export type LeadStatus = "New" | "Contacted" | "Replied" | "Interested" | "Closed" | "Not Interested";
+export type LeadStatus =
+  "New" | "Contacted" | "Replied" | "Interested" | "Closed" | "Not Interested";
 
 export type LeadScore = "High" | "Medium" | "Low";
 

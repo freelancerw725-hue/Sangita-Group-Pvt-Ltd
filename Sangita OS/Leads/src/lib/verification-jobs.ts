@@ -121,7 +121,10 @@ export async function getVerifyJob(jobId: string): Promise<VerificationJob | nul
   return memoryCache.get(jobId) ?? null;
 }
 
-export async function updateVerifyJob(jobId: string, patch: Partial<VerificationJob>): Promise<VerificationJob | null> {
+export async function updateVerifyJob(
+  jobId: string,
+  patch: Partial<VerificationJob>,
+): Promise<VerificationJob | null> {
   await loadAll();
   const existing = memoryCache.get(jobId);
   if (!existing) return null;
@@ -135,12 +138,16 @@ export async function _clearVerifyJobsForTests(): Promise<void> {
   memoryCache.clear();
   memoryLoaded = false;
   if (hasDatabaseUrl()) {
-    try { await setDbValue(DB_KEY, {}); } catch {}
+    try {
+      await setDbValue(DB_KEY, {});
+    } catch {}
     memoryLoaded = true;
     return;
   }
   if (process.env.NODE_ENV !== "production") {
-    try { await updateJsonFile<VerificationJob[]>(JOBS_FILE, async () => [], []); } catch {}
+    try {
+      await updateJsonFile<VerificationJob[]>(JOBS_FILE, async () => [], []);
+    } catch {}
   }
   memoryLoaded = true;
 }

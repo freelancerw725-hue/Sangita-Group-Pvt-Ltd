@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { enforceRateLimit } from "@/lib/rate-limit";
-import { isAutomationAuthorized, automationUnauthorizedResponse, safeLog } from "@/lib/automation-auth";
+import {
+  isAutomationAuthorized,
+  automationUnauthorizedResponse,
+  safeLog,
+} from "@/lib/automation-auth";
 import { createVerifyJob, updateVerifyJob } from "@/lib/verification-jobs";
 import { createEmailVerifier } from "@/lib/verification";
 import { getStoredLeads } from "@/lib/lead-store";
@@ -34,7 +38,10 @@ export async function POST(request: Request) {
 
   const parsed = verifySchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ error: "Invalid verification payload.", details: parsed.error.flatten() }, { status: 400 });
+    return NextResponse.json(
+      { error: "Invalid verification payload.", details: parsed.error.flatten() },
+      { status: 400 },
+    );
   }
 
   const leadIds = [...new Set(parsed.data.leadIds.map((s) => s.trim()).filter(Boolean))];
@@ -47,11 +54,17 @@ export async function POST(request: Request) {
   const existingIds = new Set(all.map((l) => l.channelId));
   const missing = leadIds.filter((id) => !existingIds.has(id));
   if (missing.length === leadIds.length) {
-    return NextResponse.json({ error: "No matching leads found for provided IDs." }, { status: 404 });
+    return NextResponse.json(
+      { error: "No matching leads found for provided IDs." },
+      { status: 404 },
+    );
   }
   // Allow partial — but log missing
   if (missing.length > 0) {
-    safeLog("verify partial missing leads", { missingCount: missing.length, total: leadIds.length });
+    safeLog("verify partial missing leads", {
+      missingCount: missing.length,
+      total: leadIds.length,
+    });
   }
   const eligibleIds = leadIds.filter((id) => existingIds.has(id));
 
@@ -85,7 +98,11 @@ export async function POST(request: Request) {
   const exec = (async () => {
     try {
       const leadsById = new Map(all.map((l) => [l.channelId, l]));
-      let valid = 0, invalid = 0, risky = 0, unknown = 0, not_verified = 0;
+      let valid = 0,
+        invalid = 0,
+        risky = 0,
+        unknown = 0,
+        not_verified = 0;
 
       for (const id of eligibleIds) {
         const lead = leadsById.get(id);
@@ -98,7 +115,12 @@ export async function POST(request: Request) {
         try {
           result = await verifier.verify(email);
         } catch (err) {
-          result = { email, status: "unknown" as const, provider: "mock", error: (err as Error).message };
+          result = {
+            email,
+            status: "unknown" as const,
+            provider: "mock",
+            error: (err as Error).message,
+          };
         }
 
         // Map to counts
@@ -115,7 +137,10 @@ export async function POST(request: Request) {
           verificationScore: result.score ?? null,
           // Manual approval required: valid does NOT auto-approve
           // Set pending_review if not already approved/rejected
-          approvalStatus: lead.approvalStatus === "approved" || lead.approvalStatus === "rejected" ? lead.approvalStatus : "pending_review",
+          approvalStatus:
+            lead.approvalStatus === "approved" || lead.approvalStatus === "rejected"
+              ? lead.approvalStatus
+              : "pending_review",
         };
 
         // Preserve existing approvalStatus if already approved/rejected; otherwise pending_review
@@ -169,5 +194,8 @@ export async function POST(request: Request) {
 
 export async function GET(request: Request) {
   if (!isAutomationAuthorized(request)) return automationUnauthorizedResponse();
-  return NextResponse.json({ error: "Use POST to start verification or GET /api/automation/verify/:jobId" }, { status: 405 });
+  return NextResponse.json(
+    { error: "Use POST to start verification or GET /api/automation/verify/:jobId" },
+    { status: 405 },
+  );
 }

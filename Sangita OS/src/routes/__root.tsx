@@ -77,11 +77,19 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Sangita OS — AI Business Operating System" },
-      { name: "description", content: "Sangita OS is the AI-powered business operating system for Sangita Group — CRM, planner, finance, agreements, and an always-on AI Chief of Staff in one command surface." },
+      { title: "Sangita OS" },
+      {
+        name: "description",
+        content:
+          "Sangita OS is the AI-powered business operating system for Sangita Group — CRM, planner, finance, agreements, and an always-on AI Chief of Staff in one command surface.",
+      },
       { name: "author", content: "Sangita Group" },
-      { property: "og:title", content: "Sangita OS — AI Business Operating System" },
-      { property: "og:description", content: "The command surface for Sangita Group. Revenue, CRM, planner, agreements, and AI — one operating system." },
+      { property: "og:title", content: "Sangita OS" },
+      {
+        property: "og:description",
+        content:
+          "The command surface for Sangita Group. Revenue, CRM, planner, agreements, and AI — one operating system.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@Lovable" },
@@ -91,7 +99,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: appCss,
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "icon", href: "/Sanglogo.png", type: "image/png" },
     ],
   }),
   shellComponent: RootShell,

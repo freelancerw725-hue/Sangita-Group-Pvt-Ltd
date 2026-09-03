@@ -35,7 +35,10 @@ async function writeJson<T>(fileName: string, value: T): Promise<void> {
 async function queueWrite(fileName: string, task: () => Promise<void>): Promise<void> {
   const current = writeQueues.get(fileName) ?? Promise.resolve();
   const next = current.then(task, task);
-  writeQueues.set(fileName, next.catch(() => undefined));
+  writeQueues.set(
+    fileName,
+    next.catch(() => undefined),
+  );
   return next;
 }
 
@@ -43,7 +46,11 @@ export async function readLeadsFile<T>(fileName: string, fallback: T): Promise<T
   return readJson(fileName, fallback);
 }
 
-export async function updateJsonFile<T>(fileName: string, updater: (current: T) => T | Promise<T>, fallback: T): Promise<T> {
+export async function updateJsonFile<T>(
+  fileName: string,
+  updater: (current: T) => T | Promise<T>,
+  fallback: T,
+): Promise<T> {
   let updated: T = fallback;
   await queueWrite(fileName, async () => {
     const current = await readJson(fileName, fallback);

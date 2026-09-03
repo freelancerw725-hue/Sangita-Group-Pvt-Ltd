@@ -42,7 +42,9 @@ export function Sidebar() {
         {!collapsed && (
           <div className="flex-1 min-w-0">
             <div className="text-sm font-semibold tracking-tight">Sangita OS</div>
-            <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Business OS</div>
+            <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
+              Business OS
+            </div>
           </div>
         )}
         <button
@@ -135,7 +137,10 @@ export function Sidebar() {
                   );
                 }
                 return (
-                  <div key="leads-disabled" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-muted-foreground/50">
+                  <div
+                    key="leads-disabled"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-muted-foreground/50"
+                  >
                     <Users className="h-4 w-4 shrink-0 text-emerald-500" />
                     <span className="flex-1 truncate">Leads</span>
                     <span className="text-[10px] bg-muted px-2 py-0.5 rounded">Not configured</span>
@@ -161,7 +166,10 @@ export function Sidebar() {
                   );
                 }
                 return (
-                  <div key="bulk-mail-disabled" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-muted-foreground/50">
+                  <div
+                    key="bulk-mail-disabled"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-muted-foreground/50"
+                  >
                     <Mail className="h-4 w-4 shrink-0 text-emerald-500" />
                     <span className="flex-1 truncate">Bulk Email</span>
                     <span className="text-[10px] bg-muted px-2 py-0.5 rounded">Not configured</span>

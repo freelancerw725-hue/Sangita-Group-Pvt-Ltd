@@ -6,6 +6,28 @@ import { appendDbSearchHistory, getDbLeads, getDbSearchHistory, hasDatabaseUrl, 
 
 const LEADS_FILE = "leads.json";
 const HISTORY_FILE = "search-history.json";
+const DELETED_LEADS_FILE = "deleted-leads.json";
+
+async function getDeletedEmails(): Promise<Set<string>> {
+  if (hasDatabaseUrl()) {
+    // This shouldn't be called when DB is available - DB handles it
+    return new Set()
+  }
+  const deleted = await readLeadsFile<{ normalized_email: string }[]>(DELETED_LEADS_FILE, []);
+  return new Set(deleted.map(d => d.normalized_email));
+}
+
+async function addDeletedEmail(normalizedEmail: string): Promise<void> {
+  if (hasDatabaseUrl()) return;
+  await updateJsonFile<{ normalized_email: string }[]>(
+    DELETED_LEADS_FILE,
+    async (current) => {
+      if (current.some(d => d.normalized_email === normalizedEmail)) return current;
+      return [...current, { normalized_email: normalizedEmail }];
+    },
+    [],
+  );
+}
 
 export async function getStoredLeads(): Promise<LeadRecord[]> {
   if (hasDatabaseUrl()) {
@@ -35,14 +57,18 @@ export async function saveNewLeads(leads: LeadRecord[]): Promise<{ leads: LeadRe
   if (process.env.NODE_ENV === "production") {
     throw new Error("DATABASE_URL or POSTGRES_URL is required for production lead storage.");
   }
+  const deletedEmails = await getDeletedEmails();
   let result = { leads: [] as LeadRecord[], skippedDuplicates: 0 };
   await updateJsonFile<LeadRecord[]>(
     LEADS_FILE,
     async (current) => {
       const normalizedCurrent = current.map((lead) => normalizeLeadRecord(lead));
       const normalizedIncoming = leads.map((lead) => normalizeLeadRecord(lead));
-      const { merged, skippedDuplicates } = mergeAndDedupeLeads(normalizedCurrent, normalizedIncoming);
-      result = { leads: merged, skippedDuplicates };
+      // Filter out leads that were previously deleted
+      const filteredIncoming = normalizedIncoming.filter(lead => !deletedEmails.has(lead.email.toLowerCase().trim()));
+      const skippedFromDeleted = normalizedIncoming.length - filteredIncoming.length;
+      const { merged, skippedDuplicates } = mergeAndDedupeLeads(normalizedCurrent, filteredIncoming);
+      result = { leads: merged, skippedDuplicates: skippedDuplicates + skippedFromDeleted };
       return merged;
     },
     [],
@@ -148,15 +174,21 @@ export async function deleteLeadByChannelId(channelId: string): Promise<boolean>
     throw new Error("DATABASE_URL or POSTGRES_URL is required for production lead storage.");
   }
   let deleted = false;
+  let deletedEmail = "";
   await updateJsonFile<LeadRecord[]>(
     LEADS_FILE,
     async (current) => {
+      const lead = current.find(l => l.channelId === channelId);
+      if (lead) deletedEmail = lead.email.toLowerCase().trim();
       const next = current.filter((lead) => lead.channelId !== channelId);
       deleted = next.length !== current.length;
       return next;
     },
     [],
   );
+  if (deleted && deletedEmail) {
+    await addDeletedEmail(deletedEmail);
+  }
   return deleted;
 }
 

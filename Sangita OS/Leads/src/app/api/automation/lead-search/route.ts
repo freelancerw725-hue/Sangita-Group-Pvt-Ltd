@@ -1,28 +1,34 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { enforceRateLimit } from "@/lib/rate-limit";
-import { isAutomationAuthorized, automationUnauthorizedResponse, safeLog } from "@/lib/automation-auth";
+import {
+  isAutomationAuthorized,
+  automationUnauthorizedResponse,
+  safeLog,
+} from "@/lib/automation-auth";
 import { createJob, updateJob, findRunningByKeyword } from "@/lib/automation-jobs";
 import { executeLeadSearch } from "@/lib/automation-search";
 
 export const runtime = "nodejs";
 
-const automationSchema = z.object({
-  keyword: z.string().trim().min(1).max(200).optional(),
-  keywords: z.array(z.string().trim().min(1).max(200)).min(1).max(5).optional(),
-  filters: z
-    .object({
-      minSubscribers: z.number().int().nonnegative().optional(),
-      maxSubscribers: z.number().int().nonnegative().optional(),
-      country: z.string().max(80).optional(),
-      keywordFilter: z.string().max(120).optional(),
-      channelAge: z.enum(["any", "under1", "oneToThree", "threeToFive", "overFive"]).optional(),
-      sortBy: z.enum(["subscribers", "views", "videos"]).optional(),
-    })
-    .optional(),
-}).refine((d) => Boolean(d.keyword?.trim() || (d.keywords && d.keywords.length > 0)), {
-  message: "keyword is required",
-});
+const automationSchema = z
+  .object({
+    keyword: z.string().trim().min(1).max(200).optional(),
+    keywords: z.array(z.string().trim().min(1).max(200)).min(1).max(5).optional(),
+    filters: z
+      .object({
+        minSubscribers: z.number().int().nonnegative().optional(),
+        maxSubscribers: z.number().int().nonnegative().optional(),
+        country: z.string().max(80).optional(),
+        keywordFilter: z.string().max(120).optional(),
+        channelAge: z.enum(["any", "under1", "oneToThree", "threeToFive", "overFive"]).optional(),
+        sortBy: z.enum(["subscribers", "views", "videos"]).optional(),
+      })
+      .optional(),
+  })
+  .refine((d) => Boolean(d.keyword?.trim() || (d.keywords && d.keywords.length > 0)), {
+    message: "keyword is required",
+  });
 
 export async function POST(request: Request) {
   // Rate limit first
@@ -44,7 +50,10 @@ export async function POST(request: Request) {
 
   const parsed = automationSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ error: "Invalid automation payload.", details: parsed.error.flatten() }, { status: 400 });
+    return NextResponse.json(
+      { error: "Invalid automation payload.", details: parsed.error.flatten() },
+      { status: 400 },
+    );
   }
 
   const keyword = parsed.data.keyword?.trim() ?? parsed.data.keywords?.[0]?.trim() ?? "";
@@ -84,7 +93,11 @@ export async function POST(request: Request) {
 
   // Fire-and-forget: update job on completion. Do not await in response.
   // Use `waitUntil` if available (Vercel), otherwise just run.
-  const execPromise = executeLeadSearch({ keyword: effectiveKeyword, keywords, filters: parsed.data.filters })
+  const execPromise = executeLeadSearch({
+    keyword: effectiveKeyword,
+    keywords,
+    filters: parsed.data.filters,
+  })
     .then(async (result) => {
       await updateJob(job.jobId, {
         status: "completed",
@@ -105,7 +118,9 @@ export async function POST(request: Request) {
     .catch(async (err: unknown) => {
       const msg = err instanceof Error ? err.message : "Search failed";
       // Never expose internal YouTube key or stack — sanitize
-      const safeMsg = msg.includes("YOUTUBE_API_KEY") ? "YouTube search failed." : msg.slice(0, 500);
+      const safeMsg = msg.includes("YOUTUBE_API_KEY")
+        ? "YouTube search failed."
+        : msg.slice(0, 500);
       await updateJob(job.jobId, {
         status: "failed",
         completedAt: new Date().toISOString(),
@@ -132,5 +147,8 @@ export async function POST(request: Request) {
 
 export async function GET(request: Request) {
   if (!isAutomationAuthorized(request)) return automationUnauthorizedResponse();
-  return NextResponse.json({ error: "Use GET /api/automation/lead-search/:jobId or POST to create a job." }, { status: 405 });
+  return NextResponse.json(
+    { error: "Use GET /api/automation/lead-search/:jobId or POST to create a job." },
+    { status: 405 },
+  );
 }

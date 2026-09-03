@@ -6,7 +6,10 @@ const envSchema = z.object({
   POSTGRES_URL: z.string().url().optional(),
   YOUTUBE_API_KEY: z.string().optional(),
   GOOGLE_SHEET_ID: z.string().optional(),
-  GOOGLE_CLIENT_EMAIL: z.string().email("GOOGLE_CLIENT_EMAIL must be a valid service account email.").optional(),
+  GOOGLE_CLIENT_EMAIL: z
+    .string()
+    .email("GOOGLE_CLIENT_EMAIL must be a valid service account email.")
+    .optional(),
   GOOGLE_PRIVATE_KEY: z.string().optional(),
   GOOGLE_OAUTH_CLIENT_ID: z.string().optional(),
   GOOGLE_OAUTH_CLIENT_SECRET: z.string().optional(),
@@ -37,14 +40,19 @@ export function getEnv(): Env {
 
 export function isGmailEnabled(): boolean {
   const env = getEnv();
-  return Boolean(env.GOOGLE_OAUTH_CLIENT_ID && env.GOOGLE_OAUTH_CLIENT_SECRET && env.GOOGLE_OAUTH_REDIRECT_URI);
+  return Boolean(
+    env.GOOGLE_OAUTH_CLIENT_ID && env.GOOGLE_OAUTH_CLIENT_SECRET && env.GOOGLE_OAUTH_REDIRECT_URI,
+  );
 }
 
 export function isGeminiEnabled(): boolean {
   return Boolean(getEnv().GEMINI_API_KEY);
 }
 
-export function requireEnvValue<K extends keyof Env>(key: K, message?: string): NonNullable<Env[K]> {
+export function requireEnvValue<K extends keyof Env>(
+  key: K,
+  message?: string,
+): NonNullable<Env[K]> {
   const value = getEnv()[key];
   if (typeof value === "string" && value.trim()) return value as NonNullable<Env[K]>;
   if (value) return value as NonNullable<Env[K]>;

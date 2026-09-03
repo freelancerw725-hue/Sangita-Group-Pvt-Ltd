@@ -1,91 +1,98 @@
-/**
- * Lead Sheets / Audience store — holds manually approved leads for Bulk Mail handoff.
- * Not a second lead DB — only references lead channelIds + verification summary.
- * Persists to Postgres app_kv or data/lead-sheets.json.
- */
-import { hasDatabaseUrl, getDbValue, setDbValue } from "@/lib/db";
-import { readLeadsFile, updateJsonFile } from "@/lib/storage";
-import type { LeadSheet, LeadRecord } from "@/lib/types";
-import { getStoredLeads } from "@/lib/lead-store";
+import { getSupabaseAdmin } from "@/lib/supabase/client"
+import type { LeadSheet, LeadRecord } from "@/lib/types"
+import { getDbLeads } from "@/lib/db"
+import type { Database } from "@/lib/types/supabase"
 
-const SHEETS_FILE = "lead-sheets.json";
-const DB_KEY = "lead_sheets";
+type DbLeadSheet = Database["public"]["Tables"]["lead_sheets"]["Row"]
 
-const memoryCache = new Map<string, LeadSheet>();
-let memoryLoaded = false;
-
-async function loadAll(): Promise<Map<string, LeadSheet>> {
-  if (memoryLoaded) return memoryCache;
-  if (hasDatabaseUrl()) {
-    try {
-      const stored = await getDbValue<Record<string, LeadSheet>>(DB_KEY, {});
-      for (const [k, v] of Object.entries(stored)) memoryCache.set(k, v);
-    } catch {}
-    memoryLoaded = true;
-    return memoryCache;
-  }
-  if (process.env.NODE_ENV === "production" && !hasDatabaseUrl()) {
-    memoryLoaded = true;
-    return memoryCache;
-  }
-  try {
-    const arr = await readLeadsFile<LeadSheet[]>(SHEETS_FILE, []);
-    for (const s of arr) memoryCache.set(s.id, s);
-  } catch {}
-  memoryLoaded = true;
-  return memoryCache;
+function getAdmin() {
+  return getSupabaseAdmin()
 }
 
-async function persistAll(): Promise<void> {
-  if (hasDatabaseUrl()) {
-    const obj: Record<string, LeadSheet> = {};
-    const sorted = Array.from(memoryCache.values()).sort(
-      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-    );
-    memoryCache.clear();
-    for (const s of sorted) {
-      obj[s.id] = s;
-      memoryCache.set(s.id, s);
-    }
-    await setDbValue(DB_KEY, obj);
-    return;
+function dbLeadSheetToSheet(db: DbLeadSheet): LeadSheet {
+  return {
+    id: db.id,
+    name: db.name,
+    createdAt: db.created_at,
+    updatedAt: db.updated_at,
+    leadIds: db.lead_ids,
+    totalLeads: db.total_leads,
+    approvedLeads: db.approved_leads,
+    rejectedLeads: db.rejected_leads,
+    verificationSummary: db.verification_summary as LeadSheet["verificationSummary"],
+    templateId: db.template_id,
+    templateName: db.template_name,
+    templateCategory: db.template_category,
+    status: db.status as LeadSheet["status"],
+    sendAt: db.send_at,
+    scheduledCampaignId: db.scheduled_campaign_id,
+    scheduledBatchId: db.scheduled_batch_id,
   }
-  if (process.env.NODE_ENV === "production" && !hasDatabaseUrl()) return;
-  const arr = Array.from(memoryCache.values()).sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-  );
-  await updateJsonFile<LeadSheet[]>(SHEETS_FILE, async () => arr, []);
+}
+
+function sheetToDbLeadSheet(sheet: LeadSheet): any {
+  return {
+    id: sheet.id,
+    name: sheet.name,
+    created_at: sheet.createdAt,
+    updated_at: sheet.updatedAt,
+    lead_ids: sheet.leadIds,
+    total_leads: sheet.totalLeads,
+    approved_leads: sheet.approvedLeads,
+    rejected_leads: sheet.rejectedLeads,
+    verification_summary: sheet.verificationSummary,
+    template_id: sheet.templateId,
+    template_name: sheet.templateName,
+    template_category: sheet.templateCategory,
+    status: sheet.status,
+    send_at: sheet.sendAt,
+    scheduled_campaign_id: sheet.scheduledCampaignId,
+    scheduled_batch_id: sheet.scheduledBatchId,
+  }
+}
+
+async function loadAll(): Promise<LeadSheet[]> {
+  const admin = getAdmin()
+  const { data, error } = await admin.from("lead_sheets").select("*").order("created_at", { ascending: false })
+  if (error) throw error
+  return ((data as DbLeadSheet[]) ?? []).map(dbLeadSheetToSheet)
+}
+
+async function persistAll(sheets: LeadSheet[]) {
+  const admin = getAdmin()
+  for (const sheet of sheets) {
+    const { error } = await admin.from("lead_sheets").upsert(sheetToDbLeadSheet(sheet), { onConflict: "id" })
+    if (error) throw error
+  }
 }
 
 function buildVerificationSummary(leads: LeadRecord[]) {
-  const summary = { valid: 0, invalid: 0, risky: 0, unknown: 0, not_verified: 0 };
+  const summary = { valid: 0, invalid: 0, risky: 0, unknown: 0, not_verified: 0 }
   for (const l of leads) {
-    const s = l.emailVerificationStatus ?? "not_verified";
-    if (s in summary) (summary as Record<string, number>)[s] += 1;
-    else summary.not_verified += 1;
+    const s = l.emailVerificationStatus ?? "not_verified"
+    if (s in summary) (summary as Record<string, number>)[s] += 1
+    else summary.not_verified += 1
   }
-  return summary;
+  return summary
 }
 
 export async function createLeadSheet(input: { name: string; leadIds: string[] }): Promise<LeadSheet> {
-  const name = input.name.trim();
-  if (!name) throw new Error("Sheet name is required");
-  if (!input.leadIds?.length) throw new Error("leadIds is required");
-  const uniqueIds = [...new Set(input.leadIds)];
-  if (uniqueIds.length > 5000) throw new Error("Too many leads (max 5000)");
+  const name = input.name.trim()
+  if (!name) throw new Error("Sheet name is required")
+  if (!input.leadIds?.length) throw new Error("leadIds is required")
+  const uniqueIds = [...new Set(input.leadIds)]
+  if (uniqueIds.length > 5000) throw new Error("Too many leads (max 5000)")
 
-  await loadAll();
-  // Validate leads exist and are approved (spec: only approved can go to sheet, but we allow creation with warning)
-  const allLeads = await getStoredLeads();
-  const map = new Map(allLeads.map((l) => [l.channelId, l]));
-  const found = uniqueIds.map((id) => map.get(id)).filter(Boolean) as LeadRecord[];
-  if (found.length === 0) throw new Error("No matching approved leads found for provided IDs");
+  const allLeads = await getDbLeads()
+  const map = new Map(allLeads.map((l) => [l.channelId, l]))
+  const found = uniqueIds.map((id) => map.get(id)).filter(Boolean) as LeadRecord[]
+  if (found.length === 0) throw new Error("No matching approved leads found for provided IDs")
 
-  const approved = found.filter((l) => l.approvalStatus === "approved").length;
-  const rejected = found.filter((l) => l.approvalStatus === "rejected").length;
-  const summary = buildVerificationSummary(found);
+  const approved = found.filter((l) => l.approvalStatus === "approved").length
+  const rejected = found.filter((l) => l.approvalStatus === "rejected").length
+  const summary = buildVerificationSummary(found)
 
-  const now = new Date().toISOString();
+  const now = new Date().toISOString()
   const sheet: LeadSheet = {
     id: `sheet_${crypto.randomUUID()}`,
     name,
@@ -103,31 +110,31 @@ export async function createLeadSheet(input: { name: string; leadIds: string[] }
     sendAt: null,
     scheduledCampaignId: null,
     scheduledBatchId: null,
-  };
-  memoryCache.set(sheet.id, sheet);
-  await persistAll();
-  return sheet;
+  }
+
+  await persistAll([sheet])
+  return sheet
 }
 
 export async function getLeadSheet(id: string): Promise<LeadSheet | null> {
-  await loadAll();
-  return memoryCache.get(id) ?? null;
+  const admin = getAdmin()
+  const { data, error } = await admin.from("lead_sheets").select("*").eq("id", id).maybeSingle()
+  if (error) throw error
+  return data ? dbLeadSheetToSheet(data) : null
 }
 
 export async function listLeadSheets(): Promise<LeadSheet[]> {
-  await loadAll();
-  return Array.from(memoryCache.values()).sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-  );
+  return loadAll()
 }
 
 export async function updateLeadSheetTemplate(
   id: string,
   template: { id: number; name: string; category: string },
 ): Promise<LeadSheet | null> {
-  await loadAll();
-  const existing = memoryCache.get(id);
-  if (!existing) return null;
+  const sheets = await loadAll()
+  const existing = sheets.find((s) => s.id === id)
+  if (!existing) return null
+
   const updated: LeadSheet = {
     ...existing,
     templateId: template.id,
@@ -135,26 +142,25 @@ export async function updateLeadSheetTemplate(
     templateCategory: template.category,
     status: existing.sendAt ? "scheduled" : "ready_for_bulk_mail",
     updatedAt: new Date().toISOString(),
-  };
-  memoryCache.set(id, updated);
-  await persistAll();
+  }
 
-  // Auto-schedule if template selected and approved leads exist
-  const autoScheduled = await tryAutoScheduleSheet(id);
-  return autoScheduled ?? updated;
+  await persistAll([updated])
+  return updated
 }
 
 export async function updateLeadSheetLeads(id: string, leadIds: string[]): Promise<LeadSheet | null> {
-  await loadAll();
-  const existing = memoryCache.get(id);
-  if (!existing) return null;
-  const uniqueIds = [...new Set(leadIds)];
-  const allLeads = await getStoredLeads();
-  const map = new Map(allLeads.map((l) => [l.channelId, l]));
-  const found = uniqueIds.map((id) => map.get(id)).filter(Boolean) as LeadRecord[];
-  const summary = buildVerificationSummary(found);
-  const approved = found.filter((l) => l.approvalStatus === "approved").length;
-  const rejected = found.filter((l) => l.approvalStatus === "rejected").length;
+  const sheets = await loadAll()
+  const existing = sheets.find((s) => s.id === id)
+  if (!existing) return null
+
+  const uniqueIds = [...new Set(leadIds)]
+  const allLeads = await getDbLeads()
+  const map = new Map(allLeads.map((l) => [l.channelId, l]))
+  const found = uniqueIds.map((id) => map.get(id)).filter(Boolean) as LeadRecord[]
+  const summary = buildVerificationSummary(found)
+  const approved = found.filter((l) => l.approvalStatus === "approved").length
+  const rejected = found.filter((l) => l.approvalStatus === "rejected").length
+
   const updated: LeadSheet = {
     ...existing,
     leadIds: uniqueIds,
@@ -163,106 +169,96 @@ export async function updateLeadSheetLeads(id: string, leadIds: string[]): Promi
     rejectedLeads: rejected,
     verificationSummary: summary,
     updatedAt: new Date().toISOString(),
-  };
-  // if template was set but now no approved leads, revert to draft
-  if (approved === 0) updated.status = "draft";
-  memoryCache.set(id, updated);
-  await persistAll();
+  }
 
-  // Auto-schedule if template selected and approved leads exist
-  const autoScheduled = await tryAutoScheduleSheet(id);
-  return autoScheduled ?? updated;
+  if (approved === 0) updated.status = "draft"
+
+  await persistAll([updated])
+  return updated
 }
 
 export async function updateLeadSheetName(id: string, name: string): Promise<LeadSheet | null> {
-  await loadAll();
-  const existing = memoryCache.get(id);
-  if (!existing) return null;
-  const trimmed = name.trim();
-  if (!trimmed) throw new Error("Sheet name is required");
-  const updated: LeadSheet = { ...existing, name: trimmed, updatedAt: new Date().toISOString() };
-  memoryCache.set(id, updated);
-  await persistAll();
-  return updated;
+  const sheets = await loadAll()
+  const existing = sheets.find((s) => s.id === id)
+  if (!existing) return null
+
+  const trimmed = name.trim()
+  if (!trimmed) throw new Error("Sheet name is required")
+
+  const updated: LeadSheet = { ...existing, name: trimmed, updatedAt: new Date().toISOString() }
+  await persistAll([updated])
+  return updated
 }
 
 async function tryAutoScheduleSheet(id: string): Promise<LeadSheet | null> {
-  await loadAll();
-  const existing = memoryCache.get(id);
-  if (!existing) return null;
+  const sheets = await loadAll()
+  const existing = sheets.find((s) => s.id === id)
+  if (!existing) return null
 
-  // Only auto-schedule if:
-  // - Has approved leads
-  // - Has template selected
-  // - Status is draft or ready_for_bulk_mail (not already scheduled/sending/completed/cancelled/archived)
-  if (
-    existing.approvedLeads > 0 &&
-    existing.templateId !== null &&
-    (existing.status === "draft" || existing.status === "ready_for_bulk_mail")
-  ) {
-    const nowIso = new Date().toISOString();
+  if (existing.approvedLeads > 0 && existing.templateId !== null && (existing.status === "draft" || existing.status === "ready_for_bulk_mail")) {
+    const nowIso = new Date().toISOString()
     const updated: LeadSheet = {
       ...existing,
       sendAt: nowIso,
       status: "scheduled",
       updatedAt: nowIso,
-    };
-    memoryCache.set(id, updated);
-    await persistAll();
-    return updated;
+    }
+    await persistAll([updated])
+    return updated
   }
-  return null;
+  return null
 }
 
 export async function updateLeadSheetSendAt(id: string, sendAt: string | null): Promise<LeadSheet | null> {
-  await loadAll();
-  const existing = memoryCache.get(id);
-  if (!existing) return null;
+  const sheets = await loadAll()
+  const existing = sheets.find((s) => s.id === id)
+  if (!existing) return null
+
   if (sendAt !== null) {
-    const d = new Date(sendAt);
-    if (isNaN(d.getTime())) throw new Error("Invalid sendAt timestamp");
-    // Must have template before scheduling
-    if (!existing.templateId) throw new Error("Template must be selected before scheduling send time");
-    // Allow scheduling even if approvedLeads is 0 — n8n will re-check approval at send time and skip if none
-    // Previously threw "No approved leads — cannot schedule", but for Step 6 we allow scheduling and let the worker handle
+    const d = new Date(sendAt)
+    if (isNaN(d.getTime())) throw new Error("Invalid sendAt timestamp")
+    if (!existing.templateId) throw new Error("Template must be selected before scheduling send time")
   }
-  const normalized = sendAt ? new Date(sendAt).toISOString() : null;
-  let status = existing.status;
+
+  const normalized = sendAt ? new Date(sendAt).toISOString() : null
+  let status = existing.status
   if (normalized) {
-    status = "scheduled";
+    status = "scheduled"
   } else if (existing.templateId) {
-    status = "ready_for_bulk_mail";
+    status = "ready_for_bulk_mail"
   } else {
-    status = "draft";
+    status = "draft"
   }
+
   const updated: LeadSheet = {
     ...existing,
     sendAt: normalized,
     status: status as LeadSheet["status"],
     updatedAt: new Date().toISOString(),
-  };
-  memoryCache.set(id, updated);
-  await persistAll();
-  return updated;
+  }
+
+  await persistAll([updated])
+  return updated
 }
 
 export async function updateLeadSheetScheduledIds(
   id: string,
   patch: { scheduledCampaignId?: number | null; scheduledBatchId?: number | null; status?: LeadSheet["status"] },
 ): Promise<LeadSheet | null> {
-  await loadAll();
-  const existing = memoryCache.get(id);
-  if (!existing) return null;
+  const sheets = await loadAll()
+  const existing = sheets.find((s) => s.id === id)
+  if (!existing) return null
+
   const updated: LeadSheet = {
     ...existing,
     scheduledCampaignId: patch.scheduledCampaignId !== undefined ? patch.scheduledCampaignId : existing.scheduledCampaignId,
     scheduledBatchId: patch.scheduledBatchId !== undefined ? patch.scheduledBatchId : existing.scheduledBatchId,
     status: (patch.status as LeadSheet["status"]) ?? existing.status,
     updatedAt: new Date().toISOString(),
-  };
-  memoryCache.set(id, updated);
-  await persistAll();
-  return updated;
+  }
+
+  await persistAll([updated])
+  return updated
 }
 
 export function getLeadSheetStatusLabel(status: LeadSheet["status"]): string {
@@ -274,20 +270,11 @@ export function getLeadSheetStatusLabel(status: LeadSheet["status"]): string {
     completed: "COMPLETED",
     cancelled: "CANCELLED",
     archived: "BLOCKED",
-  };
-  return map[status] ?? status.toUpperCase();
+  }
+  return map[status] ?? status.toUpperCase()
 }
 
 export async function _clearSheetsForTests(): Promise<void> {
-  memoryCache.clear();
-  memoryLoaded = false;
-  if (hasDatabaseUrl()) {
-    try { await setDbValue(DB_KEY, {}); } catch {}
-    memoryLoaded = true;
-    return;
-  }
-  if (process.env.NODE_ENV !== "production") {
-    try { await updateJsonFile<LeadSheet[]>(SHEETS_FILE, async () => [], []); } catch {}
-  }
-  memoryLoaded = true;
+  const admin = getAdmin()
+  await admin.from("lead_sheets").delete().neq("id", "00000000-0000-0000-0000-000000000000")
 }

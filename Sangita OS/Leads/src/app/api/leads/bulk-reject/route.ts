@@ -14,7 +14,11 @@ export async function POST(request: Request) {
   try {
     const body = await request.json().catch(() => ({}));
     const parsed = schema.safeParse(body);
-    if (!parsed.success) return NextResponse.json({ error: "Invalid payload.", details: parsed.error.flatten() }, { status: 400 });
+    if (!parsed.success)
+      return NextResponse.json(
+        { error: "Invalid payload.", details: parsed.error.flatten() },
+        { status: 400 },
+      );
 
     const unique = [...new Set(parsed.data.ids)];
     const all = await getStoredLeads();
@@ -24,7 +28,10 @@ export async function POST(request: Request) {
 
     for (const id of unique) {
       const lead = map.get(id);
-      if (!lead) { notFound.push(id); continue; }
+      if (!lead) {
+        notFound.push(id);
+        continue;
+      }
       const patch = {
         approvalStatus: "rejected" as const,
         rejectedAt: new Date().toISOString(),
@@ -35,7 +42,11 @@ export async function POST(request: Request) {
       updatedCount += 1;
     }
 
-    return NextResponse.json({ updated: updatedCount, notFound, message: `Rejected ${updatedCount} leads.` });
+    return NextResponse.json({
+      updated: updatedCount,
+      notFound,
+      message: `Rejected ${updatedCount} leads.`,
+    });
   } catch (e) {
     console.error("BULK_REJECT_ERROR", e);
     return NextResponse.json({ error: "Unable to reject leads." }, { status: 500 });

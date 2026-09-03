@@ -11,11 +11,7 @@ export interface AiKeywordProvider {
    * @param opts.seed - optional seed keyword/context
    * @param opts.context - optional free-form context (industry, geography)
    */
-  generateKeywords(opts?: {
-    count?: number;
-    seed?: string;
-    context?: string;
-  }): Promise<string[]>;
+  generateKeywords(opts?: { count?: number; seed?: string; context?: string }): Promise<string[]>;
 }
 
 /**
@@ -73,9 +69,7 @@ export class LovableGatewayAiKeywordProvider implements AiKeywordProvider {
   }): Promise<string[]> {
     const key = this.apiKey ?? process.env.LOVABLE_API_KEY;
     if (!key) {
-      throw new Error(
-        "LOVABLE_API_KEY not configured. Use StubAiKeywordProvider for Phase 1.",
-      );
+      throw new Error("LOVABLE_API_KEY not configured. Use StubAiKeywordProvider for Phase 1.");
     }
     // Real implementation would call ai.gateway.lovable.dev with a prompt like:
     // "Generate ${count} SEO lead-search keywords related to: ${seed} ${context}"

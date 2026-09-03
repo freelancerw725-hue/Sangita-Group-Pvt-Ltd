@@ -1,12 +1,21 @@
 import { useMemo } from "react";
 import { motion } from "framer-motion";
 import {
-  ClipboardCheck, CheckCircle2, XCircle, IndianRupee, TrendingUp,
-  Brain, Phone, Users, BookOpen, Dumbbell, Moon, RotateCcw, Check,
+  ClipboardCheck,
+  CheckCircle2,
+  XCircle,
+  IndianRupee,
+  TrendingUp,
+  Brain,
+  Phone,
+  Users,
+  BookOpen,
+  Dumbbell,
+  Moon,
+  RotateCcw,
+  Check,
 } from "lucide-react";
-import {
-  useDailyLog, totalProductiveHours, completionRate, type DailyLog,
-} from "@/lib/daily-log";
+import { useDailyLog, totalProductiveHours, completionRate, type DailyLog } from "@/lib/daily-log";
 import { inr } from "@/lib/mock";
 import { cn } from "@/lib/utils";
 
@@ -30,15 +39,31 @@ const FIELDS: Field[] = [
   { key: "deepWorkHours", label: "Deep work", icon: Brain, step: 0.5, suffix: "h", group: "hours" },
   { key: "salesHours", label: "Sales", icon: Phone, step: 0.5, suffix: "h", group: "hours" },
   { key: "meetingsHours", label: "Meetings", icon: Users, step: 0.5, suffix: "h", group: "hours" },
-  { key: "learningHours", label: "Learning", icon: BookOpen, step: 0.5, suffix: "h", group: "hours" },
-  { key: "exerciseHours", label: "Exercise", icon: Dumbbell, step: 0.25, suffix: "h", group: "hours" },
+  {
+    key: "learningHours",
+    label: "Learning",
+    icon: BookOpen,
+    step: 0.5,
+    suffix: "h",
+    group: "hours",
+  },
+  {
+    key: "exerciseHours",
+    label: "Exercise",
+    icon: Dumbbell,
+    step: 0.25,
+    suffix: "h",
+    group: "hours",
+  },
   { key: "sleepHours", label: "Sleep", icon: Moon, step: 0.5, suffix: "h", group: "hours" },
 ];
 
 export function DailyLogPanel({ onChange }: { onChange?: (log: DailyLog) => void }) {
   const { log, history, update, reset, hydrated } = useDailyLog();
 
-  useMemo(() => { onChange?.(log); }, [log, onChange]);
+  useMemo(() => {
+    onChange?.(log);
+  }, [log, onChange]);
 
   const productive = totalProductiveHours(log);
   const rate = completionRate(log);
@@ -52,9 +77,12 @@ export function DailyLogPanel({ onChange }: { onChange?: (log: DailyLog) => void
           <div className="text-[10px] uppercase tracking-widest text-primary/80 inline-flex items-center gap-1.5">
             <ClipboardCheck className="h-3 w-3" /> Daily Log
           </div>
-          <h2 className="mt-1 text-xl font-semibold tracking-tight">Log today so the AI never guesses</h2>
+          <h2 className="mt-1 text-xl font-semibold tracking-tight">
+            Log today so the AI never guesses
+          </h2>
           <p className="text-sm text-muted-foreground mt-1 max-w-2xl">
-            Enter what actually happened. Every AI briefing, forecast, and end-of-day rating below reads directly from this.
+            Enter what actually happened. Every AI briefing, forecast, and end-of-day rating below
+            reads directly from this.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -77,18 +105,52 @@ export function DailyLogPanel({ onChange }: { onChange?: (log: DailyLog) => void
         className="rounded-2xl border border-border bg-card p-5 md:p-6 space-y-5"
       >
         <div className="grid gap-4 md:grid-cols-4">
-          <Summary label="Completion" value={`${rate}%`} sub={`${log.completedTasks} done · ${log.missedTasks} missed`} />
-          <Summary label="Revenue today" value={log.revenue ? inr(log.revenue) : "—"} sub={log.profit ? `${inr(log.profit)} profit` : "add profit"} accent />
-          <Summary label="Productive hours" value={`${productive.toFixed(1)}h`} sub="deep work + sales + meetings + learning" />
-          <Summary label="Sleep" value={log.sleepHours ? `${log.sleepHours}h` : "—"} sub={log.exerciseHours ? `${log.exerciseHours}h exercise` : "log exercise"} />
+          <Summary
+            label="Completion"
+            value={`${rate}%`}
+            sub={`${log.completedTasks} done · ${log.missedTasks} missed`}
+          />
+          <Summary
+            label="Revenue today"
+            value={log.revenue ? inr(log.revenue) : "—"}
+            sub={log.profit ? `${inr(log.profit)} profit` : "add profit"}
+            accent
+          />
+          <Summary
+            label="Productive hours"
+            value={`${productive.toFixed(1)}h`}
+            sub="deep work + sales + meetings + learning"
+          />
+          <Summary
+            label="Sleep"
+            value={log.sleepHours ? `${log.sleepHours}h` : "—"}
+            sub={log.exerciseHours ? `${log.exerciseHours}h exercise` : "log exercise"}
+          />
         </div>
 
-        <FieldGrid title="Tasks" fields={FIELDS.filter((f) => f.group === "tasks")} log={log} update={update} />
-        <FieldGrid title="Money (INR)" fields={FIELDS.filter((f) => f.group === "money")} log={log} update={update} />
-        <FieldGrid title="Hours" fields={FIELDS.filter((f) => f.group === "hours")} log={log} update={update} />
+        <FieldGrid
+          title="Tasks"
+          fields={FIELDS.filter((f) => f.group === "tasks")}
+          log={log}
+          update={update}
+        />
+        <FieldGrid
+          title="Money (INR)"
+          fields={FIELDS.filter((f) => f.group === "money")}
+          log={log}
+          update={update}
+        />
+        <FieldGrid
+          title="Hours"
+          fields={FIELDS.filter((f) => f.group === "hours")}
+          log={log}
+          update={update}
+        />
 
         <div>
-          <label className="text-[11px] uppercase tracking-widest text-muted-foreground">Notes (optional)</label>
+          <label className="text-[11px] uppercase tracking-widest text-muted-foreground">
+            Notes (optional)
+          </label>
           <textarea
             value={log.notes ?? ""}
             onChange={(e) => update({ notes: e.target.value })}
@@ -100,7 +162,9 @@ export function DailyLogPanel({ onChange }: { onChange?: (log: DailyLog) => void
 
         {hydrated && history.length > 1 && (
           <div>
-            <div className="text-[11px] uppercase tracking-widest text-muted-foreground mb-2">Last 7 days</div>
+            <div className="text-[11px] uppercase tracking-widest text-muted-foreground mb-2">
+              Last 7 days
+            </div>
             <div className="flex gap-2 overflow-x-auto">
               {history.map((h) => {
                 const isToday = h.date === log.date;
@@ -119,7 +183,9 @@ export function DailyLogPanel({ onChange }: { onChange?: (log: DailyLog) => void
                     <div className="mt-1 text-muted-foreground">
                       {h.revenue ? inr(h.revenue) : "—"} · {completionRate(h)}%
                     </div>
-                    <div className="text-muted-foreground">{totalProductiveHours(h).toFixed(1)}h focus</div>
+                    <div className="text-muted-foreground">
+                      {totalProductiveHours(h).toFixed(1)}h focus
+                    </div>
                   </div>
                 );
               })}
@@ -128,7 +194,8 @@ export function DailyLogPanel({ onChange }: { onChange?: (log: DailyLog) => void
         )}
 
         <div className="text-[11px] italic text-muted-foreground">
-          Saved locally on this device. AI outputs below refresh with your log — no invented numbers.
+          Saved locally on this device. AI outputs below refresh with your log — no invented
+          numbers.
         </div>
       </motion.div>
     </section>
@@ -136,17 +203,29 @@ export function DailyLogPanel({ onChange }: { onChange?: (log: DailyLog) => void
 }
 
 function FieldGrid({
-  title, fields, log, update,
+  title,
+  fields,
+  log,
+  update,
 }: {
-  title: string; fields: Field[]; log: DailyLog;
+  title: string;
+  fields: Field[];
+  log: DailyLog;
   update: (p: Partial<DailyLog>) => void;
 }) {
   return (
     <div>
-      <div className="text-[11px] uppercase tracking-widest text-muted-foreground mb-2">{title}</div>
+      <div className="text-[11px] uppercase tracking-widest text-muted-foreground mb-2">
+        {title}
+      </div>
       <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
         {fields.map((f) => (
-          <Stepper key={f.key} field={f} value={log[f.key] as number} onChange={(v) => update({ [f.key]: v })} />
+          <Stepper
+            key={f.key}
+            field={f}
+            value={log[f.key] as number}
+            onChange={(v) => update({ [f.key]: v })}
+          />
         ))}
       </div>
     </div>
@@ -154,11 +233,19 @@ function FieldGrid({
 }
 
 function Stepper({
-  field, value, onChange,
-}: { field: Field; value: number; onChange: (v: number) => void }) {
+  field,
+  value,
+  onChange,
+}: {
+  field: Field;
+  value: number;
+  onChange: (v: number) => void;
+}) {
   const Icon = field.icon;
   const display = field.format
-    ? value ? field.format(value) : "0"
+    ? value
+      ? field.format(value)
+      : "0"
     : `${value}${field.suffix ?? ""}`;
   const dec = () => onChange(Math.max(0, Number((value - field.step).toFixed(2))));
   const inc = () => onChange(Number((value + field.step).toFixed(2)));
@@ -184,12 +271,16 @@ function Stepper({
           onClick={inc}
           className="h-4 w-6 rounded border border-border text-[10px] leading-none hover:bg-card"
           aria-label={`Increase ${field.label}`}
-        >+</button>
+        >
+          +
+        </button>
         <button
           onClick={dec}
           className="h-4 w-6 rounded border border-border text-[10px] leading-none hover:bg-card"
           aria-label={`Decrease ${field.label}`}
-        >−</button>
+        >
+          −
+        </button>
       </div>
       {field.format && value > 0 && (
         <div className="text-[10px] text-muted-foreground tabular-nums">{display}</div>
@@ -199,8 +290,16 @@ function Stepper({
 }
 
 function Summary({
-  label, value, sub, accent,
-}: { label: string; value: string; sub?: string; accent?: boolean }) {
+  label,
+  value,
+  sub,
+  accent,
+}: {
+  label: string;
+  value: string;
+  sub?: string;
+  accent?: boolean;
+}) {
   return (
     <div className="rounded-xl border border-border bg-background/60 p-3">
       <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{label}</div>

@@ -7,7 +7,10 @@ const YOUTUBE_CHANNELS_URL = "https://www.googleapis.com/youtube/v3/channels";
 import { requireEnvValue } from "@/lib/env";
 
 function requireYouTubeKey() {
-  const apiKey = requireEnvValue("YOUTUBE_API_KEY", "YouTube API is not configured. Set YOUTUBE_API_KEY.").trim();
+  const apiKey = requireEnvValue(
+    "YOUTUBE_API_KEY",
+    "YouTube API is not configured. Set YOUTUBE_API_KEY.",
+  ).trim();
   if (!apiKey) {
     throw new Error("YOUTUBE_API_KEY is missing.");
   }
@@ -26,7 +29,9 @@ async function fetchJson<T>(url: string): Promise<T> {
   const response = await fetch(url, { cache: "no-store" });
   if (!response.ok) {
     const body = await response.text().catch(() => "");
-    throw new Error(`YouTube API request failed (${response.status}): ${body || response.statusText}`);
+    throw new Error(
+      `YouTube API request failed (${response.status}): ${body || response.statusText}`,
+    );
   }
   return response.json() as Promise<T>;
 }
@@ -71,7 +76,9 @@ export interface DiscoveredYoutubeChannel {
   matchedKeywords: string[];
 }
 
-export async function discoverYoutubeChannels(keywords: string[]): Promise<DiscoveredYoutubeChannel[]> {
+export async function discoverYoutubeChannels(
+  keywords: string[],
+): Promise<DiscoveredYoutubeChannel[]> {
   const apiKey = requireYouTubeKey();
   const matchedKeywordsByChannel = new Map<string, Set<string>>();
 
@@ -112,7 +119,11 @@ export async function discoverYoutubeChannels(keywords: string[]): Promise<Disco
       const snippet = item.snippet;
       const statistics = item.statistics;
       if (!id || !snippet) continue;
-      const thumbnail = snippet.thumbnails?.high?.url ?? snippet.thumbnails?.medium?.url ?? snippet.thumbnails?.default?.url ?? "";
+      const thumbnail =
+        snippet.thumbnails?.high?.url ??
+        snippet.thumbnails?.medium?.url ??
+        snippet.thumbnails?.default?.url ??
+        "";
       const description = snippet.description ?? "";
       const country = snippet.country ?? item.brandingSettings?.channel?.country ?? "";
       const customUrl = snippet.customUrl ?? item.brandingSettings?.channel?.customUrl ?? "";
@@ -139,7 +150,10 @@ export async function discoverYoutubeChannels(keywords: string[]): Promise<Disco
   return candidates;
 }
 
-export function transformCandidateToLead(candidate: YouTubeChannelCandidate, searchKeyword: string): LeadRecord {
+export function transformCandidateToLead(
+  candidate: YouTubeChannelCandidate,
+  searchKeyword: string,
+): LeadRecord {
   const contactFields = extractContactFields(candidate.description);
   const ageInYears = getAgeInYears(candidate.publishedAt);
   return {
@@ -201,18 +215,27 @@ export function transformCandidateToLead(candidate: YouTubeChannelCandidate, sea
 
 export function applyLeadFilters(leads: LeadRecord[], filters: LeadFilters): LeadRecord[] {
   const normalized = leads.filter((lead) => {
-    if (filters.minSubscribers !== undefined && lead.subscribers < filters.minSubscribers) return false;
-    if (filters.maxSubscribers !== undefined && lead.subscribers > filters.maxSubscribers) return false;
-    if (filters.country && !lead.country.trim().toLowerCase().includes(filters.country.trim().toLowerCase())) return false;
+    if (filters.minSubscribers !== undefined && lead.subscribers < filters.minSubscribers)
+      return false;
+    if (filters.maxSubscribers !== undefined && lead.subscribers > filters.maxSubscribers)
+      return false;
+    if (
+      filters.country &&
+      !lead.country.trim().toLowerCase().includes(filters.country.trim().toLowerCase())
+    )
+      return false;
     if (filters.keywordFilter) {
       const needle = filters.keywordFilter.trim().toLowerCase();
-      const haystack = `${lead.channelName} ${lead.description} ${lead.searchKeyword}`.toLowerCase();
+      const haystack =
+        `${lead.channelName} ${lead.description} ${lead.searchKeyword}`.toLowerCase();
       if (!haystack.includes(needle)) return false;
     }
     if (filters.channelAge && filters.channelAge !== "any") {
       if (filters.channelAge === "under1" && !(lead.ageInYears < 1)) return false;
-      if (filters.channelAge === "oneToThree" && !(lead.ageInYears >= 1 && lead.ageInYears < 3)) return false;
-      if (filters.channelAge === "threeToFive" && !(lead.ageInYears >= 3 && lead.ageInYears < 5)) return false;
+      if (filters.channelAge === "oneToThree" && !(lead.ageInYears >= 1 && lead.ageInYears < 3))
+        return false;
+      if (filters.channelAge === "threeToFive" && !(lead.ageInYears >= 3 && lead.ageInYears < 5))
+        return false;
       if (filters.channelAge === "overFive" && !(lead.ageInYears >= 5)) return false;
     }
     return true;

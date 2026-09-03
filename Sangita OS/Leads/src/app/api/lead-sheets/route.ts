@@ -24,12 +24,18 @@ export async function POST(request: Request) {
     const body = await request.json().catch(() => ({}));
     const parsed = createSchema.safeParse(body);
     if (!parsed.success) {
-      return NextResponse.json({ error: "Invalid sheet payload.", details: parsed.error.flatten() }, { status: 400 });
+      return NextResponse.json(
+        { error: "Invalid sheet payload.", details: parsed.error.flatten() },
+        { status: 400 },
+      );
     }
     const sheet = await createLeadSheet({ name: parsed.data.name, leadIds: parsed.data.leadIds });
     return NextResponse.json({ sheet }, { status: 201 });
   } catch (e) {
     console.error("LEAD_SHEETS_CREATE_ERROR", e);
-    return NextResponse.json({ error: (e as Error).message ?? "Unable to create sheet." }, { status: 500 });
+    return NextResponse.json(
+      { error: (e as Error).message ?? "Unable to create sheet." },
+      { status: 500 },
+    );
   }
 }

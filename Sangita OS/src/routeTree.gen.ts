@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ActivityRouteImport } from './routes/activity'
 import { Route as AgreementsRouteImport } from './routes/agreements'
 import { Route as AiCommandRouteImport } from './routes/ai-command'
+import { Route as AiDevRouteImport } from './routes/ai-dev'
 import { Route as AiInsightsRouteImport } from './routes/ai-insights'
 import { Route as CalendarRouteImport } from './routes/calendar'
 import { Route as CallsRouteImport } from './routes/calls'
@@ -29,6 +30,7 @@ import { Route as MyFutureRouteImport } from './routes/my-future'
 import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as PlannerRouteImport } from './routes/planner'
 import { Route as ProductsRouteImport } from './routes/products'
+import { Route as ProjectGraphRouteImport } from './routes/project-graph'
 import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as QuotationsRouteImport } from './routes/quotations'
 import { Route as ReportsRouteImport } from './routes/reports'
@@ -36,15 +38,63 @@ import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SignaturesRouteImport } from './routes/signatures'
 import { Route as TasksRouteImport } from './routes/tasks'
 import { Route as WhatsappRouteImport } from './routes/whatsapp'
+import { Route as ApiAgreementsRouteImport } from './routes/api/agreements'
+import { Route as ApiAiInsightsRouteImport } from './routes/api/ai-insights'
 import { Route as ApiBulkMailProgressRouteImport } from './routes/api/bulk-mail-progress'
+import { Route as ApiCallsRouteImport } from './routes/api/calls'
+import { Route as ApiCampaignsRouteImport } from './routes/api/campaigns'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as ApiCustomersRouteImport } from './routes/api/customers'
+import { Route as ApiDashboardRouteImport } from './routes/api/dashboard'
+import { Route as ApiEmployeesRouteImport } from './routes/api/employees'
+import { Route as ApiForecastRouteImport } from './routes/api/forecast'
 import { Route as ApiFutureBriefRouteImport } from './routes/api/future-brief'
+import { Route as ApiHabitsRouteImport } from './routes/api/habits'
+import { Route as ApiInvoicesRouteImport } from './routes/api/invoices'
 import { Route as ApiKeywordsRouteImport } from './routes/api/keywords'
 import { Route as ApiLeadFinderStatsRouteImport } from './routes/api/lead-finder-stats'
 import { Route as ApiLeadSheetsProxyRouteImport } from './routes/api/lead-sheets-proxy'
+import { Route as ApiLeadsRouteImport } from './routes/api/leads'
+import { Route as ApiMeetingsRouteImport } from './routes/api/meetings'
+import { Route as ApiNotificationsRouteImport } from './routes/api/notifications'
+import { Route as ApiProductsRouteImport } from './routes/api/products'
+import { Route as ApiProjectsRouteImport } from './routes/api/projects'
+import { Route as ApiQuotationsRouteImport } from './routes/api/quotations'
+import { Route as ApiTasksRouteImport } from './routes/api/tasks'
+import { Route as ApiWhatsappTemplatesRouteImport } from './routes/api/whatsapp-templates'
+import { Route as ProjectGraphHealthRouteImport } from './routes/project-graph/health'
+import { Route as ApiAiDevExecuteRouteImport } from './routes/api/ai-dev/execute'
+import { Route as ApiCampaignsIdRouteImport } from './routes/api/campaigns.$id'
+import { Route as ApiCronKeywordIntelligenceRouteImport } from './routes/api/cron/keyword-intelligence'
+import { Route as ApiCustomersIdRouteImport } from './routes/api/customers.$id'
+import { Route as ApiDashboardActivityRouteImport } from './routes/api/dashboard/activity'
+import { Route as ApiDashboardCustomersRouteImport } from './routes/api/dashboard/customers'
+import { Route as ApiDashboardEmailRouteImport } from './routes/api/dashboard/email'
+import { Route as ApiDashboardInvoicesRouteImport } from './routes/api/dashboard/invoices'
+import { Route as ApiDashboardLeadsRouteImport } from './routes/api/dashboard/leads'
+import { Route as ApiDashboardMetricsRouteImport } from './routes/api/dashboard/metrics'
+import { Route as ApiDashboardRevenueRouteImport } from './routes/api/dashboard/revenue'
+import { Route as ApiDashboardTasksRouteImport } from './routes/api/dashboard/tasks'
+import { Route as ApiGraphIndexRouteImport } from './routes/api/graph/index'
+import { Route as ApiInvoicesIdRouteImport } from './routes/api/invoices.$id'
+import { Route as ApiKeywordIntelligenceConfigRouteImport } from './routes/api/keyword-intelligence/config'
+import { Route as ApiKeywordIntelligencePerformanceRouteImport } from './routes/api/keyword-intelligence/performance'
+import { Route as ApiKeywordIntelligencePreviewRouteImport } from './routes/api/keyword-intelligence/preview'
+import { Route as ApiKeywordIntelligenceRegionsRouteImport } from './routes/api/keyword-intelligence/regions'
+import { Route as ApiKeywordIntelligenceRunRouteImport } from './routes/api/keyword-intelligence/run'
+import { Route as ApiKeywordIntelligenceRunsRouteImport } from './routes/api/keyword-intelligence/runs'
+import { Route as ApiKeywordIntelligenceTemplatesRouteImport } from './routes/api/keyword-intelligence/templates'
 import { Route as ApiKeywordsIdRouteImport } from './routes/api/keywords.$id'
 import { Route as ApiKeywordsAiRouteImport } from './routes/api/keywords.ai'
 import { Route as ApiKeywordsNextRouteImport } from './routes/api/keywords.next'
+import { Route as ApiLeadsIdRouteImport } from './routes/api/leads.$id'
+import { Route as ApiProjectGraphIndexRouteImport } from './routes/api/project-graph/index'
+import { Route as ApiProjectGraphContextRouteImport } from './routes/api/project-graph/context'
+import { Route as ApiProjectsIdRouteImport } from './routes/api/projects.$id'
+import { Route as ApiTasksIdRouteImport } from './routes/api/tasks.$id'
+import { Route as ApiKeywordIntelligenceRegionsRegionCodeRouteImport } from './routes/api/keyword-intelligence/regions.$regionCode'
+import { Route as ApiKeywordIntelligenceRunsRunIdRouteImport } from './routes/api/keyword-intelligence/runs.$runId'
+import { Route as ApiKeywordIntelligenceTemplatesIdRouteImport } from './routes/api/keyword-intelligence/templates.$id'
 import { Route as ApiKeywordsIdUsageRouteImport } from './routes/api/keywords.$id.usage'
 
 const IndexRoute = IndexRouteImport.update({
@@ -65,6 +115,11 @@ const AgreementsRoute = AgreementsRouteImport.update({
 const AiCommandRoute = AiCommandRouteImport.update({
   id: '/ai-command',
   path: '/ai-command',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiDevRoute = AiDevRouteImport.update({
+  id: '/ai-dev',
+  path: '/ai-dev',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AiInsightsRoute = AiInsightsRouteImport.update({
@@ -147,6 +202,11 @@ const ProductsRoute = ProductsRouteImport.update({
   path: '/products',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProjectGraphRoute = ProjectGraphRouteImport.update({
+  id: '/project-graph',
+  path: '/project-graph',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProjectsRoute = ProjectsRouteImport.update({
   id: '/projects',
   path: '/projects',
@@ -182,9 +242,29 @@ const WhatsappRoute = WhatsappRouteImport.update({
   path: '/whatsapp',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAgreementsRoute = ApiAgreementsRouteImport.update({
+  id: '/api/agreements',
+  path: '/api/agreements',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAiInsightsRoute = ApiAiInsightsRouteImport.update({
+  id: '/api/ai-insights',
+  path: '/api/ai-insights',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiBulkMailProgressRoute = ApiBulkMailProgressRouteImport.update({
   id: '/api/bulk-mail-progress',
   path: '/api/bulk-mail-progress',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiCallsRoute = ApiCallsRouteImport.update({
+  id: '/api/calls',
+  path: '/api/calls',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiCampaignsRoute = ApiCampaignsRouteImport.update({
+  id: '/api/campaigns',
+  path: '/api/campaigns',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiChatRoute = ApiChatRouteImport.update({
@@ -192,9 +272,39 @@ const ApiChatRoute = ApiChatRouteImport.update({
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiCustomersRoute = ApiCustomersRouteImport.update({
+  id: '/api/customers',
+  path: '/api/customers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiDashboardRoute = ApiDashboardRouteImport.update({
+  id: '/api/dashboard',
+  path: '/api/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiEmployeesRoute = ApiEmployeesRouteImport.update({
+  id: '/api/employees',
+  path: '/api/employees',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiForecastRoute = ApiForecastRouteImport.update({
+  id: '/api/forecast',
+  path: '/api/forecast',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiFutureBriefRoute = ApiFutureBriefRouteImport.update({
   id: '/api/future-brief',
   path: '/api/future-brief',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiHabitsRoute = ApiHabitsRouteImport.update({
+  id: '/api/habits',
+  path: '/api/habits',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiInvoicesRoute = ApiInvoicesRouteImport.update({
+  id: '/api/invoices',
+  path: '/api/invoices',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiKeywordsRoute = ApiKeywordsRouteImport.update({
@@ -212,6 +322,164 @@ const ApiLeadSheetsProxyRoute = ApiLeadSheetsProxyRouteImport.update({
   path: '/api/lead-sheets-proxy',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiLeadsRoute = ApiLeadsRouteImport.update({
+  id: '/api/leads',
+  path: '/api/leads',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiMeetingsRoute = ApiMeetingsRouteImport.update({
+  id: '/api/meetings',
+  path: '/api/meetings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiNotificationsRoute = ApiNotificationsRouteImport.update({
+  id: '/api/notifications',
+  path: '/api/notifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiProductsRoute = ApiProductsRouteImport.update({
+  id: '/api/products',
+  path: '/api/products',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiProjectsRoute = ApiProjectsRouteImport.update({
+  id: '/api/projects',
+  path: '/api/projects',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiQuotationsRoute = ApiQuotationsRouteImport.update({
+  id: '/api/quotations',
+  path: '/api/quotations',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiTasksRoute = ApiTasksRouteImport.update({
+  id: '/api/tasks',
+  path: '/api/tasks',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiWhatsappTemplatesRoute = ApiWhatsappTemplatesRouteImport.update({
+  id: '/api/whatsapp-templates',
+  path: '/api/whatsapp-templates',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProjectGraphHealthRoute = ProjectGraphHealthRouteImport.update({
+  id: '/health',
+  path: '/health',
+  getParentRoute: () => ProjectGraphRoute,
+} as any)
+const ApiAiDevExecuteRoute = ApiAiDevExecuteRouteImport.update({
+  id: '/api/ai-dev/execute',
+  path: '/api/ai-dev/execute',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiCampaignsIdRoute = ApiCampaignsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ApiCampaignsRoute,
+} as any)
+const ApiCronKeywordIntelligenceRoute =
+  ApiCronKeywordIntelligenceRouteImport.update({
+    id: '/api/cron/keyword-intelligence',
+    path: '/api/cron/keyword-intelligence',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiCustomersIdRoute = ApiCustomersIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ApiCustomersRoute,
+} as any)
+const ApiDashboardActivityRoute = ApiDashboardActivityRouteImport.update({
+  id: '/activity',
+  path: '/activity',
+  getParentRoute: () => ApiDashboardRoute,
+} as any)
+const ApiDashboardCustomersRoute = ApiDashboardCustomersRouteImport.update({
+  id: '/customers',
+  path: '/customers',
+  getParentRoute: () => ApiDashboardRoute,
+} as any)
+const ApiDashboardEmailRoute = ApiDashboardEmailRouteImport.update({
+  id: '/email',
+  path: '/email',
+  getParentRoute: () => ApiDashboardRoute,
+} as any)
+const ApiDashboardInvoicesRoute = ApiDashboardInvoicesRouteImport.update({
+  id: '/invoices',
+  path: '/invoices',
+  getParentRoute: () => ApiDashboardRoute,
+} as any)
+const ApiDashboardLeadsRoute = ApiDashboardLeadsRouteImport.update({
+  id: '/leads',
+  path: '/leads',
+  getParentRoute: () => ApiDashboardRoute,
+} as any)
+const ApiDashboardMetricsRoute = ApiDashboardMetricsRouteImport.update({
+  id: '/metrics',
+  path: '/metrics',
+  getParentRoute: () => ApiDashboardRoute,
+} as any)
+const ApiDashboardRevenueRoute = ApiDashboardRevenueRouteImport.update({
+  id: '/revenue',
+  path: '/revenue',
+  getParentRoute: () => ApiDashboardRoute,
+} as any)
+const ApiDashboardTasksRoute = ApiDashboardTasksRouteImport.update({
+  id: '/tasks',
+  path: '/tasks',
+  getParentRoute: () => ApiDashboardRoute,
+} as any)
+const ApiGraphIndexRoute = ApiGraphIndexRouteImport.update({
+  id: '/api/graph/',
+  path: '/api/graph/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiInvoicesIdRoute = ApiInvoicesIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ApiInvoicesRoute,
+} as any)
+const ApiKeywordIntelligenceConfigRoute =
+  ApiKeywordIntelligenceConfigRouteImport.update({
+    id: '/api/keyword-intelligence/config',
+    path: '/api/keyword-intelligence/config',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiKeywordIntelligencePerformanceRoute =
+  ApiKeywordIntelligencePerformanceRouteImport.update({
+    id: '/api/keyword-intelligence/performance',
+    path: '/api/keyword-intelligence/performance',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiKeywordIntelligencePreviewRoute =
+  ApiKeywordIntelligencePreviewRouteImport.update({
+    id: '/api/keyword-intelligence/preview',
+    path: '/api/keyword-intelligence/preview',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiKeywordIntelligenceRegionsRoute =
+  ApiKeywordIntelligenceRegionsRouteImport.update({
+    id: '/api/keyword-intelligence/regions',
+    path: '/api/keyword-intelligence/regions',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiKeywordIntelligenceRunRoute =
+  ApiKeywordIntelligenceRunRouteImport.update({
+    id: '/api/keyword-intelligence/run',
+    path: '/api/keyword-intelligence/run',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiKeywordIntelligenceRunsRoute =
+  ApiKeywordIntelligenceRunsRouteImport.update({
+    id: '/api/keyword-intelligence/runs',
+    path: '/api/keyword-intelligence/runs',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiKeywordIntelligenceTemplatesRoute =
+  ApiKeywordIntelligenceTemplatesRouteImport.update({
+    id: '/api/keyword-intelligence/templates',
+    path: '/api/keyword-intelligence/templates',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiKeywordsIdRoute = ApiKeywordsIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -227,6 +495,49 @@ const ApiKeywordsNextRoute = ApiKeywordsNextRouteImport.update({
   path: '/next',
   getParentRoute: () => ApiKeywordsRoute,
 } as any)
+const ApiLeadsIdRoute = ApiLeadsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ApiLeadsRoute,
+} as any)
+const ApiProjectGraphIndexRoute = ApiProjectGraphIndexRouteImport.update({
+  id: '/api/project-graph/',
+  path: '/api/project-graph/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiProjectGraphContextRoute = ApiProjectGraphContextRouteImport.update({
+  id: '/api/project-graph/context',
+  path: '/api/project-graph/context',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiProjectsIdRoute = ApiProjectsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ApiProjectsRoute,
+} as any)
+const ApiTasksIdRoute = ApiTasksIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ApiTasksRoute,
+} as any)
+const ApiKeywordIntelligenceRegionsRegionCodeRoute =
+  ApiKeywordIntelligenceRegionsRegionCodeRouteImport.update({
+    id: '/$regionCode',
+    path: '/$regionCode',
+    getParentRoute: () => ApiKeywordIntelligenceRegionsRoute,
+  } as any)
+const ApiKeywordIntelligenceRunsRunIdRoute =
+  ApiKeywordIntelligenceRunsRunIdRouteImport.update({
+    id: '/$runId',
+    path: '/$runId',
+    getParentRoute: () => ApiKeywordIntelligenceRunsRoute,
+  } as any)
+const ApiKeywordIntelligenceTemplatesIdRoute =
+  ApiKeywordIntelligenceTemplatesIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => ApiKeywordIntelligenceTemplatesRoute,
+  } as any)
 const ApiKeywordsIdUsageRoute = ApiKeywordsIdUsageRouteImport.update({
   id: '/usage',
   path: '/usage',
@@ -238,6 +549,7 @@ export interface FileRoutesByFullPath {
   '/activity': typeof ActivityRoute
   '/agreements': typeof AgreementsRoute
   '/ai-command': typeof AiCommandRoute
+  '/ai-dev': typeof AiDevRoute
   '/ai-insights': typeof AiInsightsRoute
   '/calendar': typeof CalendarRoute
   '/calls': typeof CallsRoute
@@ -254,6 +566,7 @@ export interface FileRoutesByFullPath {
   '/notifications': typeof NotificationsRoute
   '/planner': typeof PlannerRoute
   '/products': typeof ProductsRoute
+  '/project-graph': typeof ProjectGraphRouteWithChildren
   '/projects': typeof ProjectsRoute
   '/quotations': typeof QuotationsRoute
   '/reports': typeof ReportsRoute
@@ -261,15 +574,63 @@ export interface FileRoutesByFullPath {
   '/signatures': typeof SignaturesRoute
   '/tasks': typeof TasksRoute
   '/whatsapp': typeof WhatsappRoute
+  '/api/agreements': typeof ApiAgreementsRoute
+  '/api/ai-insights': typeof ApiAiInsightsRoute
   '/api/bulk-mail-progress': typeof ApiBulkMailProgressRoute
+  '/api/calls': typeof ApiCallsRoute
+  '/api/campaigns': typeof ApiCampaignsRouteWithChildren
   '/api/chat': typeof ApiChatRoute
+  '/api/customers': typeof ApiCustomersRouteWithChildren
+  '/api/dashboard': typeof ApiDashboardRouteWithChildren
+  '/api/employees': typeof ApiEmployeesRoute
+  '/api/forecast': typeof ApiForecastRoute
   '/api/future-brief': typeof ApiFutureBriefRoute
+  '/api/habits': typeof ApiHabitsRoute
+  '/api/invoices': typeof ApiInvoicesRouteWithChildren
   '/api/keywords': typeof ApiKeywordsRouteWithChildren
   '/api/lead-finder-stats': typeof ApiLeadFinderStatsRoute
   '/api/lead-sheets-proxy': typeof ApiLeadSheetsProxyRoute
+  '/api/leads': typeof ApiLeadsRouteWithChildren
+  '/api/meetings': typeof ApiMeetingsRoute
+  '/api/notifications': typeof ApiNotificationsRoute
+  '/api/products': typeof ApiProductsRoute
+  '/api/projects': typeof ApiProjectsRouteWithChildren
+  '/api/quotations': typeof ApiQuotationsRoute
+  '/api/tasks': typeof ApiTasksRouteWithChildren
+  '/api/whatsapp-templates': typeof ApiWhatsappTemplatesRoute
+  '/project-graph/health': typeof ProjectGraphHealthRoute
+  '/api/ai-dev/execute': typeof ApiAiDevExecuteRoute
+  '/api/campaigns/$id': typeof ApiCampaignsIdRoute
+  '/api/cron/keyword-intelligence': typeof ApiCronKeywordIntelligenceRoute
+  '/api/customers/$id': typeof ApiCustomersIdRoute
+  '/api/dashboard/activity': typeof ApiDashboardActivityRoute
+  '/api/dashboard/customers': typeof ApiDashboardCustomersRoute
+  '/api/dashboard/email': typeof ApiDashboardEmailRoute
+  '/api/dashboard/invoices': typeof ApiDashboardInvoicesRoute
+  '/api/dashboard/leads': typeof ApiDashboardLeadsRoute
+  '/api/dashboard/metrics': typeof ApiDashboardMetricsRoute
+  '/api/dashboard/revenue': typeof ApiDashboardRevenueRoute
+  '/api/dashboard/tasks': typeof ApiDashboardTasksRoute
+  '/api/invoices/$id': typeof ApiInvoicesIdRoute
+  '/api/keyword-intelligence/config': typeof ApiKeywordIntelligenceConfigRoute
+  '/api/keyword-intelligence/performance': typeof ApiKeywordIntelligencePerformanceRoute
+  '/api/keyword-intelligence/preview': typeof ApiKeywordIntelligencePreviewRoute
+  '/api/keyword-intelligence/regions': typeof ApiKeywordIntelligenceRegionsRouteWithChildren
+  '/api/keyword-intelligence/run': typeof ApiKeywordIntelligenceRunRoute
+  '/api/keyword-intelligence/runs': typeof ApiKeywordIntelligenceRunsRouteWithChildren
+  '/api/keyword-intelligence/templates': typeof ApiKeywordIntelligenceTemplatesRouteWithChildren
   '/api/keywords/$id': typeof ApiKeywordsIdRouteWithChildren
   '/api/keywords/ai': typeof ApiKeywordsAiRoute
   '/api/keywords/next': typeof ApiKeywordsNextRoute
+  '/api/leads/$id': typeof ApiLeadsIdRoute
+  '/api/project-graph/context': typeof ApiProjectGraphContextRoute
+  '/api/projects/$id': typeof ApiProjectsIdRoute
+  '/api/tasks/$id': typeof ApiTasksIdRoute
+  '/api/graph/': typeof ApiGraphIndexRoute
+  '/api/project-graph/': typeof ApiProjectGraphIndexRoute
+  '/api/keyword-intelligence/regions/$regionCode': typeof ApiKeywordIntelligenceRegionsRegionCodeRoute
+  '/api/keyword-intelligence/runs/$runId': typeof ApiKeywordIntelligenceRunsRunIdRoute
+  '/api/keyword-intelligence/templates/$id': typeof ApiKeywordIntelligenceTemplatesIdRoute
   '/api/keywords/$id/usage': typeof ApiKeywordsIdUsageRoute
 }
 export interface FileRoutesByTo {
@@ -277,6 +638,7 @@ export interface FileRoutesByTo {
   '/activity': typeof ActivityRoute
   '/agreements': typeof AgreementsRoute
   '/ai-command': typeof AiCommandRoute
+  '/ai-dev': typeof AiDevRoute
   '/ai-insights': typeof AiInsightsRoute
   '/calendar': typeof CalendarRoute
   '/calls': typeof CallsRoute
@@ -293,6 +655,7 @@ export interface FileRoutesByTo {
   '/notifications': typeof NotificationsRoute
   '/planner': typeof PlannerRoute
   '/products': typeof ProductsRoute
+  '/project-graph': typeof ProjectGraphRouteWithChildren
   '/projects': typeof ProjectsRoute
   '/quotations': typeof QuotationsRoute
   '/reports': typeof ReportsRoute
@@ -300,15 +663,63 @@ export interface FileRoutesByTo {
   '/signatures': typeof SignaturesRoute
   '/tasks': typeof TasksRoute
   '/whatsapp': typeof WhatsappRoute
+  '/api/agreements': typeof ApiAgreementsRoute
+  '/api/ai-insights': typeof ApiAiInsightsRoute
   '/api/bulk-mail-progress': typeof ApiBulkMailProgressRoute
+  '/api/calls': typeof ApiCallsRoute
+  '/api/campaigns': typeof ApiCampaignsRouteWithChildren
   '/api/chat': typeof ApiChatRoute
+  '/api/customers': typeof ApiCustomersRouteWithChildren
+  '/api/dashboard': typeof ApiDashboardRouteWithChildren
+  '/api/employees': typeof ApiEmployeesRoute
+  '/api/forecast': typeof ApiForecastRoute
   '/api/future-brief': typeof ApiFutureBriefRoute
+  '/api/habits': typeof ApiHabitsRoute
+  '/api/invoices': typeof ApiInvoicesRouteWithChildren
   '/api/keywords': typeof ApiKeywordsRouteWithChildren
   '/api/lead-finder-stats': typeof ApiLeadFinderStatsRoute
   '/api/lead-sheets-proxy': typeof ApiLeadSheetsProxyRoute
+  '/api/leads': typeof ApiLeadsRouteWithChildren
+  '/api/meetings': typeof ApiMeetingsRoute
+  '/api/notifications': typeof ApiNotificationsRoute
+  '/api/products': typeof ApiProductsRoute
+  '/api/projects': typeof ApiProjectsRouteWithChildren
+  '/api/quotations': typeof ApiQuotationsRoute
+  '/api/tasks': typeof ApiTasksRouteWithChildren
+  '/api/whatsapp-templates': typeof ApiWhatsappTemplatesRoute
+  '/project-graph/health': typeof ProjectGraphHealthRoute
+  '/api/ai-dev/execute': typeof ApiAiDevExecuteRoute
+  '/api/campaigns/$id': typeof ApiCampaignsIdRoute
+  '/api/cron/keyword-intelligence': typeof ApiCronKeywordIntelligenceRoute
+  '/api/customers/$id': typeof ApiCustomersIdRoute
+  '/api/dashboard/activity': typeof ApiDashboardActivityRoute
+  '/api/dashboard/customers': typeof ApiDashboardCustomersRoute
+  '/api/dashboard/email': typeof ApiDashboardEmailRoute
+  '/api/dashboard/invoices': typeof ApiDashboardInvoicesRoute
+  '/api/dashboard/leads': typeof ApiDashboardLeadsRoute
+  '/api/dashboard/metrics': typeof ApiDashboardMetricsRoute
+  '/api/dashboard/revenue': typeof ApiDashboardRevenueRoute
+  '/api/dashboard/tasks': typeof ApiDashboardTasksRoute
+  '/api/invoices/$id': typeof ApiInvoicesIdRoute
+  '/api/keyword-intelligence/config': typeof ApiKeywordIntelligenceConfigRoute
+  '/api/keyword-intelligence/performance': typeof ApiKeywordIntelligencePerformanceRoute
+  '/api/keyword-intelligence/preview': typeof ApiKeywordIntelligencePreviewRoute
+  '/api/keyword-intelligence/regions': typeof ApiKeywordIntelligenceRegionsRouteWithChildren
+  '/api/keyword-intelligence/run': typeof ApiKeywordIntelligenceRunRoute
+  '/api/keyword-intelligence/runs': typeof ApiKeywordIntelligenceRunsRouteWithChildren
+  '/api/keyword-intelligence/templates': typeof ApiKeywordIntelligenceTemplatesRouteWithChildren
   '/api/keywords/$id': typeof ApiKeywordsIdRouteWithChildren
   '/api/keywords/ai': typeof ApiKeywordsAiRoute
   '/api/keywords/next': typeof ApiKeywordsNextRoute
+  '/api/leads/$id': typeof ApiLeadsIdRoute
+  '/api/project-graph/context': typeof ApiProjectGraphContextRoute
+  '/api/projects/$id': typeof ApiProjectsIdRoute
+  '/api/tasks/$id': typeof ApiTasksIdRoute
+  '/api/graph': typeof ApiGraphIndexRoute
+  '/api/project-graph': typeof ApiProjectGraphIndexRoute
+  '/api/keyword-intelligence/regions/$regionCode': typeof ApiKeywordIntelligenceRegionsRegionCodeRoute
+  '/api/keyword-intelligence/runs/$runId': typeof ApiKeywordIntelligenceRunsRunIdRoute
+  '/api/keyword-intelligence/templates/$id': typeof ApiKeywordIntelligenceTemplatesIdRoute
   '/api/keywords/$id/usage': typeof ApiKeywordsIdUsageRoute
 }
 export interface FileRoutesById {
@@ -317,6 +728,7 @@ export interface FileRoutesById {
   '/activity': typeof ActivityRoute
   '/agreements': typeof AgreementsRoute
   '/ai-command': typeof AiCommandRoute
+  '/ai-dev': typeof AiDevRoute
   '/ai-insights': typeof AiInsightsRoute
   '/calendar': typeof CalendarRoute
   '/calls': typeof CallsRoute
@@ -333,6 +745,7 @@ export interface FileRoutesById {
   '/notifications': typeof NotificationsRoute
   '/planner': typeof PlannerRoute
   '/products': typeof ProductsRoute
+  '/project-graph': typeof ProjectGraphRouteWithChildren
   '/projects': typeof ProjectsRoute
   '/quotations': typeof QuotationsRoute
   '/reports': typeof ReportsRoute
@@ -340,15 +753,63 @@ export interface FileRoutesById {
   '/signatures': typeof SignaturesRoute
   '/tasks': typeof TasksRoute
   '/whatsapp': typeof WhatsappRoute
+  '/api/agreements': typeof ApiAgreementsRoute
+  '/api/ai-insights': typeof ApiAiInsightsRoute
   '/api/bulk-mail-progress': typeof ApiBulkMailProgressRoute
+  '/api/calls': typeof ApiCallsRoute
+  '/api/campaigns': typeof ApiCampaignsRouteWithChildren
   '/api/chat': typeof ApiChatRoute
+  '/api/customers': typeof ApiCustomersRouteWithChildren
+  '/api/dashboard': typeof ApiDashboardRouteWithChildren
+  '/api/employees': typeof ApiEmployeesRoute
+  '/api/forecast': typeof ApiForecastRoute
   '/api/future-brief': typeof ApiFutureBriefRoute
+  '/api/habits': typeof ApiHabitsRoute
+  '/api/invoices': typeof ApiInvoicesRouteWithChildren
   '/api/keywords': typeof ApiKeywordsRouteWithChildren
   '/api/lead-finder-stats': typeof ApiLeadFinderStatsRoute
   '/api/lead-sheets-proxy': typeof ApiLeadSheetsProxyRoute
+  '/api/leads': typeof ApiLeadsRouteWithChildren
+  '/api/meetings': typeof ApiMeetingsRoute
+  '/api/notifications': typeof ApiNotificationsRoute
+  '/api/products': typeof ApiProductsRoute
+  '/api/projects': typeof ApiProjectsRouteWithChildren
+  '/api/quotations': typeof ApiQuotationsRoute
+  '/api/tasks': typeof ApiTasksRouteWithChildren
+  '/api/whatsapp-templates': typeof ApiWhatsappTemplatesRoute
+  '/project-graph/health': typeof ProjectGraphHealthRoute
+  '/api/ai-dev/execute': typeof ApiAiDevExecuteRoute
+  '/api/campaigns/$id': typeof ApiCampaignsIdRoute
+  '/api/cron/keyword-intelligence': typeof ApiCronKeywordIntelligenceRoute
+  '/api/customers/$id': typeof ApiCustomersIdRoute
+  '/api/dashboard/activity': typeof ApiDashboardActivityRoute
+  '/api/dashboard/customers': typeof ApiDashboardCustomersRoute
+  '/api/dashboard/email': typeof ApiDashboardEmailRoute
+  '/api/dashboard/invoices': typeof ApiDashboardInvoicesRoute
+  '/api/dashboard/leads': typeof ApiDashboardLeadsRoute
+  '/api/dashboard/metrics': typeof ApiDashboardMetricsRoute
+  '/api/dashboard/revenue': typeof ApiDashboardRevenueRoute
+  '/api/dashboard/tasks': typeof ApiDashboardTasksRoute
+  '/api/invoices/$id': typeof ApiInvoicesIdRoute
+  '/api/keyword-intelligence/config': typeof ApiKeywordIntelligenceConfigRoute
+  '/api/keyword-intelligence/performance': typeof ApiKeywordIntelligencePerformanceRoute
+  '/api/keyword-intelligence/preview': typeof ApiKeywordIntelligencePreviewRoute
+  '/api/keyword-intelligence/regions': typeof ApiKeywordIntelligenceRegionsRouteWithChildren
+  '/api/keyword-intelligence/run': typeof ApiKeywordIntelligenceRunRoute
+  '/api/keyword-intelligence/runs': typeof ApiKeywordIntelligenceRunsRouteWithChildren
+  '/api/keyword-intelligence/templates': typeof ApiKeywordIntelligenceTemplatesRouteWithChildren
   '/api/keywords/$id': typeof ApiKeywordsIdRouteWithChildren
   '/api/keywords/ai': typeof ApiKeywordsAiRoute
   '/api/keywords/next': typeof ApiKeywordsNextRoute
+  '/api/leads/$id': typeof ApiLeadsIdRoute
+  '/api/project-graph/context': typeof ApiProjectGraphContextRoute
+  '/api/projects/$id': typeof ApiProjectsIdRoute
+  '/api/tasks/$id': typeof ApiTasksIdRoute
+  '/api/graph/': typeof ApiGraphIndexRoute
+  '/api/project-graph/': typeof ApiProjectGraphIndexRoute
+  '/api/keyword-intelligence/regions/$regionCode': typeof ApiKeywordIntelligenceRegionsRegionCodeRoute
+  '/api/keyword-intelligence/runs/$runId': typeof ApiKeywordIntelligenceRunsRunIdRoute
+  '/api/keyword-intelligence/templates/$id': typeof ApiKeywordIntelligenceTemplatesIdRoute
   '/api/keywords/$id/usage': typeof ApiKeywordsIdUsageRoute
 }
 export interface FileRouteTypes {
@@ -358,6 +819,7 @@ export interface FileRouteTypes {
     | '/activity'
     | '/agreements'
     | '/ai-command'
+    | '/ai-dev'
     | '/ai-insights'
     | '/calendar'
     | '/calls'
@@ -374,6 +836,7 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/planner'
     | '/products'
+    | '/project-graph'
     | '/projects'
     | '/quotations'
     | '/reports'
@@ -381,15 +844,63 @@ export interface FileRouteTypes {
     | '/signatures'
     | '/tasks'
     | '/whatsapp'
+    | '/api/agreements'
+    | '/api/ai-insights'
     | '/api/bulk-mail-progress'
+    | '/api/calls'
+    | '/api/campaigns'
     | '/api/chat'
+    | '/api/customers'
+    | '/api/dashboard'
+    | '/api/employees'
+    | '/api/forecast'
     | '/api/future-brief'
+    | '/api/habits'
+    | '/api/invoices'
     | '/api/keywords'
     | '/api/lead-finder-stats'
     | '/api/lead-sheets-proxy'
+    | '/api/leads'
+    | '/api/meetings'
+    | '/api/notifications'
+    | '/api/products'
+    | '/api/projects'
+    | '/api/quotations'
+    | '/api/tasks'
+    | '/api/whatsapp-templates'
+    | '/project-graph/health'
+    | '/api/ai-dev/execute'
+    | '/api/campaigns/$id'
+    | '/api/cron/keyword-intelligence'
+    | '/api/customers/$id'
+    | '/api/dashboard/activity'
+    | '/api/dashboard/customers'
+    | '/api/dashboard/email'
+    | '/api/dashboard/invoices'
+    | '/api/dashboard/leads'
+    | '/api/dashboard/metrics'
+    | '/api/dashboard/revenue'
+    | '/api/dashboard/tasks'
+    | '/api/invoices/$id'
+    | '/api/keyword-intelligence/config'
+    | '/api/keyword-intelligence/performance'
+    | '/api/keyword-intelligence/preview'
+    | '/api/keyword-intelligence/regions'
+    | '/api/keyword-intelligence/run'
+    | '/api/keyword-intelligence/runs'
+    | '/api/keyword-intelligence/templates'
     | '/api/keywords/$id'
     | '/api/keywords/ai'
     | '/api/keywords/next'
+    | '/api/leads/$id'
+    | '/api/project-graph/context'
+    | '/api/projects/$id'
+    | '/api/tasks/$id'
+    | '/api/graph/'
+    | '/api/project-graph/'
+    | '/api/keyword-intelligence/regions/$regionCode'
+    | '/api/keyword-intelligence/runs/$runId'
+    | '/api/keyword-intelligence/templates/$id'
     | '/api/keywords/$id/usage'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -397,6 +908,7 @@ export interface FileRouteTypes {
     | '/activity'
     | '/agreements'
     | '/ai-command'
+    | '/ai-dev'
     | '/ai-insights'
     | '/calendar'
     | '/calls'
@@ -413,6 +925,7 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/planner'
     | '/products'
+    | '/project-graph'
     | '/projects'
     | '/quotations'
     | '/reports'
@@ -420,15 +933,63 @@ export interface FileRouteTypes {
     | '/signatures'
     | '/tasks'
     | '/whatsapp'
+    | '/api/agreements'
+    | '/api/ai-insights'
     | '/api/bulk-mail-progress'
+    | '/api/calls'
+    | '/api/campaigns'
     | '/api/chat'
+    | '/api/customers'
+    | '/api/dashboard'
+    | '/api/employees'
+    | '/api/forecast'
     | '/api/future-brief'
+    | '/api/habits'
+    | '/api/invoices'
     | '/api/keywords'
     | '/api/lead-finder-stats'
     | '/api/lead-sheets-proxy'
+    | '/api/leads'
+    | '/api/meetings'
+    | '/api/notifications'
+    | '/api/products'
+    | '/api/projects'
+    | '/api/quotations'
+    | '/api/tasks'
+    | '/api/whatsapp-templates'
+    | '/project-graph/health'
+    | '/api/ai-dev/execute'
+    | '/api/campaigns/$id'
+    | '/api/cron/keyword-intelligence'
+    | '/api/customers/$id'
+    | '/api/dashboard/activity'
+    | '/api/dashboard/customers'
+    | '/api/dashboard/email'
+    | '/api/dashboard/invoices'
+    | '/api/dashboard/leads'
+    | '/api/dashboard/metrics'
+    | '/api/dashboard/revenue'
+    | '/api/dashboard/tasks'
+    | '/api/invoices/$id'
+    | '/api/keyword-intelligence/config'
+    | '/api/keyword-intelligence/performance'
+    | '/api/keyword-intelligence/preview'
+    | '/api/keyword-intelligence/regions'
+    | '/api/keyword-intelligence/run'
+    | '/api/keyword-intelligence/runs'
+    | '/api/keyword-intelligence/templates'
     | '/api/keywords/$id'
     | '/api/keywords/ai'
     | '/api/keywords/next'
+    | '/api/leads/$id'
+    | '/api/project-graph/context'
+    | '/api/projects/$id'
+    | '/api/tasks/$id'
+    | '/api/graph'
+    | '/api/project-graph'
+    | '/api/keyword-intelligence/regions/$regionCode'
+    | '/api/keyword-intelligence/runs/$runId'
+    | '/api/keyword-intelligence/templates/$id'
     | '/api/keywords/$id/usage'
   id:
     | '__root__'
@@ -436,6 +997,7 @@ export interface FileRouteTypes {
     | '/activity'
     | '/agreements'
     | '/ai-command'
+    | '/ai-dev'
     | '/ai-insights'
     | '/calendar'
     | '/calls'
@@ -452,6 +1014,7 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/planner'
     | '/products'
+    | '/project-graph'
     | '/projects'
     | '/quotations'
     | '/reports'
@@ -459,15 +1022,63 @@ export interface FileRouteTypes {
     | '/signatures'
     | '/tasks'
     | '/whatsapp'
+    | '/api/agreements'
+    | '/api/ai-insights'
     | '/api/bulk-mail-progress'
+    | '/api/calls'
+    | '/api/campaigns'
     | '/api/chat'
+    | '/api/customers'
+    | '/api/dashboard'
+    | '/api/employees'
+    | '/api/forecast'
     | '/api/future-brief'
+    | '/api/habits'
+    | '/api/invoices'
     | '/api/keywords'
     | '/api/lead-finder-stats'
     | '/api/lead-sheets-proxy'
+    | '/api/leads'
+    | '/api/meetings'
+    | '/api/notifications'
+    | '/api/products'
+    | '/api/projects'
+    | '/api/quotations'
+    | '/api/tasks'
+    | '/api/whatsapp-templates'
+    | '/project-graph/health'
+    | '/api/ai-dev/execute'
+    | '/api/campaigns/$id'
+    | '/api/cron/keyword-intelligence'
+    | '/api/customers/$id'
+    | '/api/dashboard/activity'
+    | '/api/dashboard/customers'
+    | '/api/dashboard/email'
+    | '/api/dashboard/invoices'
+    | '/api/dashboard/leads'
+    | '/api/dashboard/metrics'
+    | '/api/dashboard/revenue'
+    | '/api/dashboard/tasks'
+    | '/api/invoices/$id'
+    | '/api/keyword-intelligence/config'
+    | '/api/keyword-intelligence/performance'
+    | '/api/keyword-intelligence/preview'
+    | '/api/keyword-intelligence/regions'
+    | '/api/keyword-intelligence/run'
+    | '/api/keyword-intelligence/runs'
+    | '/api/keyword-intelligence/templates'
     | '/api/keywords/$id'
     | '/api/keywords/ai'
     | '/api/keywords/next'
+    | '/api/leads/$id'
+    | '/api/project-graph/context'
+    | '/api/projects/$id'
+    | '/api/tasks/$id'
+    | '/api/graph/'
+    | '/api/project-graph/'
+    | '/api/keyword-intelligence/regions/$regionCode'
+    | '/api/keyword-intelligence/runs/$runId'
+    | '/api/keyword-intelligence/templates/$id'
     | '/api/keywords/$id/usage'
   fileRoutesById: FileRoutesById
 }
@@ -476,6 +1087,7 @@ export interface RootRouteChildren {
   ActivityRoute: typeof ActivityRoute
   AgreementsRoute: typeof AgreementsRoute
   AiCommandRoute: typeof AiCommandRoute
+  AiDevRoute: typeof AiDevRoute
   AiInsightsRoute: typeof AiInsightsRoute
   CalendarRoute: typeof CalendarRoute
   CallsRoute: typeof CallsRoute
@@ -492,6 +1104,7 @@ export interface RootRouteChildren {
   NotificationsRoute: typeof NotificationsRoute
   PlannerRoute: typeof PlannerRoute
   ProductsRoute: typeof ProductsRoute
+  ProjectGraphRoute: typeof ProjectGraphRouteWithChildren
   ProjectsRoute: typeof ProjectsRoute
   QuotationsRoute: typeof QuotationsRoute
   ReportsRoute: typeof ReportsRoute
@@ -499,12 +1112,42 @@ export interface RootRouteChildren {
   SignaturesRoute: typeof SignaturesRoute
   TasksRoute: typeof TasksRoute
   WhatsappRoute: typeof WhatsappRoute
+  ApiAgreementsRoute: typeof ApiAgreementsRoute
+  ApiAiInsightsRoute: typeof ApiAiInsightsRoute
   ApiBulkMailProgressRoute: typeof ApiBulkMailProgressRoute
+  ApiCallsRoute: typeof ApiCallsRoute
+  ApiCampaignsRoute: typeof ApiCampaignsRouteWithChildren
   ApiChatRoute: typeof ApiChatRoute
+  ApiCustomersRoute: typeof ApiCustomersRouteWithChildren
+  ApiDashboardRoute: typeof ApiDashboardRouteWithChildren
+  ApiEmployeesRoute: typeof ApiEmployeesRoute
+  ApiForecastRoute: typeof ApiForecastRoute
   ApiFutureBriefRoute: typeof ApiFutureBriefRoute
+  ApiHabitsRoute: typeof ApiHabitsRoute
+  ApiInvoicesRoute: typeof ApiInvoicesRouteWithChildren
   ApiKeywordsRoute: typeof ApiKeywordsRouteWithChildren
   ApiLeadFinderStatsRoute: typeof ApiLeadFinderStatsRoute
   ApiLeadSheetsProxyRoute: typeof ApiLeadSheetsProxyRoute
+  ApiLeadsRoute: typeof ApiLeadsRouteWithChildren
+  ApiMeetingsRoute: typeof ApiMeetingsRoute
+  ApiNotificationsRoute: typeof ApiNotificationsRoute
+  ApiProductsRoute: typeof ApiProductsRoute
+  ApiProjectsRoute: typeof ApiProjectsRouteWithChildren
+  ApiQuotationsRoute: typeof ApiQuotationsRoute
+  ApiTasksRoute: typeof ApiTasksRouteWithChildren
+  ApiWhatsappTemplatesRoute: typeof ApiWhatsappTemplatesRoute
+  ApiAiDevExecuteRoute: typeof ApiAiDevExecuteRoute
+  ApiCronKeywordIntelligenceRoute: typeof ApiCronKeywordIntelligenceRoute
+  ApiKeywordIntelligenceConfigRoute: typeof ApiKeywordIntelligenceConfigRoute
+  ApiKeywordIntelligencePerformanceRoute: typeof ApiKeywordIntelligencePerformanceRoute
+  ApiKeywordIntelligencePreviewRoute: typeof ApiKeywordIntelligencePreviewRoute
+  ApiKeywordIntelligenceRegionsRoute: typeof ApiKeywordIntelligenceRegionsRouteWithChildren
+  ApiKeywordIntelligenceRunRoute: typeof ApiKeywordIntelligenceRunRoute
+  ApiKeywordIntelligenceRunsRoute: typeof ApiKeywordIntelligenceRunsRouteWithChildren
+  ApiKeywordIntelligenceTemplatesRoute: typeof ApiKeywordIntelligenceTemplatesRouteWithChildren
+  ApiProjectGraphContextRoute: typeof ApiProjectGraphContextRoute
+  ApiGraphIndexRoute: typeof ApiGraphIndexRoute
+  ApiProjectGraphIndexRoute: typeof ApiProjectGraphIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -535,6 +1178,13 @@ declare module '@tanstack/react-router' {
       path: '/ai-command'
       fullPath: '/ai-command'
       preLoaderRoute: typeof AiCommandRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai-dev': {
+      id: '/ai-dev'
+      path: '/ai-dev'
+      fullPath: '/ai-dev'
+      preLoaderRoute: typeof AiDevRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ai-insights': {
@@ -649,6 +1299,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProductsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/project-graph': {
+      id: '/project-graph'
+      path: '/project-graph'
+      fullPath: '/project-graph'
+      preLoaderRoute: typeof ProjectGraphRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/projects': {
       id: '/projects'
       path: '/projects'
@@ -698,11 +1355,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WhatsappRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/agreements': {
+      id: '/api/agreements'
+      path: '/api/agreements'
+      fullPath: '/api/agreements'
+      preLoaderRoute: typeof ApiAgreementsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/ai-insights': {
+      id: '/api/ai-insights'
+      path: '/api/ai-insights'
+      fullPath: '/api/ai-insights'
+      preLoaderRoute: typeof ApiAiInsightsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/bulk-mail-progress': {
       id: '/api/bulk-mail-progress'
       path: '/api/bulk-mail-progress'
       fullPath: '/api/bulk-mail-progress'
       preLoaderRoute: typeof ApiBulkMailProgressRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/calls': {
+      id: '/api/calls'
+      path: '/api/calls'
+      fullPath: '/api/calls'
+      preLoaderRoute: typeof ApiCallsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/campaigns': {
+      id: '/api/campaigns'
+      path: '/api/campaigns'
+      fullPath: '/api/campaigns'
+      preLoaderRoute: typeof ApiCampaignsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/chat': {
@@ -712,11 +1397,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/customers': {
+      id: '/api/customers'
+      path: '/api/customers'
+      fullPath: '/api/customers'
+      preLoaderRoute: typeof ApiCustomersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/dashboard': {
+      id: '/api/dashboard'
+      path: '/api/dashboard'
+      fullPath: '/api/dashboard'
+      preLoaderRoute: typeof ApiDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/employees': {
+      id: '/api/employees'
+      path: '/api/employees'
+      fullPath: '/api/employees'
+      preLoaderRoute: typeof ApiEmployeesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/forecast': {
+      id: '/api/forecast'
+      path: '/api/forecast'
+      fullPath: '/api/forecast'
+      preLoaderRoute: typeof ApiForecastRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/future-brief': {
       id: '/api/future-brief'
       path: '/api/future-brief'
       fullPath: '/api/future-brief'
       preLoaderRoute: typeof ApiFutureBriefRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/habits': {
+      id: '/api/habits'
+      path: '/api/habits'
+      fullPath: '/api/habits'
+      preLoaderRoute: typeof ApiHabitsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/invoices': {
+      id: '/api/invoices'
+      path: '/api/invoices'
+      fullPath: '/api/invoices'
+      preLoaderRoute: typeof ApiInvoicesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/keywords': {
@@ -740,6 +1467,216 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiLeadSheetsProxyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/leads': {
+      id: '/api/leads'
+      path: '/api/leads'
+      fullPath: '/api/leads'
+      preLoaderRoute: typeof ApiLeadsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/meetings': {
+      id: '/api/meetings'
+      path: '/api/meetings'
+      fullPath: '/api/meetings'
+      preLoaderRoute: typeof ApiMeetingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/notifications': {
+      id: '/api/notifications'
+      path: '/api/notifications'
+      fullPath: '/api/notifications'
+      preLoaderRoute: typeof ApiNotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/products': {
+      id: '/api/products'
+      path: '/api/products'
+      fullPath: '/api/products'
+      preLoaderRoute: typeof ApiProductsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/projects': {
+      id: '/api/projects'
+      path: '/api/projects'
+      fullPath: '/api/projects'
+      preLoaderRoute: typeof ApiProjectsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/quotations': {
+      id: '/api/quotations'
+      path: '/api/quotations'
+      fullPath: '/api/quotations'
+      preLoaderRoute: typeof ApiQuotationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/tasks': {
+      id: '/api/tasks'
+      path: '/api/tasks'
+      fullPath: '/api/tasks'
+      preLoaderRoute: typeof ApiTasksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/whatsapp-templates': {
+      id: '/api/whatsapp-templates'
+      path: '/api/whatsapp-templates'
+      fullPath: '/api/whatsapp-templates'
+      preLoaderRoute: typeof ApiWhatsappTemplatesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/project-graph/health': {
+      id: '/project-graph/health'
+      path: '/health'
+      fullPath: '/project-graph/health'
+      preLoaderRoute: typeof ProjectGraphHealthRouteImport
+      parentRoute: typeof ProjectGraphRoute
+    }
+    '/api/ai-dev/execute': {
+      id: '/api/ai-dev/execute'
+      path: '/api/ai-dev/execute'
+      fullPath: '/api/ai-dev/execute'
+      preLoaderRoute: typeof ApiAiDevExecuteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/campaigns/$id': {
+      id: '/api/campaigns/$id'
+      path: '/$id'
+      fullPath: '/api/campaigns/$id'
+      preLoaderRoute: typeof ApiCampaignsIdRouteImport
+      parentRoute: typeof ApiCampaignsRoute
+    }
+    '/api/cron/keyword-intelligence': {
+      id: '/api/cron/keyword-intelligence'
+      path: '/api/cron/keyword-intelligence'
+      fullPath: '/api/cron/keyword-intelligence'
+      preLoaderRoute: typeof ApiCronKeywordIntelligenceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/customers/$id': {
+      id: '/api/customers/$id'
+      path: '/$id'
+      fullPath: '/api/customers/$id'
+      preLoaderRoute: typeof ApiCustomersIdRouteImport
+      parentRoute: typeof ApiCustomersRoute
+    }
+    '/api/dashboard/activity': {
+      id: '/api/dashboard/activity'
+      path: '/activity'
+      fullPath: '/api/dashboard/activity'
+      preLoaderRoute: typeof ApiDashboardActivityRouteImport
+      parentRoute: typeof ApiDashboardRoute
+    }
+    '/api/dashboard/customers': {
+      id: '/api/dashboard/customers'
+      path: '/customers'
+      fullPath: '/api/dashboard/customers'
+      preLoaderRoute: typeof ApiDashboardCustomersRouteImport
+      parentRoute: typeof ApiDashboardRoute
+    }
+    '/api/dashboard/email': {
+      id: '/api/dashboard/email'
+      path: '/email'
+      fullPath: '/api/dashboard/email'
+      preLoaderRoute: typeof ApiDashboardEmailRouteImport
+      parentRoute: typeof ApiDashboardRoute
+    }
+    '/api/dashboard/invoices': {
+      id: '/api/dashboard/invoices'
+      path: '/invoices'
+      fullPath: '/api/dashboard/invoices'
+      preLoaderRoute: typeof ApiDashboardInvoicesRouteImport
+      parentRoute: typeof ApiDashboardRoute
+    }
+    '/api/dashboard/leads': {
+      id: '/api/dashboard/leads'
+      path: '/leads'
+      fullPath: '/api/dashboard/leads'
+      preLoaderRoute: typeof ApiDashboardLeadsRouteImport
+      parentRoute: typeof ApiDashboardRoute
+    }
+    '/api/dashboard/metrics': {
+      id: '/api/dashboard/metrics'
+      path: '/metrics'
+      fullPath: '/api/dashboard/metrics'
+      preLoaderRoute: typeof ApiDashboardMetricsRouteImport
+      parentRoute: typeof ApiDashboardRoute
+    }
+    '/api/dashboard/revenue': {
+      id: '/api/dashboard/revenue'
+      path: '/revenue'
+      fullPath: '/api/dashboard/revenue'
+      preLoaderRoute: typeof ApiDashboardRevenueRouteImport
+      parentRoute: typeof ApiDashboardRoute
+    }
+    '/api/dashboard/tasks': {
+      id: '/api/dashboard/tasks'
+      path: '/tasks'
+      fullPath: '/api/dashboard/tasks'
+      preLoaderRoute: typeof ApiDashboardTasksRouteImport
+      parentRoute: typeof ApiDashboardRoute
+    }
+    '/api/graph/': {
+      id: '/api/graph/'
+      path: '/api/graph'
+      fullPath: '/api/graph/'
+      preLoaderRoute: typeof ApiGraphIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/invoices/$id': {
+      id: '/api/invoices/$id'
+      path: '/$id'
+      fullPath: '/api/invoices/$id'
+      preLoaderRoute: typeof ApiInvoicesIdRouteImport
+      parentRoute: typeof ApiInvoicesRoute
+    }
+    '/api/keyword-intelligence/config': {
+      id: '/api/keyword-intelligence/config'
+      path: '/api/keyword-intelligence/config'
+      fullPath: '/api/keyword-intelligence/config'
+      preLoaderRoute: typeof ApiKeywordIntelligenceConfigRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/keyword-intelligence/performance': {
+      id: '/api/keyword-intelligence/performance'
+      path: '/api/keyword-intelligence/performance'
+      fullPath: '/api/keyword-intelligence/performance'
+      preLoaderRoute: typeof ApiKeywordIntelligencePerformanceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/keyword-intelligence/preview': {
+      id: '/api/keyword-intelligence/preview'
+      path: '/api/keyword-intelligence/preview'
+      fullPath: '/api/keyword-intelligence/preview'
+      preLoaderRoute: typeof ApiKeywordIntelligencePreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/keyword-intelligence/regions': {
+      id: '/api/keyword-intelligence/regions'
+      path: '/api/keyword-intelligence/regions'
+      fullPath: '/api/keyword-intelligence/regions'
+      preLoaderRoute: typeof ApiKeywordIntelligenceRegionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/keyword-intelligence/run': {
+      id: '/api/keyword-intelligence/run'
+      path: '/api/keyword-intelligence/run'
+      fullPath: '/api/keyword-intelligence/run'
+      preLoaderRoute: typeof ApiKeywordIntelligenceRunRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/keyword-intelligence/runs': {
+      id: '/api/keyword-intelligence/runs'
+      path: '/api/keyword-intelligence/runs'
+      fullPath: '/api/keyword-intelligence/runs'
+      preLoaderRoute: typeof ApiKeywordIntelligenceRunsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/keyword-intelligence/templates': {
+      id: '/api/keyword-intelligence/templates'
+      path: '/api/keyword-intelligence/templates'
+      fullPath: '/api/keyword-intelligence/templates'
+      preLoaderRoute: typeof ApiKeywordIntelligenceTemplatesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/keywords/$id': {
       id: '/api/keywords/$id'
       path: '/$id'
@@ -761,6 +1698,62 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiKeywordsNextRouteImport
       parentRoute: typeof ApiKeywordsRoute
     }
+    '/api/leads/$id': {
+      id: '/api/leads/$id'
+      path: '/$id'
+      fullPath: '/api/leads/$id'
+      preLoaderRoute: typeof ApiLeadsIdRouteImport
+      parentRoute: typeof ApiLeadsRoute
+    }
+    '/api/project-graph/': {
+      id: '/api/project-graph/'
+      path: '/api/project-graph'
+      fullPath: '/api/project-graph/'
+      preLoaderRoute: typeof ApiProjectGraphIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/project-graph/context': {
+      id: '/api/project-graph/context'
+      path: '/api/project-graph/context'
+      fullPath: '/api/project-graph/context'
+      preLoaderRoute: typeof ApiProjectGraphContextRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/projects/$id': {
+      id: '/api/projects/$id'
+      path: '/$id'
+      fullPath: '/api/projects/$id'
+      preLoaderRoute: typeof ApiProjectsIdRouteImport
+      parentRoute: typeof ApiProjectsRoute
+    }
+    '/api/tasks/$id': {
+      id: '/api/tasks/$id'
+      path: '/$id'
+      fullPath: '/api/tasks/$id'
+      preLoaderRoute: typeof ApiTasksIdRouteImport
+      parentRoute: typeof ApiTasksRoute
+    }
+    '/api/keyword-intelligence/regions/$regionCode': {
+      id: '/api/keyword-intelligence/regions/$regionCode'
+      path: '/$regionCode'
+      fullPath: '/api/keyword-intelligence/regions/$regionCode'
+      preLoaderRoute: typeof ApiKeywordIntelligenceRegionsRegionCodeRouteImport
+      parentRoute: typeof ApiKeywordIntelligenceRegionsRoute
+    }
+    '/api/keyword-intelligence/runs/$runId': {
+      id: '/api/keyword-intelligence/runs/$runId'
+      path: '/$runId'
+      fullPath: '/api/keyword-intelligence/runs/$runId'
+      preLoaderRoute: typeof ApiKeywordIntelligenceRunsRunIdRouteImport
+      parentRoute: typeof ApiKeywordIntelligenceRunsRoute
+    }
+    '/api/keyword-intelligence/templates/$id': {
+      id: '/api/keyword-intelligence/templates/$id'
+      path: '/$id'
+      fullPath: '/api/keyword-intelligence/templates/$id'
+      preLoaderRoute: typeof ApiKeywordIntelligenceTemplatesIdRouteImport
+      parentRoute: typeof ApiKeywordIntelligenceTemplatesRoute
+    }
     '/api/keywords/$id/usage': {
       id: '/api/keywords/$id/usage'
       path: '/usage'
@@ -770,6 +1763,80 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface ProjectGraphRouteChildren {
+  ProjectGraphHealthRoute: typeof ProjectGraphHealthRoute
+}
+
+const ProjectGraphRouteChildren: ProjectGraphRouteChildren = {
+  ProjectGraphHealthRoute: ProjectGraphHealthRoute,
+}
+
+const ProjectGraphRouteWithChildren = ProjectGraphRoute._addFileChildren(
+  ProjectGraphRouteChildren,
+)
+
+interface ApiCampaignsRouteChildren {
+  ApiCampaignsIdRoute: typeof ApiCampaignsIdRoute
+}
+
+const ApiCampaignsRouteChildren: ApiCampaignsRouteChildren = {
+  ApiCampaignsIdRoute: ApiCampaignsIdRoute,
+}
+
+const ApiCampaignsRouteWithChildren = ApiCampaignsRoute._addFileChildren(
+  ApiCampaignsRouteChildren,
+)
+
+interface ApiCustomersRouteChildren {
+  ApiCustomersIdRoute: typeof ApiCustomersIdRoute
+}
+
+const ApiCustomersRouteChildren: ApiCustomersRouteChildren = {
+  ApiCustomersIdRoute: ApiCustomersIdRoute,
+}
+
+const ApiCustomersRouteWithChildren = ApiCustomersRoute._addFileChildren(
+  ApiCustomersRouteChildren,
+)
+
+interface ApiDashboardRouteChildren {
+  ApiDashboardActivityRoute: typeof ApiDashboardActivityRoute
+  ApiDashboardCustomersRoute: typeof ApiDashboardCustomersRoute
+  ApiDashboardEmailRoute: typeof ApiDashboardEmailRoute
+  ApiDashboardInvoicesRoute: typeof ApiDashboardInvoicesRoute
+  ApiDashboardLeadsRoute: typeof ApiDashboardLeadsRoute
+  ApiDashboardMetricsRoute: typeof ApiDashboardMetricsRoute
+  ApiDashboardRevenueRoute: typeof ApiDashboardRevenueRoute
+  ApiDashboardTasksRoute: typeof ApiDashboardTasksRoute
+}
+
+const ApiDashboardRouteChildren: ApiDashboardRouteChildren = {
+  ApiDashboardActivityRoute: ApiDashboardActivityRoute,
+  ApiDashboardCustomersRoute: ApiDashboardCustomersRoute,
+  ApiDashboardEmailRoute: ApiDashboardEmailRoute,
+  ApiDashboardInvoicesRoute: ApiDashboardInvoicesRoute,
+  ApiDashboardLeadsRoute: ApiDashboardLeadsRoute,
+  ApiDashboardMetricsRoute: ApiDashboardMetricsRoute,
+  ApiDashboardRevenueRoute: ApiDashboardRevenueRoute,
+  ApiDashboardTasksRoute: ApiDashboardTasksRoute,
+}
+
+const ApiDashboardRouteWithChildren = ApiDashboardRoute._addFileChildren(
+  ApiDashboardRouteChildren,
+)
+
+interface ApiInvoicesRouteChildren {
+  ApiInvoicesIdRoute: typeof ApiInvoicesIdRoute
+}
+
+const ApiInvoicesRouteChildren: ApiInvoicesRouteChildren = {
+  ApiInvoicesIdRoute: ApiInvoicesIdRoute,
+}
+
+const ApiInvoicesRouteWithChildren = ApiInvoicesRoute._addFileChildren(
+  ApiInvoicesRouteChildren,
+)
 
 interface ApiKeywordsIdRouteChildren {
   ApiKeywordsIdUsageRoute: typeof ApiKeywordsIdUsageRoute
@@ -799,11 +1866,92 @@ const ApiKeywordsRouteWithChildren = ApiKeywordsRoute._addFileChildren(
   ApiKeywordsRouteChildren,
 )
 
+interface ApiLeadsRouteChildren {
+  ApiLeadsIdRoute: typeof ApiLeadsIdRoute
+}
+
+const ApiLeadsRouteChildren: ApiLeadsRouteChildren = {
+  ApiLeadsIdRoute: ApiLeadsIdRoute,
+}
+
+const ApiLeadsRouteWithChildren = ApiLeadsRoute._addFileChildren(
+  ApiLeadsRouteChildren,
+)
+
+interface ApiProjectsRouteChildren {
+  ApiProjectsIdRoute: typeof ApiProjectsIdRoute
+}
+
+const ApiProjectsRouteChildren: ApiProjectsRouteChildren = {
+  ApiProjectsIdRoute: ApiProjectsIdRoute,
+}
+
+const ApiProjectsRouteWithChildren = ApiProjectsRoute._addFileChildren(
+  ApiProjectsRouteChildren,
+)
+
+interface ApiTasksRouteChildren {
+  ApiTasksIdRoute: typeof ApiTasksIdRoute
+}
+
+const ApiTasksRouteChildren: ApiTasksRouteChildren = {
+  ApiTasksIdRoute: ApiTasksIdRoute,
+}
+
+const ApiTasksRouteWithChildren = ApiTasksRoute._addFileChildren(
+  ApiTasksRouteChildren,
+)
+
+interface ApiKeywordIntelligenceRegionsRouteChildren {
+  ApiKeywordIntelligenceRegionsRegionCodeRoute: typeof ApiKeywordIntelligenceRegionsRegionCodeRoute
+}
+
+const ApiKeywordIntelligenceRegionsRouteChildren: ApiKeywordIntelligenceRegionsRouteChildren =
+  {
+    ApiKeywordIntelligenceRegionsRegionCodeRoute:
+      ApiKeywordIntelligenceRegionsRegionCodeRoute,
+  }
+
+const ApiKeywordIntelligenceRegionsRouteWithChildren =
+  ApiKeywordIntelligenceRegionsRoute._addFileChildren(
+    ApiKeywordIntelligenceRegionsRouteChildren,
+  )
+
+interface ApiKeywordIntelligenceRunsRouteChildren {
+  ApiKeywordIntelligenceRunsRunIdRoute: typeof ApiKeywordIntelligenceRunsRunIdRoute
+}
+
+const ApiKeywordIntelligenceRunsRouteChildren: ApiKeywordIntelligenceRunsRouteChildren =
+  {
+    ApiKeywordIntelligenceRunsRunIdRoute: ApiKeywordIntelligenceRunsRunIdRoute,
+  }
+
+const ApiKeywordIntelligenceRunsRouteWithChildren =
+  ApiKeywordIntelligenceRunsRoute._addFileChildren(
+    ApiKeywordIntelligenceRunsRouteChildren,
+  )
+
+interface ApiKeywordIntelligenceTemplatesRouteChildren {
+  ApiKeywordIntelligenceTemplatesIdRoute: typeof ApiKeywordIntelligenceTemplatesIdRoute
+}
+
+const ApiKeywordIntelligenceTemplatesRouteChildren: ApiKeywordIntelligenceTemplatesRouteChildren =
+  {
+    ApiKeywordIntelligenceTemplatesIdRoute:
+      ApiKeywordIntelligenceTemplatesIdRoute,
+  }
+
+const ApiKeywordIntelligenceTemplatesRouteWithChildren =
+  ApiKeywordIntelligenceTemplatesRoute._addFileChildren(
+    ApiKeywordIntelligenceTemplatesRouteChildren,
+  )
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ActivityRoute: ActivityRoute,
   AgreementsRoute: AgreementsRoute,
   AiCommandRoute: AiCommandRoute,
+  AiDevRoute: AiDevRoute,
   AiInsightsRoute: AiInsightsRoute,
   CalendarRoute: CalendarRoute,
   CallsRoute: CallsRoute,
@@ -820,6 +1968,7 @@ const rootRouteChildren: RootRouteChildren = {
   NotificationsRoute: NotificationsRoute,
   PlannerRoute: PlannerRoute,
   ProductsRoute: ProductsRoute,
+  ProjectGraphRoute: ProjectGraphRouteWithChildren,
   ProjectsRoute: ProjectsRoute,
   QuotationsRoute: QuotationsRoute,
   ReportsRoute: ReportsRoute,
@@ -827,12 +1976,45 @@ const rootRouteChildren: RootRouteChildren = {
   SignaturesRoute: SignaturesRoute,
   TasksRoute: TasksRoute,
   WhatsappRoute: WhatsappRoute,
+  ApiAgreementsRoute: ApiAgreementsRoute,
+  ApiAiInsightsRoute: ApiAiInsightsRoute,
   ApiBulkMailProgressRoute: ApiBulkMailProgressRoute,
+  ApiCallsRoute: ApiCallsRoute,
+  ApiCampaignsRoute: ApiCampaignsRouteWithChildren,
   ApiChatRoute: ApiChatRoute,
+  ApiCustomersRoute: ApiCustomersRouteWithChildren,
+  ApiDashboardRoute: ApiDashboardRouteWithChildren,
+  ApiEmployeesRoute: ApiEmployeesRoute,
+  ApiForecastRoute: ApiForecastRoute,
   ApiFutureBriefRoute: ApiFutureBriefRoute,
+  ApiHabitsRoute: ApiHabitsRoute,
+  ApiInvoicesRoute: ApiInvoicesRouteWithChildren,
   ApiKeywordsRoute: ApiKeywordsRouteWithChildren,
   ApiLeadFinderStatsRoute: ApiLeadFinderStatsRoute,
   ApiLeadSheetsProxyRoute: ApiLeadSheetsProxyRoute,
+  ApiLeadsRoute: ApiLeadsRouteWithChildren,
+  ApiMeetingsRoute: ApiMeetingsRoute,
+  ApiNotificationsRoute: ApiNotificationsRoute,
+  ApiProductsRoute: ApiProductsRoute,
+  ApiProjectsRoute: ApiProjectsRouteWithChildren,
+  ApiQuotationsRoute: ApiQuotationsRoute,
+  ApiTasksRoute: ApiTasksRouteWithChildren,
+  ApiWhatsappTemplatesRoute: ApiWhatsappTemplatesRoute,
+  ApiAiDevExecuteRoute: ApiAiDevExecuteRoute,
+  ApiCronKeywordIntelligenceRoute: ApiCronKeywordIntelligenceRoute,
+  ApiKeywordIntelligenceConfigRoute: ApiKeywordIntelligenceConfigRoute,
+  ApiKeywordIntelligencePerformanceRoute:
+    ApiKeywordIntelligencePerformanceRoute,
+  ApiKeywordIntelligencePreviewRoute: ApiKeywordIntelligencePreviewRoute,
+  ApiKeywordIntelligenceRegionsRoute:
+    ApiKeywordIntelligenceRegionsRouteWithChildren,
+  ApiKeywordIntelligenceRunRoute: ApiKeywordIntelligenceRunRoute,
+  ApiKeywordIntelligenceRunsRoute: ApiKeywordIntelligenceRunsRouteWithChildren,
+  ApiKeywordIntelligenceTemplatesRoute:
+    ApiKeywordIntelligenceTemplatesRouteWithChildren,
+  ApiProjectGraphContextRoute: ApiProjectGraphContextRoute,
+  ApiGraphIndexRoute: ApiGraphIndexRoute,
+  ApiProjectGraphIndexRoute: ApiProjectGraphIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

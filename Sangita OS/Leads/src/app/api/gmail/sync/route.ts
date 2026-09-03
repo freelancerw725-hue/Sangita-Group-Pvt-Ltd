@@ -1,18 +1,29 @@
 import { NextResponse } from "next/server";
 import { getEmailHistory } from "@/lib/email-store";
 import { getEnv } from "@/lib/env";
-import { detectDemoType, extractEmailAddress, isDemoRequestText, normalizeLeadRecord } from "@/lib/crm";
+import {
+  detectDemoType,
+  extractEmailAddress,
+  isDemoRequestText,
+  normalizeLeadRecord,
+} from "@/lib/crm";
 import { fetchGmailThread, sendGmail } from "@/lib/gmail";
 import { getStoredLeads, updateLeadByChannelId } from "@/lib/lead-store";
 
 export const runtime = "nodejs";
 
-function extractHeader(headers: Array<{ name?: string | null; value?: string | null }>, name: string) {
+function extractHeader(
+  headers: Array<{ name?: string | null; value?: string | null }>,
+  name: string,
+) {
   return headers.find((header) => header.name?.toLowerCase() === name.toLowerCase())?.value ?? "";
 }
 
 function decodeBase64Url(value: string) {
-  const padded = value.replace(/-/g, "+").replace(/_/g, "/").padEnd(value.length + ((4 - (value.length % 4)) % 4), "=");
+  const padded = value
+    .replace(/-/g, "+")
+    .replace(/_/g, "/")
+    .padEnd(value.length + ((4 - (value.length % 4)) % 4), "=");
   return Buffer.from(padded, "base64").toString("utf8");
 }
 
@@ -76,7 +87,12 @@ export async function POST() {
   try {
     const history = await getEmailHistory();
     const sentThreads = history.filter((event) => event.eventType === "sent" && event.threadId);
-    const replies: Array<{ leadId: string; threadId: string; replyFrom: string; replyDate: string }> = [];
+    const replies: Array<{
+      leadId: string;
+      threadId: string;
+      replyFrom: string;
+      replyDate: string;
+    }> = [];
     const leads = (await getStoredLeads()).map((lead) => normalizeLeadRecord(lead));
     const leadMap = new Map(leads.map((lead) => [lead.channelId, lead]));
 
@@ -88,7 +104,9 @@ export async function POST() {
           const headers = message.payload?.headers ?? [];
           const from = extractHeader(headers, "From");
           const messageId = extractHeader(headers, "Message-ID");
-          return from && !from.includes(getEnv().GMAIL_FROM_ADDRESS) && messageId !== event.messageId;
+          return (
+            from && !from.includes(getEnv().GMAIL_FROM_ADDRESS) && messageId !== event.messageId
+          );
         });
 
         if (replyMessages.length > 0) {
@@ -119,7 +137,12 @@ export async function POST() {
                   : "Replied";
 
           await updateLeadByChannelId(event.leadId, {
-            leadStatus: status === "Closed Lost" ? "Not Interested" : status === "Interested" ? "Interested" : "Replied",
+            leadStatus:
+              status === "Closed Lost"
+                ? "Not Interested"
+                : status === "Interested"
+                  ? "Interested"
+                  : "Replied",
             leadStage: status,
             status,
             replyStatus,

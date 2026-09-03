@@ -69,13 +69,22 @@ function inferCrmStatus(lead: Partial<LeadRecord>): CrmStatus {
   if (lead.closedLost) return "Closed Lost";
   if (lead.closedWon) return "Closed Won";
   if (lead.meetingScheduled) return "Meeting Scheduled";
-  if (lead.interested || lead.leadStage === "Interested" || lead.leadStatus === "Interested") return "Interested";
+  if (lead.interested || lead.leadStage === "Interested" || lead.leadStatus === "Interested")
+    return "Interested";
   if (lead.demoSent) return "Demo Sent";
   if (lead.leadStatus === "Not Interested") return "Closed Lost";
   if (lead.leadStatus === "Closed") return "Closed Won";
   if (lead.replyStatus && lead.replyStatus !== "No Reply") return "Replied";
-  if (lead.lastReplyTime || lead.leadStage === "Replied" || lead.leadStatus === "Replied") return "Replied";
-  if (lead.sentTime || lead.emailSentAt || lead.emailThreadId || lead.threadId || lead.leadStage === "Sent" || lead.leadStatus === "Contacted") {
+  if (lead.lastReplyTime || lead.leadStage === "Replied" || lead.leadStatus === "Replied")
+    return "Replied";
+  if (
+    lead.sentTime ||
+    lead.emailSentAt ||
+    lead.emailThreadId ||
+    lead.threadId ||
+    lead.leadStage === "Sent" ||
+    lead.leadStatus === "Contacted"
+  ) {
     return "Sent";
   }
   if (lead.verified) return "Verified";
@@ -202,7 +211,12 @@ export function shouldSendLeadEmail(lead: LeadRecord, manualResend = false): boo
   if (!isValidEmail(normalized.email)) return false;
   if (!normalized.verified || !normalized.sendMail) return false;
   if (!manualResend) {
-    if (normalized.status === "Sent" || normalized.status === "Closed Won" || normalized.status === "Closed Lost") return false;
+    if (
+      normalized.status === "Sent" ||
+      normalized.status === "Closed Won" ||
+      normalized.status === "Closed Lost"
+    )
+      return false;
     if (normalized.sentTime || normalized.threadId) return false;
   }
   return true;

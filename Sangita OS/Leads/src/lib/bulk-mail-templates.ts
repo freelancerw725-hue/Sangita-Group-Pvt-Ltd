@@ -15,9 +15,30 @@ export interface BulkMailTemplate {
 }
 
 const MOCK_TEMPLATES: BulkMailTemplate[] = [
-  { id: 1, name: "Initial Outreach", category: "Initial Outreach", subject: "Quick idea for {{company}}", body: "Hi {{contact}},\n\nNoticed {{company}} on YouTube...", variables: ["company", "contact"] },
-  { id: 2, name: "Media Partnership", category: "Initial Outreach", subject: "Partnership opportunity for {{company}}", body: "Hello {{contact}},\n\nWe help media…", variables: ["company", "contact"] },
-  { id: 3, name: "Followup 1", category: "Followup 1", subject: "Re: {{company}}", body: "Just bumping…", variables: ["company"] },
+  {
+    id: 1,
+    name: "Initial Outreach",
+    category: "Initial Outreach",
+    subject: "Quick idea for {{company}}",
+    body: "Hi {{contact}},\n\nNoticed {{company}} on YouTube...",
+    variables: ["company", "contact"],
+  },
+  {
+    id: 2,
+    name: "Media Partnership",
+    category: "Initial Outreach",
+    subject: "Partnership opportunity for {{company}}",
+    body: "Hello {{contact}},\n\nWe help media…",
+    variables: ["company", "contact"],
+  },
+  {
+    id: 3,
+    name: "Followup 1",
+    category: "Followup 1",
+    subject: "Re: {{company}}",
+    body: "Just bumping…",
+    variables: ["company"],
+  },
 ];
 
 export async function fetchBulkMailTemplates(): Promise<BulkMailTemplate[]> {

@@ -10,7 +10,9 @@ const GMAIL_USER_ID = "me";
 
 function buildOAuthClient() {
   if (!isGmailEnabled()) {
-    throw new Error("Gmail OAuth is not configured. Set GOOGLE_OAUTH_CLIENT_ID, GOOGLE_OAUTH_CLIENT_SECRET, and GOOGLE_OAUTH_REDIRECT_URI.");
+    throw new Error(
+      "Gmail OAuth is not configured. Set GOOGLE_OAUTH_CLIENT_ID, GOOGLE_OAUTH_CLIENT_SECRET, and GOOGLE_OAUTH_REDIRECT_URI.",
+    );
   }
 
   const env = getEnv();
@@ -37,12 +39,18 @@ export function getGmailAuthUrl() {
 
 async function loadStoredTokens() {
   if (hasDatabaseUrl()) {
-    return getDbValue<{ refresh_token?: string; access_token?: string; expiry_date?: number }>(GMAIL_TOKEN_FILE, {});
+    return getDbValue<{ refresh_token?: string; access_token?: string; expiry_date?: number }>(
+      GMAIL_TOKEN_FILE,
+      {},
+    );
   }
   if (process.env.NODE_ENV === "production") {
     throw new Error("DATABASE_URL or POSTGRES_URL is required for production Gmail token storage.");
   }
-  return readLeadsFile<{ refresh_token?: string; access_token?: string; expiry_date?: number }>(GMAIL_TOKEN_FILE, {});
+  return readLeadsFile<{ refresh_token?: string; access_token?: string; expiry_date?: number }>(
+    GMAIL_TOKEN_FILE,
+    {},
+  );
 }
 
 async function storeTokens(tokens: Record<string, unknown>) {
@@ -74,7 +82,14 @@ async function getAuthorizedClient() {
   return oauth2Client;
 }
 
-function createRawMessage({ from, to, subject, html, threadId, attachments }: GmailSendPayload & { from: string }) {
+function createRawMessage({
+  from,
+  to,
+  subject,
+  html,
+  threadId,
+  attachments,
+}: GmailSendPayload & { from: string }) {
   const boundary = `swiftgrowth-${Date.now()}`;
   const headers = [
     `From: ${from}`,
@@ -111,7 +126,9 @@ function createRawMessage({ from, to, subject, html, threadId, attachments }: Gm
 
   bodyParts.push(`--${boundary}--`, "");
 
-  const raw = Buffer.from([...headers, "", ...bodyParts].join("\r\n"), "utf8").toString("base64url");
+  const raw = Buffer.from([...headers, "", ...bodyParts].join("\r\n"), "utf8").toString(
+    "base64url",
+  );
   return raw;
 }
 
@@ -165,13 +182,21 @@ export async function sendGmail(payload: GmailSendPayload) {
 export async function fetchGmailThread(threadId: string) {
   const oauth2Client = await getAuthorizedClient();
   const gmail = google.gmail({ version: "v1", auth: oauth2Client });
-  const response = await gmail.users.threads.get({ userId: GMAIL_USER_ID, id: threadId, format: "full" });
+  const response = await gmail.users.threads.get({
+    userId: GMAIL_USER_ID,
+    id: threadId,
+    format: "full",
+  });
   return response.data;
 }
 
 export async function syncRepliesForThread(threadId: string) {
   const oauth2Client = await getAuthorizedClient();
   const gmail = google.gmail({ version: "v1", auth: oauth2Client });
-  const response = await gmail.users.threads.get({ userId: GMAIL_USER_ID, id: threadId, format: "metadata" });
+  const response = await gmail.users.threads.get({
+    userId: GMAIL_USER_ID,
+    id: threadId,
+    format: "metadata",
+  });
   return response.data;
 }

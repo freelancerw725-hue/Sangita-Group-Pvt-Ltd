@@ -104,14 +104,10 @@ async function persistAll(): Promise<void> {
   }
 
   if (process.env.NODE_ENV === "production" && !hasDatabaseUrl()) return;
-  const arr = Array.from(memoryCache.values()).sort(
-    (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
-  ).slice(0, 500);
-  await updateJsonFile<AutomationJob[]>(
-    JOBS_FILE,
-    async () => arr,
-    [],
-  );
+  const arr = Array.from(memoryCache.values())
+    .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+    .slice(0, 500);
+  await updateJsonFile<AutomationJob[]>(JOBS_FILE, async () => arr, []);
 }
 
 export async function createJob(input: {
@@ -160,7 +156,10 @@ export async function getJob(jobId: string): Promise<AutomationJob | null> {
   return memoryCache.get(jobId) ?? null;
 }
 
-export async function updateJob(jobId: string, patch: Partial<AutomationJob>): Promise<AutomationJob | null> {
+export async function updateJob(
+  jobId: string,
+  patch: Partial<AutomationJob>,
+): Promise<AutomationJob | null> {
   await loadAll();
   const existing = memoryCache.get(jobId);
   if (!existing) return null;

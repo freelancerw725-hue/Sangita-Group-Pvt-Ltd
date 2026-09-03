@@ -22,9 +22,13 @@ export async function appendEmailEvent(event: EmailEvent): Promise<void> {
   if (process.env.NODE_ENV === "production") {
     throw new Error("DATABASE_URL or POSTGRES_URL is required for production email history.");
   }
-  await updateJsonFile<EmailEvent[]>(EMAIL_HISTORY_FILE, async (current) => {
-    return [event, ...current].slice(0, 500);
-  }, []);
+  await updateJsonFile<EmailEvent[]>(
+    EMAIL_HISTORY_FILE,
+    async (current) => {
+      return [event, ...current].slice(0, 500);
+    },
+    [],
+  );
 }
 
 export async function getEmailEventsForLead(leadId: string): Promise<EmailEvent[]> {

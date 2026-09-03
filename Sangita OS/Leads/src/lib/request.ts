@@ -13,7 +13,9 @@ export function parseFiltersFromSearchParams(searchParams: URLSearchParams): Lea
     maxSubscribers: parsePositiveNumber(searchParams.get("maxSubscribers") ?? undefined),
     country: searchParams.get("country") ?? undefined,
     keywordFilter: searchParams.get("keywordFilter") ?? undefined,
-    channelAge: ageValues.includes(channelAgeRaw as ChannelAgePreset) ? (channelAgeRaw as ChannelAgePreset) : "any",
+    channelAge: ageValues.includes(channelAgeRaw as ChannelAgePreset)
+      ? (channelAgeRaw as ChannelAgePreset)
+      : "any",
     sortBy: sortValues.includes(sortByRaw as SortBy) ? (sortByRaw as SortBy) : "subscribers",
   };
 }
@@ -21,8 +23,10 @@ export function parseFiltersFromSearchParams(searchParams: URLSearchParams): Lea
 export function leadFiltersToQuery(filters: LeadFilters): string {
   const params = new URLSearchParams();
   if (filters.keywords.length > 0) params.set("keywords", filters.keywords.join("\n"));
-  if (typeof filters.minSubscribers === "number") params.set("minSubscribers", String(filters.minSubscribers));
-  if (typeof filters.maxSubscribers === "number") params.set("maxSubscribers", String(filters.maxSubscribers));
+  if (typeof filters.minSubscribers === "number")
+    params.set("minSubscribers", String(filters.minSubscribers));
+  if (typeof filters.maxSubscribers === "number")
+    params.set("maxSubscribers", String(filters.maxSubscribers));
   if (filters.country) params.set("country", filters.country);
   if (filters.keywordFilter) params.set("keywordFilter", filters.keywordFilter);
   if (filters.channelAge) params.set("channelAge", filters.channelAge);

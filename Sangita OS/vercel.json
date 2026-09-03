@@ -1,0 +1,31 @@
+{
+  "version": 2,
+  "framework": "tanstack-start",
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "regions": ["bom1"],
+  "functions": {
+    "src/routes/api/cron/keyword-intelligence.ts": {
+      "maxDuration": 300
+    },
+    "src/routes/api/keyword-intelligence/run.ts": {
+      "maxDuration": 300
+    }
+  },
+  "crons": [
+    {
+      "path": "/api/cron/keyword-intelligence",
+      "schedule": "0 6 * * *",
+      "timezone": "Asia/Kolkata"
+    }
+  ],
+  "env": {
+    "SUPABASE_URL": "@supabase-url",
+    "SUPABASE_SERVICE_ROLE_KEY": "@supabase-service-role-key",
+    "LEAD_FINDER_BASE_URL": "@lead-finder-base-url",
+    "LEAD_FINDER_AUTOMATION_KEY": "@lead-finder-automation-key",
+    "KEYWORDS_API_KEY": "@keywords-api-key",
+    "CRON_SECRET": "@cron-secret"
+  }
+}

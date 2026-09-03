@@ -29,8 +29,8 @@ function Sidebar({ open, onClose }) {
       <div className={`sidebar-backdrop${open ? ' show' : ''}`} onClick={onClose} />
       <aside className={`sidebar${open ? ' open' : ''}`}>
         <div className="sidebar-brand">
-          <div className="brand-logo">SG</div>
-          <div className="brand-name">SwiftGrowth</div>
+          <img src="/Sanglogo.png" alt="Sangita Group" className="brand-logo" />
+          <div className="brand-name">Sangita Bulk Email</div>
         </div>
         <nav className="sidebar-nav">
           {NAV_ITEMS.map(({ to, label, icon: Icon, end }) => (

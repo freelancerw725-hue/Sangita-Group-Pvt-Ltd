@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { getLeadSheet, updateLeadSheetTemplate, updateLeadSheetLeads } from "@/lib/lead-sheets-store";
+import {
+  getLeadSheet,
+  updateLeadSheetTemplate,
+  updateLeadSheetLeads,
+} from "@/lib/lead-sheets-store";
 import { getBulkMailTemplate } from "@/lib/bulk-mail-templates";
 
 export const runtime = "nodejs";
@@ -24,15 +28,27 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
   if (!sheet) return NextResponse.json({ error: "Sheet not found." }, { status: 404 });
 
   let body: unknown;
-  try { body = await request.json(); } catch { return NextResponse.json({ error: "Invalid JSON." }, { status: 400 }); }
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON." }, { status: 400 });
+  }
   const parsed = patchSchema.safeParse(body);
-  if (!parsed.success) return NextResponse.json({ error: "Invalid patch.", details: parsed.error.flatten() }, { status: 400 });
+  if (!parsed.success)
+    return NextResponse.json(
+      { error: "Invalid patch.", details: parsed.error.flatten() },
+      { status: 400 },
+    );
 
   // Template selection (manual, no auto-send)
   if (parsed.data.templateId !== undefined) {
     const tpl = await getBulkMailTemplate(parsed.data.templateId);
     if (!tpl) return NextResponse.json({ error: "Template not found." }, { status: 404 });
-    const updated = await updateLeadSheetTemplate(id, { id: tpl.id, name: tpl.name, category: tpl.category });
+    const updated = await updateLeadSheetTemplate(id, {
+      id: tpl.id,
+      name: tpl.name,
+      category: tpl.category,
+    });
     return NextResponse.json({ sheet: updated });
   }
 

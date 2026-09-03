@@ -60,9 +60,7 @@ export function Topbar() {
         <span className="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-primary" />
       </button>
 
-      <div className="h-9 w-9 rounded-lg gradient-primary grid place-items-center text-white text-xs font-semibold">
-        SG
-      </div>
+      <img src="/Sanglogo.png" alt="Sangita Group" className="h-9 w-9 rounded-lg" />
     </header>
   );
 }

@@ -63,9 +63,7 @@ export function validateCreateInput(input: CreateKeywordInput) {
       input.priority < MIN_PRIORITY ||
       input.priority > MAX_PRIORITY
     ) {
-      throw new KeywordValidationError(
-        `priority must be integer ${MIN_PRIORITY}-${MAX_PRIORITY}`,
-      );
+      throw new KeywordValidationError(`priority must be integer ${MIN_PRIORITY}-${MAX_PRIORITY}`);
     }
   }
   if (input.status !== undefined && !["active", "paused", "completed"].includes(input.status)) {
@@ -96,9 +94,7 @@ export function validateUpdateInput(input: UpdateKeywordInput) {
       input.priority < MIN_PRIORITY ||
       input.priority > MAX_PRIORITY
     ) {
-      throw new KeywordValidationError(
-        `priority must be integer ${MIN_PRIORITY}-${MAX_PRIORITY}`,
-      );
+      throw new KeywordValidationError(`priority must be integer ${MIN_PRIORITY}-${MAX_PRIORITY}`);
     }
   }
   if (input.status !== undefined && !["active", "paused", "completed"].includes(input.status)) {
@@ -137,14 +133,8 @@ export function buildKeyword(
 /**
  * Check duplicate among existing keywords.
  */
-export function isDuplicate(
-  existing: Keyword[],
-  normalized: string,
-  excludeId?: string,
-): boolean {
-  return existing.some(
-    (k) => k.normalizedKeyword === normalized && k.id !== excludeId,
-  );
+export function isDuplicate(existing: Keyword[], normalized: string, excludeId?: string): boolean {
+  return existing.some((k) => k.normalizedKeyword === normalized && k.id !== excludeId);
 }
 
 /**
@@ -173,10 +163,7 @@ export function getTodayKey(date: Date = new Date()): string {
   return date.toISOString().slice(0, 10);
 }
 
-export function getDailyTargetInfo(
-  keyword: Keyword,
-  todaySearches: number,
-): DailyTargetInfo {
+export function getDailyTargetInfo(keyword: Keyword, todaySearches: number): DailyTargetInfo {
   const remaining = Math.max(0, keyword.dailyTarget - todaySearches);
   return {
     keywordId: keyword.id,
@@ -188,10 +175,7 @@ export function getDailyTargetInfo(
   };
 }
 
-export function hasReachedDailyTarget(
-  keyword: Keyword,
-  todaySearches: number,
-): boolean {
+export function hasReachedDailyTarget(keyword: Keyword, todaySearches: number): boolean {
   return todaySearches >= keyword.dailyTarget;
 }
 

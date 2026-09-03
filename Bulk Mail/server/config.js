@@ -13,6 +13,11 @@ if (fs.existsSync(envFile)) {
   } catch {
     // ignore malformed lines; defaults below still apply
   }
+} else {
+  // Fallback: try loading from current working directory
+  try {
+    process.loadEnvFile(path.join(process.cwd(), '.env'))
+  } catch {}
 }
 
 const env = process.env

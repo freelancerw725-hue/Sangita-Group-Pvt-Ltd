@@ -26,12 +26,23 @@ export interface LeadFinderStats {
     ready: number;
     draft: number;
   };
-  history: Array<{ id: string; searchKeyword: string; searchedAt: string; totalLeadsFound: number }>;
+  history: Array<{
+    id: string;
+    searchKeyword: string;
+    searchedAt: string;
+    totalLeadsFound: number;
+  }>;
 }
 
 export async function fetchLeadFinderStats(): Promise<LeadFinderStats | null> {
-  const base = process.env.LEAD_FINDER_BASE_URL?.trim() || process.env.LEAD_FINDER_URL?.trim() || "https://sangita-lead-finder.vercel.app";
-  const key = process.env.LEAD_FINDER_API_KEY?.trim() || process.env.LEAD_FINDER_AUTOMATION_KEY?.trim() || process.env.AUTOMATION_API_KEY?.trim();
+  const base =
+    process.env.LEAD_FINDER_BASE_URL?.trim() ||
+    process.env.LEAD_FINDER_URL?.trim() ||
+    "https://sangita-lead-finder.vercel.app";
+  const key =
+    process.env.LEAD_FINDER_API_KEY?.trim() ||
+    process.env.LEAD_FINDER_AUTOMATION_KEY?.trim() ||
+    process.env.AUTOMATION_API_KEY?.trim();
   if (!base) return null;
   const url = `${base.replace(/\/$/, "")}/api/automation/stats`;
   try {

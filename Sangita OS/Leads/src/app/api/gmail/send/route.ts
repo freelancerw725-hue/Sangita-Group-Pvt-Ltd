@@ -10,7 +10,10 @@ import { normalizeLeadRecord, shouldSendLeadEmail } from "@/lib/crm";
 export const runtime = "nodejs";
 
 const sendSchema = z.object({
-  leadIds: z.array(z.string().regex(/^[A-Za-z0-9_-]{3,120}$/)).min(1).max(100),
+  leadIds: z
+    .array(z.string().regex(/^[A-Za-z0-9_-]{3,120}$/))
+    .min(1)
+    .max(100),
   manualResend: z.boolean().optional(),
 });
 
@@ -88,7 +91,11 @@ export async function POST(request: Request) {
 
         results.push({ leadId, success: true });
       } catch (sendError) {
-        results.push({ leadId, success: false, error: sendError instanceof Error ? sendError.message : "Send failed." });
+        results.push({
+          leadId,
+          success: false,
+          error: sendError instanceof Error ? sendError.message : "Send failed.",
+        });
       }
     }
 

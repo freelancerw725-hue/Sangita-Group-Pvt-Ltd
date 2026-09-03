@@ -8,7 +8,8 @@ import { startCampaign, pauseCampaign, resumeCampaign, cancelCampaign, getCampai
 const router = Router()
 
 router.get('/campaigns', asyncHandler(async (req, res) => {
-  ok(res, { data: campaigns.listCampaigns(), stats: campaigns.getCampaignStats() })
+  const userTenantId = req.user ? req.user.tenant_id : null
+  ok(res, { data: campaigns.listCampaigns(userTenantId), stats: campaigns.getCampaignStats(userTenantId) })
 }))
 
 router.get('/campaigns/:id/recipients', asyncHandler(async (req, res) => {
@@ -16,7 +17,8 @@ router.get('/campaigns/:id/recipients', asyncHandler(async (req, res) => {
 }))
 
 router.get('/campaigns/:id', asyncHandler(async (req, res) => {
-  ok(res, campaigns.getCampaign(Number(req.params.id)))
+  const userTenantId = req.user ? req.user.tenant_id : null
+  ok(res, campaigns.getCampaign(userTenantId, Number(req.params.id)))
 }))
 
 router.post('/campaigns', validate(campaignCreateSchema), asyncHandler(async (req, res) => {

@@ -8,10 +8,15 @@ export const Route = createFileRoute("/api/lead-finder-stats")({
         try {
           const stats = await fetchLeadFinderStats();
           if (!stats) {
-            return new Response(JSON.stringify({ error: "Unable to fetch Lead Finder stats. Check LEAD_FINDER_BASE_URL." }), {
-              status: 502,
-              headers: { "content-type": "application/json" },
-            });
+            return new Response(
+              JSON.stringify({
+                error: "Unable to fetch Lead Finder stats. Check LEAD_FINDER_BASE_URL.",
+              }),
+              {
+                status: 502,
+                headers: { "content-type": "application/json" },
+              },
+            );
           }
           // Never expose internal keys — only stats
           return new Response(JSON.stringify(stats), {

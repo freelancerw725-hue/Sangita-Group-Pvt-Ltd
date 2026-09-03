@@ -33,7 +33,9 @@ function getPool() {
 
 async function ensureSchema() {
   if (!initialized) {
-    initialized = getPool().query(`
+    initialized = getPool()
+      .query(
+        `
       CREATE TABLE IF NOT EXISTS leads (
         channel_id TEXT PRIMARY KEY,
         data JSONB NOT NULL,
@@ -76,7 +78,9 @@ async function ensureSchema() {
         value JSONB NOT NULL,
         updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
       );
-    `).then(() => undefined);
+    `,
+      )
+      .then(() => undefined);
   }
 
   return initialized;
@@ -84,11 +88,15 @@ async function ensureSchema() {
 
 export async function getDbLeads(): Promise<LeadRecord[]> {
   await ensureSchema();
-  const result = await getPool().query<{ data: LeadRecord }>("SELECT data FROM leads ORDER BY last_updated DESC");
+  const result = await getPool().query<{ data: LeadRecord }>(
+    "SELECT data FROM leads ORDER BY last_updated DESC",
+  );
   return result.rows.map((row) => normalizeLeadRecord(row.data));
 }
 
-export async function upsertDbLeads(incoming: LeadRecord[]): Promise<{ leads: LeadRecord[]; skippedDuplicates: number }> {
+export async function upsertDbLeads(
+  incoming: LeadRecord[],
+): Promise<{ leads: LeadRecord[]; skippedDuplicates: number }> {
   await ensureSchema();
   const client = await getPool().connect();
   let skippedDuplicates = 0;
@@ -115,30 +123,38 @@ export async function upsertDbLeads(incoming: LeadRecord[]): Promise<{ leads: Le
   return { leads: await getDbLeads(), skippedDuplicates };
 }
 
-export async function updateDbLead(channelId: string, patch: Partial<LeadRecord>): Promise<LeadRecord | null> {
+export async function updateDbLead(
+  channelId: string,
+  patch: Partial<LeadRecord>,
+): Promise<LeadRecord | null> {
   await ensureSchema();
   const client = await getPool().connect();
 
   try {
     await client.query("BEGIN");
-    const current = await client.query<{ data: LeadRecord }>("SELECT data FROM leads WHERE channel_id = $1 FOR UPDATE", [channelId]);
+    const current = await client.query<{ data: LeadRecord }>(
+      "SELECT data FROM leads WHERE channel_id = $1 FOR UPDATE",
+      [channelId],
+    );
     const existing = current.rows[0]?.data;
     if (!existing) {
       await client.query("ROLLBACK");
       return null;
     }
 
-    const filteredPatch = Object.fromEntries(Object.entries(patch).filter(([, value]) => value !== undefined));
+    const filteredPatch = Object.fromEntries(
+      Object.entries(patch).filter(([, value]) => value !== undefined),
+    );
     const updated = normalizeLeadRecord({
       ...normalizeLeadRecord(existing),
       ...filteredPatch,
       lastUpdated: new Date().toISOString(),
     });
 
-    await client.query("UPDATE leads SET data = $2::jsonb, last_updated = NOW() WHERE channel_id = $1", [
-      channelId,
-      JSON.stringify(updated),
-    ]);
+    await client.query(
+      "UPDATE leads SET data = $2::jsonb, last_updated = NOW() WHERE channel_id = $1",
+      [channelId, JSON.stringify(updated)],
+    );
     await client.query("COMMIT");
     return updated;
   } catch (error) {
@@ -169,7 +185,9 @@ export async function appendDbSearchHistory(entry: SearchHistoryEntry): Promise<
 
 export async function getDbEmailHistory(): Promise<EmailEvent[]> {
   await ensureSchema();
-  const result = await getPool().query<{ data: EmailEvent }>("SELECT data FROM email_events ORDER BY sent_at DESC NULLS LAST LIMIT 500");
+  const result = await getPool().query<{ data: EmailEvent }>(
+    "SELECT data FROM email_events ORDER BY sent_at DESC NULLS LAST LIMIT 500",
+  );
   return result.rows.map((row) => row.data);
 }
 
@@ -184,13 +202,22 @@ export async function appendDbEmailEvent(event: EmailEvent): Promise<void> {
        event_type = EXCLUDED.event_type,
        sent_at = EXCLUDED.sent_at,
        data = EXCLUDED.data`,
-    [event.id, event.leadId, event.threadId, event.eventType, event.sentAt || null, JSON.stringify(event)],
+    [
+      event.id,
+      event.leadId,
+      event.threadId,
+      event.eventType,
+      event.sentAt || null,
+      JSON.stringify(event),
+    ],
   );
 }
 
 export async function getDbValue<T>(key: string, fallback: T): Promise<T> {
   await ensureSchema();
-  const result = await getPool().query<{ value: T }>("SELECT value FROM app_kv WHERE key = $1", [key]);
+  const result = await getPool().query<{ value: T }>("SELECT value FROM app_kv WHERE key = $1", [
+    key,
+  ]);
   return result.rows[0]?.value ?? fallback;
 }
 

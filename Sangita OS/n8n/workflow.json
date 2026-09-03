@@ -17,10 +17,7 @@
       "name": "Schedule Trigger",
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
-      "position": [
-        0,
-        0
-      ],
+      "position": [0, 0],
       "notes": "Every 30 minutes. Adjust cron for production. Daily-target is enforced by Sangita OS \u2014 n8n never calculates it."
     },
     {
@@ -48,10 +45,7 @@
       "name": "GET Sangita OS /api/keywords/next",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [
-        260,
-        0
-      ],
+      "position": [260, 0],
       "notes": "Source of truth for eligibility. Returns 204 when no keyword. Never hard-code keywords."
     },
     {
@@ -70,10 +64,7 @@
       "name": "IF Keyword Available?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
-      "position": [
-        520,
-        0
-      ]
+      "position": [520, 0]
     },
     {
       "parameters": {
@@ -108,10 +99,7 @@
       "name": "POST Sangita OS usage: search_started",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [
-        760,
-        -80
-      ]
+      "position": [760, -80]
     },
     {
       "parameters": {
@@ -146,10 +134,7 @@
       "name": "POST Lead Finder /api/automation/lead-search",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [
-        760,
-        100
-      ]
+      "position": [760, 100]
     },
     {
       "parameters": {
@@ -160,10 +145,7 @@
       "name": "Wait 60s",
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
-      "position": [
-        1000,
-        100
-      ]
+      "position": [1000, 100]
     },
     {
       "parameters": {
@@ -185,10 +167,7 @@
       "name": "GET Lead Finder job status",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [
-        1220,
-        100
-      ]
+      "position": [1220, 100]
     },
     {
       "parameters": {
@@ -206,10 +185,7 @@
       "name": "IF status == running?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
-      "position": [
-        1440,
-        100
-      ]
+      "position": [1440, 100]
     },
     {
       "parameters": {
@@ -253,10 +229,7 @@
       "name": "POST Sangita OS usage: search_completed",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [
-        1660,
-        -40
-      ]
+      "position": [1660, -40]
     },
     {
       "parameters": {
@@ -292,10 +265,7 @@
       "name": "POST Sangita OS usage: failed_search",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [
-        1660,
-        140
-      ]
+      "position": [1660, 140]
     },
     {
       "parameters": {
@@ -313,10 +283,7 @@
       "name": "IF status == failed?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
-      "position": [
-        1440,
-        200
-      ],
+      "position": [1440, 200],
       "notes": "Secondary branch: if job polling reaches failed after running, still report to Sangita OS."
     },
     {
@@ -352,10 +319,7 @@
       "name": "POST Lead Finder /api/automation/verify",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [
-        1880,
-        -40
-      ],
+      "position": [1880, -40],
       "notes": "Batch verify new leads. Sets emailVerificationStatus + pending_review. Valid does NOT auto-approve."
     },
     {
@@ -367,10 +331,7 @@
       "name": "Wait 30s (verify)",
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
-      "position": [
-        2100,
-        -40
-      ]
+      "position": [2100, -40]
     },
     {
       "parameters": {
@@ -392,10 +353,7 @@
       "name": "GET Verify job status",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [
-        2320,
-        -40
-      ]
+      "position": [2320, -40]
     },
     {
       "parameters": {
@@ -413,10 +371,7 @@
       "name": "IF verify running?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
-      "position": [
-        2540,
-        -40
-      ]
+      "position": [2540, -40]
     }
   ],
   "connections": {

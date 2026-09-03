@@ -67,7 +67,10 @@ function buildVerificationSummary(leads: LeadRecord[]) {
   return summary;
 }
 
-export async function createLeadSheet(input: { name: string; leadIds: string[] }): Promise<LeadSheet> {
+export async function createLeadSheet(input: {
+  name: string;
+  leadIds: string[];
+}): Promise<LeadSheet> {
   const name = input.name.trim();
   if (!name) throw new Error("Sheet name is required");
   if (!input.leadIds?.length) throw new Error("leadIds is required");
@@ -138,7 +141,10 @@ export async function updateLeadSheetTemplate(
   return updated;
 }
 
-export async function updateLeadSheetLeads(id: string, leadIds: string[]): Promise<LeadSheet | null> {
+export async function updateLeadSheetLeads(
+  id: string,
+  leadIds: string[],
+): Promise<LeadSheet | null> {
   await loadAll();
   const existing = memoryCache.get(id);
   if (!existing) return null;
@@ -181,12 +187,16 @@ export async function _clearSheetsForTests(): Promise<void> {
   memoryCache.clear();
   memoryLoaded = false;
   if (hasDatabaseUrl()) {
-    try { await setDbValue(DB_KEY, {}); } catch {}
+    try {
+      await setDbValue(DB_KEY, {});
+    } catch {}
     memoryLoaded = true;
     return;
   }
   if (process.env.NODE_ENV !== "production") {
-    try { await updateJsonFile<LeadSheet[]>(SHEETS_FILE, async () => [], []); } catch {}
+    try {
+      await updateJsonFile<LeadSheet[]>(SHEETS_FILE, async () => [], []);
+    } catch {}
   }
   memoryLoaded = true;
 }

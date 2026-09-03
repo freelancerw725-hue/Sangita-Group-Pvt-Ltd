@@ -534,6 +534,10 @@ function processQueueRow(queueRow, options = {}) {
       throw result.error || new Error('SMTP send failed')
     }
     const sentAt = nowSql()
+    const { accepted, rejected } = result
+    const deliveredAddresses = accepted ? accepted.filter((a) => !rejected || !rejected.includes(a)) : []
+    const rejectedAddresses = rejected || []
+
     markQueue(queueRow.id, { status: 'sent', error: null, sent_at: sentAt, provider_message_id: result.messageId || null })
     markEmail(queueRow.email_id, {
       status: 'sent',
@@ -542,14 +546,25 @@ function processQueueRow(queueRow, options = {}) {
       sent_at: sentAt,
     })
     markRecipientStatus(queueRow, 'sent', null, sentAt)
+    // Record 'sent' event with full metadata
     db.prepare(
       `INSERT INTO email_events (email_id, campaign_id, lead_id, type, meta, provider_message_id, occurred_at) VALUES (?, ?, ?, 'sent', ?, ?, ?)`
     ).run(queueRow.email_id, queueRow.campaign_id, queueRow.lead_id, JSON.stringify({ providerMessageId: result.messageId || null, accepted: result.accepted, rejected: result.rejected }), result.messageId || null, sentAt)
-    // Check if provider reports rejections
-    if (result.rejected && result.rejected.length > 0) {
-      db.prepare(
-        `INSERT INTO email_events (email_id, campaign_id, lead_id, type, meta, occurred_at) VALUES (?, ?, ?, 'rejected', ?, ?)`
-      ).run(queueRow.email_id, queueRow.campaign_id, queueRow.lead_id, JSON.stringify({ rejected: result.rejected }), sentAt)
+    // Record 'delivered' events for accepted addresses
+    if (deliveredAddresses && deliveredAddresses.length > 0) {
+      for (const addr of deliveredAddresses) {
+        db.prepare(
+          `INSERT INTO email_events (email_id, campaign_id, lead_id, type, meta, provider_message_id, occurred_at) VALUES (?, ?, ?, 'delivered', ?, ?, ?)`
+        ).run(queueRow.email_id, queueRow.campaign_id, queueRow.lead_id, JSON.stringify({ deliveredTo: addr, providerMessageId: result.messageId || null }), result.messageId || null, sentAt)
+      }
+    }
+    // Record 'rejected' events for rejected addresses
+    if (rejectedAddresses && rejectedAddresses.length > 0) {
+      for (const addr of rejectedAddresses) {
+        db.prepare(
+          `INSERT INTO email_events (email_id, campaign_id, lead_id, type, meta, occurred_at) VALUES (?, ?, ?, 'rejected', ?, ?)`
+        ).run(queueRow.email_id, queueRow.campaign_id, queueRow.lead_id, JSON.stringify({ rejectedTo: addr }), sentAt)
+      }
     }
     markLeadContacted(queueRow, sentAt)
     recordActivity('email_sent', queueRow.company, `Email sent to ${queueRow.email}`)

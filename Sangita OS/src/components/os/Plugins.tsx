@@ -28,7 +28,9 @@ export function Plugins() {
   return (
     <div className="rounded-xl border border-border bg-card p-5">
       <div className="text-sm font-semibold">Plugins</div>
-      <div className="text-xs text-muted-foreground mb-4">Open your connected apps — each opens in a new tab</div>
+      <div className="text-xs text-muted-foreground mb-4">
+        Open your connected apps — each opens in a new tab
+      </div>
       <div className="grid gap-3 sm:grid-cols-2">
         {/* Leads */}
         <div className="rounded-xl border border-border bg-background p-4 flex flex-col">
@@ -69,7 +71,9 @@ export function Plugins() {
             )}
           </div>
           {!leadsUrl && (
-            <div className="mt-2 text-[10px] text-muted-foreground">Set VITE_LEADS_BASE_URL in .env to enable</div>
+            <div className="mt-2 text-[10px] text-muted-foreground">
+              Set VITE_LEADS_BASE_URL in .env to enable
+            </div>
           )}
         </div>
 
@@ -112,7 +116,9 @@ export function Plugins() {
             )}
           </div>
           {!bulkMailUrl && (
-            <div className="mt-2 text-[10px] text-muted-foreground">Set VITE_BULK_MAIL_BASE_URL in .env to enable</div>
+            <div className="mt-2 text-[10px] text-muted-foreground">
+              Set VITE_BULK_MAIL_BASE_URL in .env to enable
+            </div>
           )}
         </div>
       </div>

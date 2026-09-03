@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { getKeywordStore } from "@/lib/keywords/store";
+import { getKeywordStore } from "@/lib/dashboard/server";
 import { KeywordValidationError, validateUpdateInput } from "@/lib/keywords/service";
 import { normalizeKeyword } from "@/lib/keywords/normalize";
 import { isAuthorized, unauthorizedResponse, json, errorJson } from "@/lib/keywords/api-auth";
@@ -38,10 +38,14 @@ export const Route = createFileRoute("/api/keywords/$id")({
             const normalized = normalizeKeyword(patch.keyword as string);
             const dup = await store.findByNormalized(normalized);
             if (dup && dup.id !== id) {
-              return errorJson(`Duplicate keyword: "${patch.keyword}" already exists as "${dup.keyword}"`, 409, {
-                code: "DUPLICATE_KEYWORD",
-                existing: dup,
-              });
+              return errorJson(
+                `Duplicate keyword: "${patch.keyword}" already exists as "${dup.keyword}"`,
+                409,
+                {
+                  code: "DUPLICATE_KEYWORD",
+                  existing: dup,
+                },
+              );
             }
             // patch normalized too
             (patch as Record<string, unknown>).normalizedKeyword = normalized;

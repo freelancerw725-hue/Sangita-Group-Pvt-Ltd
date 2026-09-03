@@ -2,7 +2,14 @@ import { buildStats, mergeAndDedupeLeads } from "@/lib/lead-utils";
 import { LeadRecord, SearchHistoryEntry } from "@/lib/types";
 import { readLeadsFile, updateJsonFile } from "@/lib/storage";
 import { normalizeLeadRecord } from "@/lib/crm";
-import { appendDbSearchHistory, getDbLeads, getDbSearchHistory, hasDatabaseUrl, updateDbLead, upsertDbLeads } from "@/lib/db";
+import {
+  appendDbSearchHistory,
+  getDbLeads,
+  getDbSearchHistory,
+  hasDatabaseUrl,
+  updateDbLead,
+  upsertDbLeads,
+} from "@/lib/db";
 
 const LEADS_FILE = "leads.json";
 const HISTORY_FILE = "search-history.json";
@@ -28,7 +35,9 @@ export async function getSearchHistory(): Promise<SearchHistoryEntry[]> {
   return readLeadsFile<SearchHistoryEntry[]>(HISTORY_FILE, []);
 }
 
-export async function saveNewLeads(leads: LeadRecord[]): Promise<{ leads: LeadRecord[]; skippedDuplicates: number }> {
+export async function saveNewLeads(
+  leads: LeadRecord[],
+): Promise<{ leads: LeadRecord[]; skippedDuplicates: number }> {
   if (hasDatabaseUrl()) {
     return upsertDbLeads(leads);
   }
@@ -41,7 +50,10 @@ export async function saveNewLeads(leads: LeadRecord[]): Promise<{ leads: LeadRe
     async (current) => {
       const normalizedCurrent = current.map((lead) => normalizeLeadRecord(lead));
       const normalizedIncoming = leads.map((lead) => normalizeLeadRecord(lead));
-      const { merged, skippedDuplicates } = mergeAndDedupeLeads(normalizedCurrent, normalizedIncoming);
+      const { merged, skippedDuplicates } = mergeAndDedupeLeads(
+        normalizedCurrent,
+        normalizedIncoming,
+      );
       result = { leads: merged, skippedDuplicates };
       return merged;
     },

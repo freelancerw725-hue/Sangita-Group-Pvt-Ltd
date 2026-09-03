@@ -80,6 +80,14 @@ export async function createCampaignFromBatch({ batchId, templateId, sendAt }) {
       throw badRequest('Lead Sheet not found in Lead Finder')
     }
     // If fetch_failed or no_base, we fallback to local check — allow
+    // For local testing without Leads project running, allow if we have a valid local import record
+    if (sheetCheck.reason === 'fetch_failed' || sheetCheck.reason === 'no_base') {
+      // Local fallback: check if batch_imports record exists and has imported leads
+      const localImport = db.prepare(`SELECT * FROM batch_imports WHERE sheet_id = ?`).get(sheetId)
+      if (!localImport || localImport.imported === 0) {
+        throw badRequest('Lead Sheet not found locally or no leads imported')
+      }
+    }
   }
 
   // 5. Verify template exists using existing template service
@@ -92,7 +100,7 @@ export async function createCampaignFromBatch({ batchId, templateId, sendAt }) {
     ORDER BY id DESC LIMIT 1
   `).get(batchId, templateId)
   if (existing) {
-    const campaign = getCampaign(existing.id)
+    const campaign = getCampaign(undefined, existing.id)
     // Calculate recipient count for response (reuse existing logic)
     const recipientCount = db.prepare(`SELECT COUNT(*) c FROM campaign_recipients WHERE campaign_id = ?`).get(existing.id).c
     return {

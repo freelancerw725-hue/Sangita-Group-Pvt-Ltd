@@ -104,9 +104,13 @@ export function CampaignMonitor() {
         <div>
           <div className="text-sm font-semibold flex items-center gap-2">
             <Mail className="h-4 w-4 text-primary" /> Campaign Monitoring
-            <span className="text-[10px] px-1.5 py-0.5 rounded bg-primary/10 text-primary">Bulk Mail</span>
+            <span className="text-[10px] px-1.5 py-0.5 rounded bg-primary/10 text-primary">
+              Bulk Mail
+            </span>
           </div>
-          <div className="text-xs text-muted-foreground">Manual control — existing queue & worker remain source of truth</div>
+          <div className="text-xs text-muted-foreground">
+            Manual control — existing queue & worker remain source of truth
+          </div>
         </div>
         <button
           onClick={() => selectedId && fetchProgress(selectedId)}
@@ -134,7 +138,9 @@ export function CampaignMonitor() {
       )}
 
       {loading ? (
-        <div className="py-8 text-center text-sm text-muted-foreground">Loading campaign progress...</div>
+        <div className="py-8 text-center text-sm text-muted-foreground">
+          Loading campaign progress...
+        </div>
       ) : error ? (
         <div className="py-4 text-sm text-amber-400 flex items-center gap-2">
           <AlertTriangle className="h-4 w-4" /> {error}
@@ -148,7 +154,9 @@ export function CampaignMonitor() {
           <div className="flex items-start justify-between gap-4">
             <div>
               <div className="text-sm font-semibold">{progress.name}</div>
-              <div className="text-xs text-muted-foreground">ID {progress.campaignId} · {progress.progress.total} recipients</div>
+              <div className="text-xs text-muted-foreground">
+                ID {progress.campaignId} · {progress.progress.total} recipients
+              </div>
             </div>
             <span
               className={`text-[10px] px-2 py-1 rounded-full border font-medium uppercase tracking-widest ${
@@ -184,17 +192,23 @@ export function CampaignMonitor() {
 
           <div className="mt-4 grid grid-cols-3 gap-3">
             <div className="rounded-lg border border-border bg-card p-3">
-              <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Daily Limit</div>
+              <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                Daily Limit
+              </div>
               <div className="text-lg font-semibold mt-1">{progress.dailyLimit}</div>
               <div className="text-xs text-muted-foreground">per sender/day</div>
             </div>
             <div className="rounded-lg border border-border bg-card p-3">
-              <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Sent Today</div>
+              <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                Sent Today
+              </div>
               <div className="text-lg font-semibold mt-1">{progress.todaySent}</div>
               <div className="text-xs text-emerald-400">remaining {progress.remainingToday}</div>
             </div>
             <div className="rounded-lg border border-border bg-card p-3">
-              <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Pending</div>
+              <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                Pending
+              </div>
               <div className="text-lg font-semibold mt-1">{progress.progress.pending}</div>
               <div className="text-xs text-muted-foreground">retry {progress.progress.retry}</div>
             </div>
@@ -226,7 +240,8 @@ export function CampaignMonitor() {
                 disabled={!!actionLoading}
                 className="h-8 px-3 rounded-md border border-amber-500/30 bg-amber-500/10 text-amber-400 text-xs inline-flex items-center gap-1.5 hover:bg-amber-500/20"
               >
-                <Pause className="h-3.5 w-3.5" /> {actionLoading === "pause" ? "Pausing..." : "Pause"}
+                <Pause className="h-3.5 w-3.5" />{" "}
+                {actionLoading === "pause" ? "Pausing..." : "Pause"}
               </button>
             )}
             {isPaused && (
@@ -235,7 +250,8 @@ export function CampaignMonitor() {
                 disabled={!!actionLoading}
                 className="h-8 px-3 rounded-md bg-emerald-600 text-white text-xs inline-flex items-center gap-1.5 hover:bg-emerald-500"
               >
-                <Play className="h-3.5 w-3.5" /> {actionLoading === "resume" ? "Resuming..." : "Resume"}
+                <Play className="h-3.5 w-3.5" />{" "}
+                {actionLoading === "resume" ? "Resuming..." : "Resume"}
               </button>
             )}
             {!isCancelled && !isCompleted && (
@@ -244,17 +260,23 @@ export function CampaignMonitor() {
                 disabled={!!actionLoading}
                 className="h-8 px-3 rounded-md border border-rose-500/30 bg-rose-500/10 text-rose-400 text-xs inline-flex items-center gap-1.5 hover:bg-rose-500/20"
               >
-                <XCircle className="h-3.5 w-3.5" /> {actionLoading === "cancel" ? "Cancelling..." : "Cancel"}
+                <XCircle className="h-3.5 w-3.5" />{" "}
+                {actionLoading === "cancel" ? "Cancelling..." : "Cancel"}
               </button>
             )}
-            {isCompleted && <span className="text-xs text-muted-foreground inline-flex items-center gap-1"><Clock className="h-3.5 w-3.5" /> Completed — worker auto-detected terminal states</span>}
+            {isCompleted && (
+              <span className="text-xs text-muted-foreground inline-flex items-center gap-1">
+                <Clock className="h-3.5 w-3.5" /> Completed — worker auto-detected terminal states
+              </span>
+            )}
           </div>
         </div>
       )}
 
       {campaigns.length === 0 && !loading && !error && (
         <div className="text-xs text-muted-foreground mt-3">
-          No Bulk Mail campaigns yet. Import a Lead Finder sheet → Create Draft Campaign → Start to queue.
+          No Bulk Mail campaigns yet. Import a Lead Finder sheet → Create Draft Campaign → Start to
+          queue.
         </div>
       )}
     </div>

@@ -22,7 +22,7 @@ app.use((req, res, next) => {
   res.on('finish', () => {
     const ms = Date.now() - start
     if (config.isProd ? res.statusCode >= 500 || ms > 1000 : req.path.startsWith('/api')) {
-      logger.info(`${req.method} ${req.originalUrl} → ${res.statusCode} (${ms}ms)`)
+      logger.info(`${req.method} ${req.originalUrl} -> ${res.statusCode} (${ms}ms)`)
     }
   })
   next()
@@ -49,7 +49,7 @@ app.use(errorHandler)
 
 app.listen(config.port, () => {
   logger.info(`API server listening on http://localhost:${config.port} (${config.env})`)
-  if (!config.isProd) logger.info(`Vite dev server should proxy /api → http://localhost:${config.port}`)
+  if (!config.isProd) logger.info(`Vite dev server should proxy /api -> http://localhost:${config.port}`)
 })
 
 if (config.env !== 'test') {

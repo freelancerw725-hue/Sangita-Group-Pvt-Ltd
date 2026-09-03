@@ -100,7 +100,7 @@ export interface LeadRecord {
   viewCount: number;
   description: string;
   country: string;
-  state: string; // Indian state inferred from search keyword/location context
+  state: string;
   customUrl: string;
   thumbnail: string;
   publishedAt: string;
@@ -142,16 +142,18 @@ export interface LeadRecord {
   notes: string;
   addedDate: string;
   lastUpdated: string;
-  // Phase 3 — Email verification
   emailVerificationStatus?: EmailVerificationStatus;
   verifiedAt?: string | null;
   verificationProvider?: string | null;
   verificationError?: string | null;
   verificationScore?: number | null;
-  // Phase 3 — Manual approval (pending_review is default after verification)
   approvalStatus?: ApprovalStatus;
   approvedAt?: string | null;
   rejectedAt?: string | null;
+  company?: string;
+  contact?: string;
+  keyword?: string;
+  matchedKeywords?: string;
 }
 
 export interface LeadSheet {
@@ -196,6 +198,7 @@ export interface SearchHistoryEntry {
   keywords: string[];
   searchedAt: string;
   totalLeadsFound: number;
+  filters?: LeadFilters;
 }
 
 export interface DashboardStats {

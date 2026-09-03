@@ -46,7 +46,14 @@ const defaultFilters: LeadFilters = {
   sortBy: "subscribers",
 };
 
-const leadStatuses: LeadStatus[] = ["New", "Contacted", "Replied", "Interested", "Closed", "Not Interested"];
+const leadStatuses: LeadStatus[] = [
+  "New",
+  "Contacted",
+  "Replied",
+  "Interested",
+  "Closed",
+  "Not Interested",
+];
 const sortOptions: { value: SortBy; label: string }[] = [
   { value: "subscribers", label: "Subscribers" },
   { value: "views", label: "Views" },
@@ -98,7 +105,9 @@ const STICKY_EMAIL_LEFT = 552;
 const STICKY_VERIFICATION_LEFT = 812;
 
 function formatCompactNumber(value: number) {
-  return new Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 }).format(value);
+  return new Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 }).format(
+    value,
+  );
 }
 
 function formatDate(value: string) {
@@ -164,15 +173,23 @@ function getLatestSearchLeads(leads: LeadRecord[], history: SearchHistoryEntry[]
   return leads.filter((lead) => lead.searchKeyword.trim() === latestKeyword);
 }
 
-export default function LeadDashboard({ initialLeads, initialHistory, initialStats }: LeadDashboardProps) {
+export default function LeadDashboard({
+  initialLeads,
+  initialHistory,
+  initialStats,
+}: LeadDashboardProps) {
   const [leads, setLeads] = useState<LeadRecord[]>(initialLeads);
-  const [currentSearchLeads, setCurrentSearchLeads] = useState<LeadRecord[]>(() => getLatestSearchLeads(initialLeads, initialHistory));
+  const [currentSearchLeads, setCurrentSearchLeads] = useState<LeadRecord[]>(() =>
+    getLatestSearchLeads(initialLeads, initialHistory),
+  );
   const [history, setHistory] = useState<SearchHistoryEntry[]>(initialHistory);
   const [stats, setStats] = useState<DashboardStats>(initialStats);
   const [keywordsText, setKeywordsText] = useState("");
   const [filters, setFilters] = useState<LeadFilters>(defaultFilters);
   const [tableMode, setTableMode] = useState<"current" | "all">("current");
-  const [selectedChannelId, setSelectedChannelId] = useState<string>(getLatestSearchLeads(initialLeads, initialHistory)[0]?.channelId ?? "");
+  const [selectedChannelId, setSelectedChannelId] = useState<string>(
+    getLatestSearchLeads(initialLeads, initialHistory)[0]?.channelId ?? "",
+  );
   const [statusMessage, setStatusMessage] = useState("Ready");
   const [selectedLeadIds, setSelectedLeadIds] = useState<string[]>([]);
   const [isBulkSending, setIsBulkSending] = useState(false);
@@ -192,7 +209,21 @@ export default function LeadDashboard({ initialLeads, initialHistory, initialSta
   const [leadStatusFilter, setLeadStatusFilter] = useState("all");
   const [addedDateFilter, setAddedDateFilter] = useState("");
   const [subscriberPreset, setSubscriberPreset] = useState("any");
-  const [leadSheets, setLeadSheets] = useState<{ id: string; name: string; createdAt: string; totalLeads: number; approvedLeads: number; rejectedLeads: number; verificationSummary?: { valid: number; invalid: number }; templateName?: string; templateId?: number; sendAt?: string; status: string }[]>([]);
+  const [leadSheets, setLeadSheets] = useState<
+    {
+      id: string;
+      name: string;
+      createdAt: string;
+      totalLeads: number;
+      approvedLeads: number;
+      rejectedLeads: number;
+      verificationSummary?: { valid: number; invalid: number };
+      templateName?: string;
+      templateId?: number;
+      sendAt?: string;
+      status: string;
+    }[]
+  >([]);
   const [templates, setTemplates] = useState<{ id: number; name: string; category: string }[]>([]);
   const [selectedTemplateId, setSelectedTemplateId] = useState("");
   const [sheetName, setSheetName] = useState("");
@@ -203,21 +234,34 @@ export default function LeadDashboard({ initialLeads, initialHistory, initialSta
 
   const filteredLeads = useMemo(() => {
     const list = [...activeLeads].filter((lead) => {
-      if (filters.minSubscribers !== undefined && lead.subscribers < filters.minSubscribers) return false;
-      if (filters.maxSubscribers !== undefined && lead.subscribers > filters.maxSubscribers) return false;
-      if (isTruthy(filters.country ?? "") && !lead.country.trim().toLowerCase().includes(filters.country?.trim().toLowerCase() ?? "")) return false;
+      if (filters.minSubscribers !== undefined && lead.subscribers < filters.minSubscribers)
+        return false;
+      if (filters.maxSubscribers !== undefined && lead.subscribers > filters.maxSubscribers)
+        return false;
+      if (
+        isTruthy(filters.country ?? "") &&
+        !lead.country
+          .trim()
+          .toLowerCase()
+          .includes(filters.country?.trim().toLowerCase() ?? "")
+      )
+        return false;
       if (isTruthy(filters.keywordFilter ?? "")) {
-        const haystack = `${lead.channelName} ${lead.description} ${lead.searchKeyword}`.toLowerCase();
+        const haystack =
+          `${lead.channelName} ${lead.description} ${lead.searchKeyword}`.toLowerCase();
         if (!haystack.includes(filters.keywordFilter!.trim().toLowerCase())) return false;
       }
       if (filters.channelAge && filters.channelAge !== "any") {
         if (filters.channelAge === "under1" && !(lead.ageInYears < 1)) return false;
-        if (filters.channelAge === "oneToThree" && !(lead.ageInYears >= 1 && lead.ageInYears < 3)) return false;
-        if (filters.channelAge === "threeToFive" && !(lead.ageInYears >= 3 && lead.ageInYears < 5)) return false;
+        if (filters.channelAge === "oneToThree" && !(lead.ageInYears >= 1 && lead.ageInYears < 3))
+          return false;
+        if (filters.channelAge === "threeToFive" && !(lead.ageInYears >= 3 && lead.ageInYears < 5))
+          return false;
         if (filters.channelAge === "overFive" && !(lead.ageInYears >= 5)) return false;
       }
       if (sourceFilter !== "all" && lead.source !== sourceFilter) return false;
-      if (verificationFilter !== "all" && lead.emailVerificationStatus !== verificationFilter) return false;
+      if (verificationFilter !== "all" && lead.emailVerificationStatus !== verificationFilter)
+        return false;
       if (approvalFilter !== "all" && lead.approvalStatus !== approvalFilter) return false;
       if (leadStatusFilter !== "all" && lead.leadStatus !== leadStatusFilter) return false;
       if (addedDateFilter && lead.addedDate !== addedDateFilter) return false;
@@ -231,19 +275,28 @@ export default function LeadDashboard({ initialLeads, initialHistory, initialSta
     });
 
     return list;
-  }, [filters, activeLeads, sourceFilter, verificationFilter, approvalFilter, leadStatusFilter, addedDateFilter]);
+  }, [
+    filters,
+    activeLeads,
+    sourceFilter,
+    verificationFilter,
+    approvalFilter,
+    leadStatusFilter,
+    addedDateFilter,
+  ]);
 
   const selectedLeadsCount = selectedLeadIds.length;
-  const eligibleLeadIds = useMemo(() =>
-    leads
-      .filter((lead) => {
-        const hasValidEmail = lead.email && lead.email.includes("@");
-        const isVerified = lead.emailVerificationStatus === "valid";
-        const isNotApproved = lead.approvalStatus !== "approved" && lead.approved !== true;
-        return hasValidEmail && isVerified && isNotApproved;
-      })
-      .map((lead) => lead.channelId),
-    [leads]
+  const eligibleLeadIds = useMemo(
+    () =>
+      leads
+        .filter((lead) => {
+          const hasValidEmail = lead.email && lead.email.includes("@");
+          const isVerified = lead.emailVerificationStatus === "valid";
+          const isNotApproved = lead.approvalStatus !== "approved" && lead.approved !== true;
+          return hasValidEmail && isVerified && isNotApproved;
+        })
+        .map((lead) => lead.channelId),
+    [leads],
   );
 
   const totalPages = Math.ceil(filteredLeads.length / pageSize);
@@ -292,7 +345,11 @@ export default function LeadDashboard({ initialLeads, initialHistory, initialSta
       setSelectedChannelId(activeLeads[0].channelId);
       return;
     }
-    if (selectedChannelId && !activeLeads.some((lead) => lead.channelId === selectedChannelId) && activeLeads[0]) {
+    if (
+      selectedChannelId &&
+      !activeLeads.some((lead) => lead.channelId === selectedChannelId) &&
+      activeLeads[0]
+    ) {
       setSelectedChannelId(activeLeads[0].channelId);
     }
   }, [selectedChannelId, activeLeads]);
@@ -370,17 +427,23 @@ export default function LeadDashboard({ initialLeads, initialHistory, initialSta
     if (selectedLeadIds.length === 0) return;
     setIsVerifying(true);
     try {
-      await Promise.all(selectedLeadIds.map(async (channelId) => {
-        const response = await fetch(`/api/leads/${encodeURIComponent(channelId)}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ approved: true }),
-        });
-        if (!response.ok) return;
-        const updated = (await response.json()) as { lead: LeadRecord };
-        setLeads((current) => current.map((lead) => (lead.channelId === channelId ? updated.lead : lead)));
-        setCurrentSearchLeads((current) => current.map((lead) => (lead.channelId === channelId ? updated.lead : lead)));
-      }));
+      await Promise.all(
+        selectedLeadIds.map(async (channelId) => {
+          const response = await fetch(`/api/leads/${encodeURIComponent(channelId)}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ approved: true }),
+          });
+          if (!response.ok) return;
+          const updated = (await response.json()) as { lead: LeadRecord };
+          setLeads((current) =>
+            current.map((lead) => (lead.channelId === channelId ? updated.lead : lead)),
+          );
+          setCurrentSearchLeads((current) =>
+            current.map((lead) => (lead.channelId === channelId ? updated.lead : lead)),
+          );
+        }),
+      );
       setStatusMessage(`Verified ${selectedLeadIds.length} leads.`);
     } catch {
       setStatusMessage("Verification failed");
@@ -393,17 +456,23 @@ export default function LeadDashboard({ initialLeads, initialHistory, initialSta
     if (selectedLeadIds.length === 0) return;
     setIsApproving(true);
     try {
-      await Promise.all(selectedLeadIds.map(async (channelId) => {
-        const response = await fetch(`/api/leads/${encodeURIComponent(channelId)}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ approvalStatus: "approved" }),
-        });
-        if (!response.ok) return;
-        const updated = (await response.json()) as { lead: LeadRecord };
-        setLeads((current) => current.map((lead) => (lead.channelId === channelId ? updated.lead : lead)));
-        setCurrentSearchLeads((current) => current.map((lead) => (lead.channelId === channelId ? updated.lead : lead)));
-      }));
+      await Promise.all(
+        selectedLeadIds.map(async (channelId) => {
+          const response = await fetch(`/api/leads/${encodeURIComponent(channelId)}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ approvalStatus: "approved" }),
+          });
+          if (!response.ok) return;
+          const updated = (await response.json()) as { lead: LeadRecord };
+          setLeads((current) =>
+            current.map((lead) => (lead.channelId === channelId ? updated.lead : lead)),
+          );
+          setCurrentSearchLeads((current) =>
+            current.map((lead) => (lead.channelId === channelId ? updated.lead : lead)),
+          );
+        }),
+      );
       setStatusMessage(`Approved ${selectedLeadIds.length} leads.`);
     } catch {
       setStatusMessage("Approval failed");
@@ -416,17 +485,23 @@ export default function LeadDashboard({ initialLeads, initialHistory, initialSta
     if (selectedLeadIds.length === 0) return;
     setIsRejecting(true);
     try {
-      await Promise.all(selectedLeadIds.map(async (channelId) => {
-        const response = await fetch(`/api/leads/${encodeURIComponent(channelId)}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ approvalStatus: "rejected" }),
-        });
-        if (!response.ok) return;
-        const updated = (await response.json()) as { lead: LeadRecord };
-        setLeads((current) => current.map((lead) => (lead.channelId === channelId ? updated.lead : lead)));
-        setCurrentSearchLeads((current) => current.map((lead) => (lead.channelId === channelId ? updated.lead : lead)));
-      }));
+      await Promise.all(
+        selectedLeadIds.map(async (channelId) => {
+          const response = await fetch(`/api/leads/${encodeURIComponent(channelId)}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ approvalStatus: "rejected" }),
+          });
+          if (!response.ok) return;
+          const updated = (await response.json()) as { lead: LeadRecord };
+          setLeads((current) =>
+            current.map((lead) => (lead.channelId === channelId ? updated.lead : lead)),
+          );
+          setCurrentSearchLeads((current) =>
+            current.map((lead) => (lead.channelId === channelId ? updated.lead : lead)),
+          );
+        }),
+      );
       setStatusMessage(`Rejected ${selectedLeadIds.length} leads.`);
     } catch {
       setStatusMessage("Rejection failed");
@@ -442,17 +517,23 @@ export default function LeadDashboard({ initialLeads, initialHistory, initialSta
     }
     setIsVerifying(true);
     try {
-      await Promise.all(eligibleLeadIds.map(async (channelId) => {
-        const response = await fetch(`/api/leads/${encodeURIComponent(channelId)}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ approved: true }),
-        });
-        if (!response.ok) return;
-        const updated = (await response.json()) as { lead: LeadRecord };
-        setLeads((current) => current.map((lead) => (lead.channelId === channelId ? updated.lead : lead)));
-        setCurrentSearchLeads((current) => current.map((lead) => (lead.channelId === channelId ? updated.lead : lead)));
-      }));
+      await Promise.all(
+        eligibleLeadIds.map(async (channelId) => {
+          const response = await fetch(`/api/leads/${encodeURIComponent(channelId)}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ approved: true }),
+          });
+          if (!response.ok) return;
+          const updated = (await response.json()) as { lead: LeadRecord };
+          setLeads((current) =>
+            current.map((lead) => (lead.channelId === channelId ? updated.lead : lead)),
+          );
+          setCurrentSearchLeads((current) =>
+            current.map((lead) => (lead.channelId === channelId ? updated.lead : lead)),
+          );
+        }),
+      );
       setStatusMessage(`Verified ${eligibleLeadIds.length} eligible leads.`);
     } catch {
       setStatusMessage("Bulk verification failed");
@@ -462,7 +543,9 @@ export default function LeadDashboard({ initialLeads, initialHistory, initialSta
   }
 
   async function createSheetFromApproved() {
-    const approvedLeadIds = leads.filter((l) => l.approvalStatus === "approved" || l.approved).map((l) => l.channelId);
+    const approvedLeadIds = leads
+      .filter((l) => l.approvalStatus === "approved" || l.approved)
+      .map((l) => l.channelId);
     if (approvedLeadIds.length === 0) {
       setStatusMessage("No approved leads to create sheet from.");
       return;
@@ -471,7 +554,10 @@ export default function LeadDashboard({ initialLeads, initialHistory, initialSta
       const response = await fetch("/api/lead-sheets", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: sheetName || `Leads ${new Date().toLocaleDateString()}`, leadIds: approvedLeadIds }),
+        body: JSON.stringify({
+          name: sheetName || `Leads ${new Date().toLocaleDateString()}`,
+          leadIds: approvedLeadIds,
+        }),
       });
       if (!response.ok) throw new Error("Sheet creation failed");
       const data = await response.json();
@@ -504,12 +590,19 @@ export default function LeadDashboard({ initialLeads, initialHistory, initialSta
       const r = await fetch(`/api/lead-sheets/${encodeURIComponent(sheetId)}/handoff`);
       const d = await r.json().catch(() => ({}));
       if (!r.ok) throw new Error(d.error || "Handoff not ready");
-      setStatusMessage(`READY_FOR_BULK_MAIL: ${d.handoff.sheetName} → Template ${d.handoff.templateName} (${d.handoff.total} leads). No email sent.`);
-    } catch (e) { setStatusMessage(e instanceof Error ? e.message : "Handoff failed"); }
+      setStatusMessage(
+        `READY_FOR_BULK_MAIL: ${d.handoff.sheetName} → Template ${d.handoff.templateName} (${d.handoff.total} leads). No email sent.`,
+      );
+    } catch (e) {
+      setStatusMessage(e instanceof Error ? e.message : "Handoff failed");
+    }
   }
 
   async function attachTemplate(sheetId: string) {
-    if (!selectedTemplateId) { setStatusMessage("Select a template first."); return; }
+    if (!selectedTemplateId) {
+      setStatusMessage("Select a template first.");
+      return;
+    }
     try {
       const r = await fetch(`/api/lead-sheets/${encodeURIComponent(sheetId)}`, {
         method: "PATCH",
@@ -520,7 +613,9 @@ export default function LeadDashboard({ initialLeads, initialHistory, initialSta
       if (!r.ok) throw new Error(d.error || "Attach template failed");
       setStatusMessage(`Template attached: ${d.sheet.templateName} → ${d.sheet.status}`);
       refreshSheets();
-    } catch (e) { setStatusMessage(e instanceof Error ? e.message : "Attach failed"); }
+    } catch (e) {
+      setStatusMessage(e instanceof Error ? e.message : "Attach failed");
+    }
   }
 
   async function downloadExport(format: "csv" | "xlsx") {
@@ -536,7 +631,8 @@ export default function LeadDashboard({ initialLeads, initialHistory, initialSta
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = format === "csv" ? "swiftgrowthdigital-leads.csv" : "swiftgrowthdigital-leads.xlsx";
+      a.download =
+        format === "csv" ? "swiftgrowthdigital-leads.csv" : "swiftgrowthdigital-leads.xlsx";
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -556,7 +652,9 @@ export default function LeadDashboard({ initialLeads, initialHistory, initialSta
   }
 
   function selectVisibleLeads() {
-    setSelectedLeadIds((current) => Array.from(new Set([...current, ...paginatedLeads.map((lead) => lead.channelId)])));
+    setSelectedLeadIds((current) =>
+      Array.from(new Set([...current, ...paginatedLeads.map((lead) => lead.channelId)])),
+    );
   }
 
   function clearSelectedLeads() {
@@ -599,7 +697,12 @@ export default function LeadDashboard({ initialLeads, initialHistory, initialSta
 
     try {
       const sendableLeadIds = leads
-        .filter((lead) => (lead.verified ?? lead.approved) && (lead.sendMail ?? lead.approved) && !lead.emailSentAt)
+        .filter(
+          (lead) =>
+            (lead.verified ?? lead.approved) &&
+            (lead.sendMail ?? lead.approved) &&
+            !lead.emailSentAt,
+        )
         .map((lead) => lead.channelId);
       if (sendableLeadIds.length === 0) {
         setStatusMessage("No verified leads available for sending.");
@@ -688,7 +791,11 @@ export default function LeadDashboard({ initialLeads, initialHistory, initialSta
         const error = await response.json().catch(() => ({}));
         throw new Error(error.error || "Sheets sync failed");
       }
-      const data = (await response.json()) as { appended: number; skippedExisting: number; sheetName: string };
+      const data = (await response.json()) as {
+        appended: number;
+        skippedExisting: number;
+        sheetName: string;
+      };
       setStatusMessage(`Synced ${data.appended} leads to ${data.sheetName}.`);
     } catch (error) {
       setStatusMessage(error instanceof Error ? error.message : "Sheets sync failed");
@@ -717,7 +824,9 @@ export default function LeadDashboard({ initialLeads, initialHistory, initialSta
                 disabled={isVerifying || selectedLeadsCount === 0}
               >
                 <BadgeCheck className="h-4 w-4" />
-                {isVerifying ? "Verifying..." : `Verify Selected${selectedLeadsCount ? ` (${selectedLeadsCount})` : ""}`}
+                {isVerifying
+                  ? "Verifying..."
+                  : `Verify Selected${selectedLeadsCount ? ` (${selectedLeadsCount})` : ""}`}
               </button>
               <button
                 type="button"
@@ -784,7 +893,9 @@ export default function LeadDashboard({ initialLeads, initialHistory, initialSta
               </button>
               <button
                 type="button"
-                onClick={() => { void (tableMode === "all" ? refreshLeadLists("all") : runSearch()); }}
+                onClick={() => {
+                  void (tableMode === "all" ? refreshLeadLists("all") : runSearch());
+                }}
                 className="inline-flex items-center gap-2 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50"
               >
                 <RefreshCw className="h-4 w-4" />
@@ -816,7 +927,9 @@ export default function LeadDashboard({ initialLeads, initialHistory, initialSta
                   className="w-full rounded-md border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                 >
                   {sourceOptions.map((option) => (
-                    <option key={option.value} value={option.value}>{option.label}</option>
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
                   ))}
                 </select>
               </Field>
@@ -824,7 +937,9 @@ export default function LeadDashboard({ initialLeads, initialHistory, initialSta
                 <input
                   type="text"
                   value={filters.country ?? ""}
-                  onChange={(event) => setFilters((current) => ({ ...current, country: event.target.value }))}
+                  onChange={(event) =>
+                    setFilters((current) => ({ ...current, country: event.target.value }))
+                  }
                   placeholder="All Countries"
                   className="w-full rounded-md border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                 />
@@ -833,7 +948,9 @@ export default function LeadDashboard({ initialLeads, initialHistory, initialSta
                 <select
                   value={subscriberPreset}
                   onChange={(event) => {
-                    const preset = subscriberPresets.find((item) => item.value === event.target.value) ?? subscriberPresets[0];
+                    const preset =
+                      subscriberPresets.find((item) => item.value === event.target.value) ??
+                      subscriberPresets[0];
                     setSubscriberPreset(preset.value);
                     setFilters((current) => ({
                       ...current,
@@ -844,7 +961,9 @@ export default function LeadDashboard({ initialLeads, initialHistory, initialSta
                   className="w-full rounded-md border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                 >
                   {subscriberPresets.map((preset) => (
-                    <option key={preset.value} value={preset.value}>{preset.label}</option>
+                    <option key={preset.value} value={preset.value}>
+                      {preset.label}
+                    </option>
                   ))}
                 </select>
               </Field>
@@ -855,7 +974,9 @@ export default function LeadDashboard({ initialLeads, initialHistory, initialSta
                   className="w-full rounded-md border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                 >
                   {verificationOptions.map((option) => (
-                    <option key={option.value} value={option.value}>{option.label}</option>
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
                   ))}
                 </select>
               </Field>
@@ -866,7 +987,9 @@ export default function LeadDashboard({ initialLeads, initialHistory, initialSta
                   className="w-full rounded-md border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                 >
                   {approvalOptions.map((option) => (
-                    <option key={option.value} value={option.value}>{option.label}</option>
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
                   ))}
                 </select>
               </Field>
@@ -878,7 +1001,9 @@ export default function LeadDashboard({ initialLeads, initialHistory, initialSta
                 >
                   <option value="all">All</option>
                   {leadStatuses.map((status) => (
-                    <option key={status} value={status}>{status}</option>
+                    <option key={status} value={status}>
+                      {status}
+                    </option>
                   ))}
                 </select>
               </Field>
@@ -964,14 +1089,18 @@ export default function LeadDashboard({ initialLeads, initialHistory, initialSta
                   className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                 >
                   {[10, 25, 50, 100].map((size) => (
-                    <option key={size} value={size}>{size} per page</option>
+                    <option key={size} value={size}>
+                      {size} per page
+                    </option>
                   ))}
                 </select>
               </div>
             </div>
             <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600">
               <p>{statusMessage}</p>
-              {sendResultMessage ? <p className="mt-1 text-slate-500">{sendResultMessage}</p> : null}
+              {sendResultMessage ? (
+                <p className="mt-1 text-slate-500">{sendResultMessage}</p>
+              ) : null}
             </div>
           </div>
           <div className="lead-table-scroll overflow-x-auto overflow-y-hidden max-w-full">
@@ -981,7 +1110,9 @@ export default function LeadDashboard({ initialLeads, initialHistory, initialSta
                   <Th sticky="left" left={STICKY_CHECKBOX_LEFT} className="w-8 shrink-0">
                     <input
                       type="checkbox"
-                      checked={selectedLeadsCount > 0 && selectedLeadsCount === paginatedLeads.length}
+                      checked={
+                        selectedLeadsCount > 0 && selectedLeadsCount === paginatedLeads.length
+                      }
                       onChange={(event) => {
                         if (event.target.checked) selectVisibleLeads();
                         else clearSelectedLeads();
@@ -989,15 +1120,31 @@ export default function LeadDashboard({ initialLeads, initialHistory, initialSta
                       className="h-3.5 w-3.5 rounded border-slate-300 text-slate-900 focus:ring-slate-500"
                     />
                   </Th>
-                  <Th sticky="left" left={STICKY_INDEX_LEFT} className="w-8 shrink-0">#</Th>
-                  <Th sticky="left" left={STICKY_NAME_LEFT} className="min-w-[240px] max-w-[320px]">Lead / Channel</Th>
+                  <Th sticky="left" left={STICKY_INDEX_LEFT} className="w-8 shrink-0">
+                    #
+                  </Th>
+                  <Th sticky="left" left={STICKY_NAME_LEFT} className="min-w-[240px] max-w-[320px]">
+                    Lead / Channel
+                  </Th>
                   <Th className="min-w-[100px] max-w-[140px]">Category</Th>
                   <Th className="min-w-[70px] max-w-[100px] shrink-0">Country</Th>
                   <Th className="min-w-[80px] max-w-[100px] shrink-0">Subscribers</Th>
                   <Th className="min-w-[70px] max-w-[90px] shrink-0">Views</Th>
                   <Th className="min-w-[50px] max-w-[70px] shrink-0">Videos</Th>
-                  <Th sticky="left" left={STICKY_EMAIL_LEFT} className="min-w-[180px] max-w-[240px]">Email</Th>
-                  <Th sticky="left" left={STICKY_VERIFICATION_LEFT} className="min-w-[100px] max-w-[130px] shrink-0">Verification</Th>
+                  <Th
+                    sticky="left"
+                    left={STICKY_EMAIL_LEFT}
+                    className="min-w-[180px] max-w-[240px]"
+                  >
+                    Email
+                  </Th>
+                  <Th
+                    sticky="left"
+                    left={STICKY_VERIFICATION_LEFT}
+                    className="min-w-[100px] max-w-[130px] shrink-0"
+                  >
+                    Verification
+                  </Th>
                   <Th className="min-w-[90px] max-w-[120px] shrink-0">Approval</Th>
                   <Th className="min-w-[60px] max-w-[80px] shrink-0">Age</Th>
                   <Th className="min-w-[90px] max-w-[110px] shrink-0">Lead Score</Th>
@@ -1021,10 +1168,18 @@ export default function LeadDashboard({ initialLeads, initialHistory, initialSta
                         className="h-3.5 w-3.5 rounded border-slate-300 text-slate-900 focus:ring-slate-500"
                       />
                     </Td>
-                    <Td sticky="left" left={STICKY_INDEX_LEFT} className="w-8 shrink-0 text-center text-slate-500 font-mono">
+                    <Td
+                      sticky="left"
+                      left={STICKY_INDEX_LEFT}
+                      className="w-8 shrink-0 text-center text-slate-500 font-mono"
+                    >
                       {(safeCurrentPage - 1) * pageSize + index + 1}
                     </Td>
-                    <Td sticky="left" left={STICKY_NAME_LEFT} className="min-w-[240px] max-w-[320px]">
+                    <Td
+                      sticky="left"
+                      left={STICKY_NAME_LEFT}
+                      className="min-w-[240px] max-w-[320px]"
+                    >
                       <div className="flex items-center gap-2 py-1.5">
                         {lead.thumbnail ? (
                           <Image
@@ -1042,7 +1197,9 @@ export default function LeadDashboard({ initialLeads, initialHistory, initialSta
                         )}
                         <div className="min-w-0">
                           <div className="flex items-center gap-1.5">
-                            <p className="truncate font-medium text-slate-900 text-sm">{lead.channelName}</p>
+                            <p className="truncate font-medium text-slate-900 text-sm">
+                              {lead.channelName}
+                            </p>
                             <a
                               href={lead.channelUrl}
                               target="_blank"
@@ -1053,7 +1210,9 @@ export default function LeadDashboard({ initialLeads, initialHistory, initialSta
                               <ExternalLink className="h-3 w-3" />
                             </a>
                           </div>
-                          <p className="truncate text-[11px] text-slate-500">{lead.searchKeyword}</p>
+                          <p className="truncate text-[11px] text-slate-500">
+                            {lead.searchKeyword}
+                          </p>
                         </div>
                       </div>
                     </Td>
@@ -1062,20 +1221,43 @@ export default function LeadDashboard({ initialLeads, initialHistory, initialSta
                         {lead.source || "youtube"}
                       </span>
                     </Td>
-                    <Td className="min-w-[70px] max-w-[100px] shrink-0 whitespace-nowrap">{lead.country || "—"}</Td>
-                    <Td className="min-w-[80px] max-w-[100px] shrink-0 whitespace-nowrap font-mono tabular-nums">{formatCompactNumber(lead.subscribers)}</Td>
-                    <Td className="min-w-[70px] max-w-[90px] shrink-0 whitespace-nowrap font-mono tabular-nums">{formatCompactNumber(lead.viewCount)}</Td>
-                    <Td className="min-w-[50px] max-w-[70px] shrink-0 whitespace-nowrap font-mono tabular-nums">{formatCompactNumber(lead.videoCount)}</Td>
-                    <Td sticky="left" left={STICKY_EMAIL_LEFT} className="min-w-[180px] max-w-[240px]">
+                    <Td className="min-w-[70px] max-w-[100px] shrink-0 whitespace-nowrap">
+                      {lead.country || "—"}
+                    </Td>
+                    <Td className="min-w-[80px] max-w-[100px] shrink-0 whitespace-nowrap font-mono tabular-nums">
+                      {formatCompactNumber(lead.subscribers)}
+                    </Td>
+                    <Td className="min-w-[70px] max-w-[90px] shrink-0 whitespace-nowrap font-mono tabular-nums">
+                      {formatCompactNumber(lead.viewCount)}
+                    </Td>
+                    <Td className="min-w-[50px] max-w-[70px] shrink-0 whitespace-nowrap font-mono tabular-nums">
+                      {formatCompactNumber(lead.videoCount)}
+                    </Td>
+                    <Td
+                      sticky="left"
+                      left={STICKY_EMAIL_LEFT}
+                      className="min-w-[180px] max-w-[240px]"
+                    >
                       {lead.email ? (
-                        <a href={`mailto:${lead.email}`} className="text-blue-600 hover:underline truncate block max-w-full text-sm">{lead.email}</a>
+                        <a
+                          href={`mailto:${lead.email}`}
+                          className="text-blue-600 hover:underline truncate block max-w-full text-sm"
+                        >
+                          {lead.email}
+                        </a>
                       ) : (
                         <span className="text-slate-400">—</span>
                       )}
                     </Td>
-                    <Td sticky="left" left={STICKY_VERIFICATION_LEFT} className="min-w-[100px] max-w-[130px] shrink-0">
+                    <Td
+                      sticky="left"
+                      left={STICKY_VERIFICATION_LEFT}
+                      className="min-w-[100px] max-w-[130px] shrink-0"
+                    >
                       {lead.emailVerificationStatus ? (
-                        <span className={`inline-flex rounded-full border px-1.5 py-0.5 text-[11px] font-medium whitespace-nowrap ${verificationBadge(lead.emailVerificationStatus)}`}>
+                        <span
+                          className={`inline-flex rounded-full border px-1.5 py-0.5 text-[11px] font-medium whitespace-nowrap ${verificationBadge(lead.emailVerificationStatus)}`}
+                        >
                           {lead.emailVerificationStatus.replace("_", " ")}
                         </span>
                       ) : (
@@ -1084,32 +1266,48 @@ export default function LeadDashboard({ initialLeads, initialHistory, initialSta
                     </Td>
                     <Td className="min-w-[90px] max-w-[120px] shrink-0">
                       {lead.approvalStatus ? (
-                        <span className={`inline-flex rounded-full border px-1.5 py-0.5 text-[11px] font-medium whitespace-nowrap ${approvalBadge(lead.approvalStatus)}`}>
-                          {lead.approvalStatus === "pending_review" ? "Pending" : lead.approvalStatus}
+                        <span
+                          className={`inline-flex rounded-full border px-1.5 py-0.5 text-[11px] font-medium whitespace-nowrap ${approvalBadge(lead.approvalStatus)}`}
+                        >
+                          {lead.approvalStatus === "pending_review"
+                            ? "Pending"
+                            : lead.approvalStatus}
                         </span>
                       ) : (
-                        <span className={`inline-flex rounded-full border px-1.5 py-0.5 text-[11px] font-medium whitespace-nowrap ${lead.approved ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-slate-100 text-slate-600 border-slate-200"}`}>
+                        <span
+                          className={`inline-flex rounded-full border px-1.5 py-0.5 text-[11px] font-medium whitespace-nowrap ${lead.approved ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-slate-100 text-slate-600 border-slate-200"}`}
+                        >
                           {lead.approved ? "Approved" : "Pending"}
                         </span>
                       )}
                     </Td>
-                    <Td className="min-w-[60px] max-w-[80px] shrink-0 whitespace-nowrap text-slate-600">{formatAge(lead.ageInYears)}</Td>
+                    <Td className="min-w-[60px] max-w-[80px] shrink-0 whitespace-nowrap text-slate-600">
+                      {formatAge(lead.ageInYears)}
+                    </Td>
                     <Td className="min-w-[90px] max-w-[110px] shrink-0">
-                      <span className={`inline-flex rounded-full border px-1.5 py-0.5 text-[11px] font-medium whitespace-nowrap ${badgeClasses(lead.leadScore)}`}>
+                      <span
+                        className={`inline-flex rounded-full border px-1.5 py-0.5 text-[11px] font-medium whitespace-nowrap ${badgeClasses(lead.leadScore)}`}
+                      >
                         {lead.leadScore}
                       </span>
                     </Td>
                     <Td className="min-w-[80px] max-w-[100px] shrink-0 whitespace-nowrap">
                       <div className="flex items-center gap-1">
                         <button
-                          onClick={(e) => { e.stopPropagation(); setSelectedChannelId(lead.channelId); }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedChannelId(lead.channelId);
+                          }}
                           className="inline-flex items-center justify-center p-1 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded transition"
                           title="View details"
                         >
                           <ExternalLink className="h-3.5 w-3.5" />
                         </button>
                         <button
-                          onClick={(e) => { e.stopPropagation(); toggleLeadSelection(lead.channelId); }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleLeadSelection(lead.channelId);
+                          }}
                           className="inline-flex items-center justify-center p-1 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded transition"
                           title="Select"
                         >
@@ -1157,7 +1355,9 @@ export default function LeadDashboard({ initialLeads, initialHistory, initialSta
               </button>
               {pageButtons.map((page, index) => (
                 <div key={page} className="flex items-center gap-2">
-                  {index > 0 && page - pageButtons[index - 1] > 1 ? <span className="text-slate-400">...</span> : null}
+                  {index > 0 && page - pageButtons[index - 1] > 1 ? (
+                    <span className="text-slate-400">...</span>
+                  ) : null}
                   <button
                     type="button"
                     onClick={() => setCurrentPage(page)}
@@ -1195,7 +1395,11 @@ export default function LeadDashboard({ initialLeads, initialHistory, initialSta
                 placeholder="Sheet name e.g. Bihar News Outreach - 27 Aug"
                 className="rounded-md border border-slate-200 px-3 py-2 text-sm"
               />
-              <button type="button" onClick={() => void createSheetFromApproved()} className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800">
+              <button
+                type="button"
+                onClick={() => void createSheetFromApproved()}
+                className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800"
+              >
                 Create Sheet from Approved
               </button>
             </div>
@@ -1205,9 +1409,15 @@ export default function LeadDashboard({ initialLeads, initialHistory, initialSta
                   <tr>
                     <th className="px-3 py-2 text-left text-xs font-semibold uppercase">Sheet</th>
                     <th className="px-3 py-2 text-left text-xs font-semibold uppercase">Leads</th>
-                    <th className="px-3 py-2 text-left text-xs font-semibold uppercase">Approved / Rejected</th>
-                    <th className="px-3 py-2 text-left text-xs font-semibold uppercase">Verification</th>
-                    <th className="px-3 py-2 text-left text-xs font-semibold uppercase">Template</th>
+                    <th className="px-3 py-2 text-left text-xs font-semibold uppercase">
+                      Approved / Rejected
+                    </th>
+                    <th className="px-3 py-2 text-left text-xs font-semibold uppercase">
+                      Verification
+                    </th>
+                    <th className="px-3 py-2 text-left text-xs font-semibold uppercase">
+                      Template
+                    </th>
                     <th className="px-3 py-2 text-left text-xs font-semibold uppercase">Send At</th>
                     <th className="px-3 py-2 text-left text-xs font-semibold uppercase">Status</th>
                     <th className="px-3 py-2 text-left text-xs font-semibold uppercase">Actions</th>
@@ -1215,43 +1425,124 @@ export default function LeadDashboard({ initialLeads, initialHistory, initialSta
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {leadSheets.length === 0 ? (
-                    <tr><td colSpan={8} className="px-3 py-6 text-center text-sm text-slate-500">No sheets yet. Approve some leads and create one.</td></tr>
-                  ) : leadSheets.map((s) => (
-                    <tr key={s.id}>
-                      <td className="px-3 py-2 font-medium">{s.name}<br/><span className="text-xs text-slate-500">{new Date(s.createdAt ?? s.createdAt).toLocaleDateString()}</span></td>
-                      <td className="px-3 py-2">{s.totalLeads}</td>
-                      <td className="px-3 py-2">{s.approvedLeads} / {s.rejectedLeads}</td>
-                      <td className="px-3 py-2 text-xs">{s.verificationSummary ? `${s.verificationSummary.valid ?? 0} valid, ${s.verificationSummary.invalid ?? 0} invalid` : "-"}</td>
-                      <td className="px-3 py-2">
-                        <select value={selectedTemplateId} onChange={(e) => setSelectedTemplateId(e.target.value)} className="rounded-md border border-slate-200 px-2 py-1 text-xs">
-                          <option value="">Select template</option>
-                          {templates.map((tpl) => <option key={tpl.id} value={String(tpl.id)}>{tpl.name} ({tpl.category})</option>)}
-                        </select>
-                        <button type="button" onClick={() => void attachTemplate(s.id)} className="ml-2 rounded-md border border-slate-200 px-2 py-1 text-xs hover:bg-slate-50">Attach</button>
-                        {s.templateName ? <div className="mt-1 text-xs text-emerald-600">{s.templateName}</div> : null}
+                    <tr>
+                      <td colSpan={8} className="px-3 py-6 text-center text-sm text-slate-500">
+                        No sheets yet. Approve some leads and create one.
                       </td>
-                      <td className="px-3 py-2 text-xs">
-                        {s.sendAt ? new Date(s.sendAt).toLocaleString() : <span className="text-slate-400">Not scheduled</span>}
-                        <div className="mt-1 flex gap-1">
-                          <input type="datetime-local" id={`sendAt-${s.id}`} defaultValue={s.sendAt ? new Date(new Date(s.sendAt).getTime() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16) : ""} className="w-32 rounded border border-slate-200 px-1 py-0.5 text-[10px]" />
-                          <button type="button" onClick={async () => {
-                            const el = document.getElementById(`sendAt-${s.id}`) as HTMLInputElement;
-                            const val = el?.value ? new Date(el.value).toISOString() : null;
-                            const res = await fetch(`/api/lead-sheets/${s.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ sendAt: val }) });
-                            const data = await res.json().catch(() => ({}));
-                            if (!res.ok) alert(data.error || "Failed");
-                            else location.reload();
-                          }} className="rounded border border-slate-200 px-1 py-0.5 text-[10px] hover:bg-slate-50">Set</button>
-                        </div>
-                      </td>
-                      <td className="px-3 py-2"><span className={`rounded-full border px-2 py-1 text-xs ${s.status === "scheduled" ? "bg-sky-50 text-sky-700 border-sky-200" : s.status === "ready_for_bulk_mail" ? "bg-emerald-50 text-emerald-700 border-emerald-200" : s.status === "sending" ? "bg-amber-50 text-amber-700 border-amber-200" : "bg-slate-100 text-slate-600"}`}>{s.status}</span></td>
-                      <td className="px-3 py-2"><button type="button" onClick={() => void handoffSheet(s.id)} className="rounded-md bg-blue-600 px-2 py-1 text-xs text-white hover:bg-blue-500">Handoff</button></td>
                     </tr>
-                  ))}
+                  ) : (
+                    leadSheets.map((s) => (
+                      <tr key={s.id}>
+                        <td className="px-3 py-2 font-medium">
+                          {s.name}
+                          <br />
+                          <span className="text-xs text-slate-500">
+                            {new Date(s.createdAt ?? s.createdAt).toLocaleDateString()}
+                          </span>
+                        </td>
+                        <td className="px-3 py-2">{s.totalLeads}</td>
+                        <td className="px-3 py-2">
+                          {s.approvedLeads} / {s.rejectedLeads}
+                        </td>
+                        <td className="px-3 py-2 text-xs">
+                          {s.verificationSummary
+                            ? `${s.verificationSummary.valid ?? 0} valid, ${s.verificationSummary.invalid ?? 0} invalid`
+                            : "-"}
+                        </td>
+                        <td className="px-3 py-2">
+                          <select
+                            value={selectedTemplateId}
+                            onChange={(e) => setSelectedTemplateId(e.target.value)}
+                            className="rounded-md border border-slate-200 px-2 py-1 text-xs"
+                          >
+                            <option value="">Select template</option>
+                            {templates.map((tpl) => (
+                              <option key={tpl.id} value={String(tpl.id)}>
+                                {tpl.name} ({tpl.category})
+                              </option>
+                            ))}
+                          </select>
+                          <button
+                            type="button"
+                            onClick={() => void attachTemplate(s.id)}
+                            className="ml-2 rounded-md border border-slate-200 px-2 py-1 text-xs hover:bg-slate-50"
+                          >
+                            Attach
+                          </button>
+                          {s.templateName ? (
+                            <div className="mt-1 text-xs text-emerald-600">{s.templateName}</div>
+                          ) : null}
+                        </td>
+                        <td className="px-3 py-2 text-xs">
+                          {s.sendAt ? (
+                            new Date(s.sendAt).toLocaleString()
+                          ) : (
+                            <span className="text-slate-400">Not scheduled</span>
+                          )}
+                          <div className="mt-1 flex gap-1">
+                            <input
+                              type="datetime-local"
+                              id={`sendAt-${s.id}`}
+                              defaultValue={
+                                s.sendAt
+                                  ? new Date(
+                                      new Date(s.sendAt).getTime() -
+                                        new Date().getTimezoneOffset() * 60000,
+                                    )
+                                      .toISOString()
+                                      .slice(0, 16)
+                                  : ""
+                              }
+                              className="w-32 rounded border border-slate-200 px-1 py-0.5 text-[10px]"
+                            />
+                            <button
+                              type="button"
+                              onClick={async () => {
+                                const el = document.getElementById(
+                                  `sendAt-${s.id}`,
+                                ) as HTMLInputElement;
+                                const val = el?.value ? new Date(el.value).toISOString() : null;
+                                const res = await fetch(`/api/lead-sheets/${s.id}`, {
+                                  method: "PATCH",
+                                  headers: { "Content-Type": "application/json" },
+                                  body: JSON.stringify({ sendAt: val }),
+                                });
+                                const data = await res.json().catch(() => ({}));
+                                if (!res.ok) alert(data.error || "Failed");
+                                else location.reload();
+                              }}
+                              className="rounded border border-slate-200 px-1 py-0.5 text-[10px] hover:bg-slate-50"
+                            >
+                              Set
+                            </button>
+                          </div>
+                        </td>
+                        <td className="px-3 py-2">
+                          <span
+                            className={`rounded-full border px-2 py-1 text-xs ${s.status === "scheduled" ? "bg-sky-50 text-sky-700 border-sky-200" : s.status === "ready_for_bulk_mail" ? "bg-emerald-50 text-emerald-700 border-emerald-200" : s.status === "sending" ? "bg-amber-50 text-amber-700 border-amber-200" : "bg-slate-100 text-slate-600"}`}
+                          >
+                            {s.status}
+                          </span>
+                        </td>
+                        <td className="px-3 py-2">
+                          <button
+                            type="button"
+                            onClick={() => void handoffSheet(s.id)}
+                            className="rounded-md bg-blue-600 px-2 py-1 text-xs text-white hover:bg-blue-500"
+                          >
+                            Handoff
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
-            <p className="mt-2 text-xs text-slate-500">Bulk Mail handoff is read-only — returns <code>READY_FOR_BULK_MAIL</code> with leadIds/emails/templateId. No SMTP/queue is created here.</p>
+            <p className="mt-2 text-xs text-slate-500">
+              Bulk Mail handoff is read-only — returns <code>READY_FOR_BULK_MAIL</code> with
+              leadIds/emails/templateId. No SMTP/queue is created here.
+            </p>
           </div>
         </details>
       </main>
@@ -1268,7 +1559,17 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
   );
 }
 
-function Th({ children, className, sticky, left = 0 }: { children: ReactNode; className?: string; sticky?: "left"; left?: number }) {
+function Th({
+  children,
+  className,
+  sticky,
+  left = 0,
+}: {
+  children: ReactNode;
+  className?: string;
+  sticky?: "left";
+  left?: number;
+}) {
   return (
     <th
       className={`whitespace-nowrap px-2 py-2 text-[11px] font-semibold uppercase tracking-wide ${sticky ? "sticky z-20 bg-slate-50" : ""} ${className ?? ""}`}
@@ -1279,7 +1580,17 @@ function Th({ children, className, sticky, left = 0 }: { children: ReactNode; cl
   );
 }
 
-function Td({ children, className, sticky, left = 0 }: { children: ReactNode; className?: string; sticky?: "left"; left?: number }) {
+function Td({
+  children,
+  className,
+  sticky,
+  left = 0,
+}: {
+  children: ReactNode;
+  className?: string;
+  sticky?: "left";
+  left?: number;
+}) {
   return (
     <td
       className={`px-2 py-1.5 align-middle ${sticky ? "sticky z-10 bg-white shadow-[1px_0_0_0_rgba(226,232,240,0.9)]" : ""} ${className ?? ""}`}
